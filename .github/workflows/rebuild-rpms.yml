@@ -59,15 +59,16 @@ jobs:
       - name: Build the verified source with its RPM recipe
         env:
           PACKAGE: ${{ matrix.package }}
+          FACTORY_REPO: ${{ vars.FACTORY_REPO }}
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
           docker run --rm --privileged \
-            -e PACKAGE \
+            -e PACKAGE -e FACTORY_REPO \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
-            quay.io/fedora/fedora:44 bash -exc '
+            fedora:rawhide bash -exc '
               # The fedora:rawhide image ships fedora-cisco-openh264 enabled, but
               # its packages are signed with Cisco key, which the image does not
               # trust -- so any builddep graph reaching gstreamer/pipewire dies on
@@ -75,13 +76,20 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
-              # Build against Hummingbird plus Fedora 44, which is the pairing
-              # Hummingbird itself uses (images/variables.yml maps its rawhide
-              # variant to fedora-44.repo). Building against the rolling Rawhide
-              # produced RPMs a Hummingbird system cannot install: Rawhide has
-              # moved to OpenSSL 4 while Hummingbird pins 3.5.6, so gnome-shell
-              # pulled in a pipewire-libs needing libcrypto.so.4.
-              cp /repos/hummingbird.repo /repos/fedora-44.repo /etc/yum.repos.d/
+              # Rawhide is the bootstrap build root, per the policy in README.md:
+              # it supplies the compiler, macros and BuildRequires that introduce
+              # a gap, and nothing else. Hummingbird and this factory own
+              # repository are layered over it at a higher priority so that a
+              # package already built for Hummingbird is preferred to Rawhide,
+              # which is step 3 of the ladder in docs/targeting-hummingbird.md.
+              # Without this the output silently carries Rawhide ABI: gnome-shell
+              # built here pulled a pipewire-libs needing libcrypto.so.4, which
+              # Hummingbird (OpenSSL 3.5.6) cannot provide.
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              if [ -n "${FACTORY_REPO:-}" ]; then
+                printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
+                  "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
+              fi
               # The plain fedora image is not a build root: it lacks the group mock
               # installs, so /usr/bin/echo and friends are missing. Most packages pull
               # them in transitively; squashfs-tools calls echo directly from its
