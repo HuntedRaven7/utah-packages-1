@@ -22,13 +22,13 @@ permissions:
   pages: write
 
 concurrency:
-  # Scoped per ref. With a constant group every run cancelled whatever was in
-  # flight on any other branch, so a PR build, a main build and a Renovate
-  # build cancelled each other in turn and none of them ever finished.
-  # Publishing is still serialised: it only runs on main, behind the
-  # github-pages environment.
+  # Scoped per ref, and deliberately NOT cancel-in-progress. A staged build
+  # takes tens of minutes, and cancelling it on every push threw away runs
+  # that were about to answer the question they were started for. A newer run
+  # now queues behind the one in flight instead. Stale runs are cancelled by
+  # hand when we know they will not tell us anything.
   group: upstream-rpm-build-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   prepare:
