@@ -160,6 +160,15 @@
       "sha512": "aa6bb16be18b42925ac1834aa4d558fafdba7751639acfb7344a79f7ead1125d810f13c442458526f394d8790369b1c48ab41cb73881808740263161caa99655"
     },
     {
+      "name": "gnome-desktop3",
+      "version": "51.alpha",
+      "stage": 2,
+      "url": "https://download.gnome.org/sources/gnome-desktop/51/gnome-desktop-51.alpha.tar.xz",
+      "filename": "gnome-desktop-51.alpha.tar.xz",
+      "sha512": "05377890e343b7c5f47e785191e83559e5e053f0e5712c022af9c4e66a40129bd3f37aed9dc4926db5e37020515b1aeb30d2402961bc75a858129dda3ece4e5b",
+      "sha256_url": "https://download.gnome.org/sources/gnome-desktop/51/gnome-desktop-51.alpha.sha256sum"
+    },
+    {
       "name": "libadwaita",
       "version": "1.10.beta.1",
       "url": "https://download.gnome.org/sources/libadwaita/1.10/libadwaita-1.10.beta.1.tar.xz",

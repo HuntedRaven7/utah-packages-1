@@ -106,7 +106,7 @@ repository the next stage resolves against:
 | --- | --- |
 | 0 | everything with no in-set dependency, plus `wayland-protocols`, `accountsservice`, `gsettings-desktop-schemas` |
 | 1 | `gtk4` |
-| 2 | `libadwaita`, `mutter` |
+| 2 | `libadwaita`, `mutter`, `gnome-desktop3` |
 | 3 | `gnome-shell`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome`, `malcontent-bootstrap` |
 | 4 | `malcontent`, `gnome-control-center` |
 
@@ -262,15 +262,31 @@ Genuine gaps, which must themselves be built:
 | `gsettings-desktop-schemas` | 50.1 | >= 51.alpha | mutter |
 | `accountsservice` | 23.13.9 | >= 26.27.3 | gnome-control-center |
 | `pango` | 1.57.1 | >= 1.58.0 | gtk4 |
+| `gnome-desktop3` | 44.5 | >= 51.alpha | gnome-control-center |
 
 `wayland-protocols` was previously listed here as a gap at 1.47. That is no
 longer true: Fedora 44 carries 1.49, the same version we fork, so gtk4's
 `>= 1.48` resolves without us. We still build it, which costs nothing and
 keeps it under this factory's control, but it is not what is blocking anything.
 
-The `pango` row was not predicted from the meson files; it was found by the
-stage-1 build failing on `No match for argument: pkgconfig(pango) >= 1.58.0`.
-That is the expensive way to learn it. The `preflight` job in
+The `gnome-desktop3` row is the fourth and, so far, last of these. Fedora's
+source package is `gnome-desktop3` even though what needs it is the
+`gnome-desktop-4` pkg-config module, which is why searching for the latter finds
+nothing to fork. Upstream has no 51.beta, so we build 51.alpha, which is exactly
+what the requirement asks for.
+
+Neither it nor the `pango` row was predicted from the meson files. Both were
+found by a build failing -- pango at stage 1 on `No match for argument:
+pkgconfig(pango) >= 1.58.0`, and gnome-desktop at stage 4 on
+
+```
+Dependency gnome-desktop-4 for host machine found: NO. Found 44.5 but need: '>= 51.alpha'
+```
+
+That is the expensive way to learn it, and note that `preflight` cannot catch
+this class: the BuildRequires is `pkgconfig(gnome-desktop-4)` with no version, so
+the buildroot resolves and only meson objects. A version floor that lives in
+meson rather than in the spec is invisible until the build configures. The `preflight` job in
 `rebuild-rpms.yml` now resolves every recipe's BuildRequires in the real build
 root on each run, so the whole gap list arrives at once rather than one entry
 per half-hour round. Its output is a worklist, not a gate: a later-stage
