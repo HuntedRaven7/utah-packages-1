@@ -68,3 +68,19 @@ an independent GitHub repository is intentionally optional: GitHub Actions'
 dedicated, narrowly scoped repository-creation credential.
 
 See [architecture](docs/architecture.md) and [contributing](docs/contributing.md).
+
+## Hummingbird availability measurement
+
+`Recalculate Hummingbird package gaps` runs every six hours. It pulls the
+Hummingbird bootc image to inspect its installed RPM database, queries the live
+Hummingbird repository separately, and compares their union to Bluefin's
+package contract. Its artifact distinguishes packages already installed in the
+base image, packages newly available from the repository, and genuine gaps.
+
+## Rawhide bootstrap policy
+
+Fedora Rawhide is permitted only inside an isolated buildroot: it supplies the
+compiler, build macros, and bootstrap BuildRequires needed to introduce a
+Hummingbird gap. Package source archives still come directly from their
+upstreams and are verified before build; the resulting repository, not Rawhide,
+is used by consumer images and subsequent cross-package builds.
