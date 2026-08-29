@@ -1,13 +1,35 @@
-# Hummingbird GitHub
+# utah-packages
 
-A GitHub-hosted RPM and bootc image factory inspired by Hummingbird's goals:
-fast upstream tracking, minimal images, reproducible build roots, and verifiable
-supply-chain metadata.
+GNOME 51 and the rest of the desktop stack, built from verified upstream sources
+for [Fedora Hummingbird](https://packages.redhat.com), and published as an OCI
+image for [projectbluefin/utah](https://github.com/projectbluefin/utah) to
+consume.
 
-It does **not** make consumer images install Fedora Rawhide directly. It uses
-Fedora dist-git only to seed RPM recipes and patches, then rebuilds verified
-direct-upstream sources on GitHub-hosted runners, publishes a coherent overlay
-repository, and composes images from that repository.
+Hummingbird supplies a hardened, fast-moving bootable base and no desktop at
+all. This is where the desktop comes from.
+
+**Experimental pre-alpha**, alongside Utah itself.
+
+It does **not** rebuild Fedora Rawhide. Fedora dist-git seeds the RPM recipes and
+patches; the sources are then fetched from upstream and verified against recorded
+digests, built on GitHub-hosted runners against a Hummingbird plus Fedora 44 build
+root, and published as a coherent overlay.
+
+## What it produces
+
+`ghcr.io/OWNER/utah-packages` — an image whose only content is the
+`createrepo_c` output, consumed with `COPY --from=` pinned by digest, the same
+way Utah already pulls `projectbluefin/common` and `ublue-os/brew`. `main`
+publishes `:latest`; every other branch publishes under its own name, so an
+image can be built against a package set before either is merged.
+
+A GitHub Pages mirror is also published from `main` for anything that wants a
+plain HTTP repository.
+
+Packages are tagged `.hum1.bfin` — the vendor release and dist, then our suffix,
+following AlmaLinux's convention. See
+[docs/targeting-hummingbird.md](docs/targeting-hummingbird.md) for the ordering
+rules and the `precedence` job that enforces them.
 
 ## Initial scope
 
