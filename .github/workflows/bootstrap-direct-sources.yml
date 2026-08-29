@@ -1,6 +1,11 @@
 name: Bootstrap direct upstream sources
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - tools/bootstrap_upstream_sources.py
+      - .github/workflows/bootstrap-direct-sources.yml
   workflow_dispatch:
     inputs:
       source_ref:
@@ -23,7 +28,7 @@ jobs:
           fetch-depth: 0
       - name: Create candidate branch from imported package recipes
         env:
-          SOURCE_REF: ${{ inputs.source_ref }}
+          SOURCE_REF: ${{ inputs.source_ref || 'import/bluefin-rawhide' }}
           BRANCH: source-bootstrap/${{ github.run_id }}
         run: |
           git fetch origin "$SOURCE_REF"
