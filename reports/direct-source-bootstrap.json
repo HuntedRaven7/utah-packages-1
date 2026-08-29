@@ -156,5 +156,15 @@
       "spec": "packages/zsh/zsh.spec",
       "reason": "additional Source entries require an explicit verified source-closure mapping"
     }
+  ],
+  "already_supplied_by_hummingbird": [
+    "bootc",
+    "dracut",
+    "firewalld",
+    "gcc",
+    "libxcrypt",
+    "make",
+    "openssh",
+    "rust-bootupd"
   ]
 }
