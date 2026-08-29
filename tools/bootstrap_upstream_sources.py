@@ -38,9 +38,13 @@ def sha512(url: str) -> tuple[str, str]:
     request = urllib.request.Request(url, headers={"User-Agent": "hummingbird-github-bootstrap/1"})
     value = hashlib.sha512()
     with urllib.request.urlopen(request, timeout=120) as response:
-        # GitHub release redirects end at an opaque object-store name. RPM's
-        # Source0 basename comes from the declared upstream URL, so retain it.
-        filename = Path(urllib.parse.urlparse(url).path).name
+        # GitHub release redirects end at an opaque object-store name, and some
+        # upstreams have a meaningless path basename -- a crates.io download URL
+        # ends in literally "download". RPM takes the local file name from the
+        # "#/name" fragment when the URL carries one, and from the declared URL
+        # basename otherwise; mirror that so the staged file matches Source0.
+        parsed = urllib.parse.urlparse(url)
+        filename = parsed.fragment.lstrip("/") or Path(parsed.path).name
         for block in iter(lambda: response.read(1024 * 1024), b""):
             value.update(block)
     return value.hexdigest(), filename

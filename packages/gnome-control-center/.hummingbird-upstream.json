@@ -1,0 +1,8 @@
+{
+  "package": "gnome-control-center",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-control-center.git",
+  "commit": "fde3eb54243093e5a9c6884263742d1a493f2144",
+  "tree": "237bd2294a2a6ea731a169824effd528f4d80237",
+  "imported_at": "2026-08-29T06:52:03.100876+00:00"
+}

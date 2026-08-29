@@ -1,0 +1,8 @@
+{
+  "package": "gnome-shell",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-shell.git",
+  "commit": "7a4fc07d45bdf3d352138d56733a26d655155c88",
+  "tree": "e431e150047bd1296e36ecf0a3dec54a1838328b",
+  "imported_at": "2026-08-29T06:52:01.322048+00:00"
+}
