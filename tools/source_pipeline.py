@@ -50,7 +50,7 @@ class EmptyDownload(RuntimeError):
 
 
 def fetch(url: str, destination: Path) -> None:
-    request = urllib.request.Request(url, headers={"User-Agent": "hummingbird-github-source-pipeline/1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "utah-packages-source-pipeline/1"})
     last: Exception | None = None
     for attempt in range(1, FETCH_ATTEMPTS + 1):
         try:

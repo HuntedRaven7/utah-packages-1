@@ -29,12 +29,12 @@ jobs:
         with:
           context: containers/base
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: ghcr.io/${{ github.repository_owner }}/hummingbird-github-base:rawhide
+          tags: ghcr.io/${{ github.repository_owner }}/utah-packages-base:rawhide
           build-args: |
             REPOSITORY_URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
             VERSION=${{ github.sha }}
       - uses: actions/attest-build-provenance@v2
         if: github.ref == 'refs/heads/main'
         with:
-          subject-name: ghcr.io/${{ github.repository_owner }}/hummingbird-github-base
+          subject-name: ghcr.io/${{ github.repository_owner }}/utah-packages-base
           subject-digest: ${{ steps.build.outputs.digest }}

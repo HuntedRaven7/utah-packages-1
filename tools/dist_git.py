@@ -29,7 +29,7 @@ def koji_complete(nvr: str) -> bool:
     request = urllib.request.Request(
         "https://koji.fedoraproject.org/kojihub",
         data=json.dumps({"method": "getBuild", "params": [nvr], "id": 1}).encode(),
-        headers={"Content-Type": "application/json", "User-Agent": "hummingbird-github-distgit/1"},
+        headers={"Content-Type": "application/json", "User-Agent": "utah-packages-distgit/1"},
     )
     with urllib.request.urlopen(request, timeout=30) as response:
         build = json.load(response).get("result")

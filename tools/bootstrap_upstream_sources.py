@@ -35,7 +35,7 @@ def sources(spec: Path) -> list[tuple[int, str]]:
 
 
 def sha512(url: str) -> tuple[str, str]:
-    request = urllib.request.Request(url, headers={"User-Agent": "hummingbird-github-bootstrap/1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "utah-packages-bootstrap/1"})
     value = hashlib.sha512()
     with urllib.request.urlopen(request, timeout=120) as response:
         # GitHub release redirects end at an opaque object-store name, and some
