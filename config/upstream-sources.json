@@ -225,9 +225,18 @@
       "sha512": "145260cbd6a8226cef3dfef0c8baba31847beaebc7e6b65d39d02715fd4f4cab9b139b6c3772e550088d4f9ae80c6d3ed20b9a7664c693644dfb96b4cb60e67c"
     },
     {
-      "name": "malcontent",
+      "name": "malcontent-bootstrap",
       "version": "0.14.0",
       "stage": 3,
+      "url": "https://tecnocode.co.uk/downloads/malcontent/malcontent-0.14.0.tar.xz",
+      "filename": "malcontent-0.14.0.tar.xz",
+      "sha512": "e1b7d1d5895b37dce0662ac4e01d1a8dc726a32361c159ae41b4338e06c0920f6a5d14ad7df9a5d98e5ac6e648d06017ccbb2100896cbe11446733d5ba1e449d",
+      "dist_git_name": "malcontent"
+    },
+    {
+      "name": "malcontent",
+      "version": "0.14.0",
+      "stage": 4,
       "url": "https://tecnocode.co.uk/downloads/malcontent/malcontent-0.14.0.tar.xz",
       "filename": "malcontent-0.14.0.tar.xz",
       "sha512": "e1b7d1d5895b37dce0662ac4e01d1a8dc726a32361c159ae41b4338e06c0920f6a5d14ad7df9a5d98e5ac6e648d06017ccbb2100896cbe11446733d5ba1e449d"

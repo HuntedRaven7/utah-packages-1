@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import time
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -82,6 +83,48 @@ def verify_signature(package: dict, target: Path, directory: Path) -> None:
         subprocess.run(["gpg", "--batch", "--verify", str(signature), str(target)], check=True, env=environment, capture_output=True)
 
 
+LOOKASIDE = "https://src.fedoraproject.org/repo/pkgs/rpms/{pkg}/{name}/sha512/{hash}/{name}"
+
+
+def bundled_sources(package: dict, target_dir: Path, already: str) -> list[str]:
+    """Fetch the sources a spec carries that upstream does not publish.
+
+    Several specs bundle tarballs that only exist in Fedora's lookaside cache --
+    malcontent's Source2 is a gvdb snapshot with no upstream URL at all -- and
+    the dist-git checkout records them in a `sources` file rather than in the
+    spec. Nothing fetched them, so `%prep` would have died on
+
+        tar -xf /.../gvdb.tar.xz: No such file or directory
+
+    the moment the buildroot resolved. Each entry names its own SHA-512 and the
+    lookaside is addressed by that hash, so the URL is only satisfiable by the
+    exact bytes recorded here.
+    """
+    manifest = Path("packages") / package.get("dist_git_name", package["name"]) / "sources"
+    if not manifest.is_file():
+        return []
+    fetched = []
+    for line in manifest.read_text().splitlines():
+        match = re.fullmatch(r"SHA512 \((\S+)\) = ([0-9a-f]{128})", line.strip())
+        if not match:
+            continue
+        filename, expected = match.groups()
+        if filename == already:  # Source0 comes from upstream, with its own checks.
+            continue
+        url = LOOKASIDE.format(pkg=package.get("dist_git_name", package["name"]),
+                               name=filename, hash=expected)
+        candidate = target_dir / f"{filename}.candidate"
+        fetch(url, candidate)
+        actual = digest(candidate, "sha512")
+        if actual != expected:
+            candidate.unlink(missing_ok=True)
+            raise ValueError(f"SHA-512 mismatch for {filename}: expected {expected}, got {actual}")
+        candidate.replace(target_dir / filename)
+        fetched.append(filename)
+    return fetched
+
+
+
 def selected(config: dict, name: str | None) -> list[dict]:
     packages = config.get("packages", [])
     if name is None:
@@ -131,7 +174,10 @@ def main() -> int:
                     raise ValueError("download is absent from the upstream SHA-256 manifest")
             final = target_dir / filename
             candidate.replace(final)
+            bundled = bundled_sources(package, target_dir, filename)
             report.update({"result": "accepted", "sha512": actual, "file": str(final)})
+            if bundled:
+                report["bundled"] = bundled
         except Exception as error:  # Do not replace an accepted source.
             candidate.unlink(missing_ok=True)
             succeeded = False

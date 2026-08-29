@@ -1002,6 +1002,12 @@ jobs:
       - name: Create and keylessly sign repository metadata
         run: |
           sudo apt-get update && sudo apt-get install -y createrepo-c
+          # The malcontent bootstrap pass exists only to give the next stage a
+          # malcontent-libs linked against accountsservice 26, breaking the
+          # flatpak-libs -> libmalcontent-0.so.0 cycle. It has no parental
+          # controls UI, so it must not reach anyone's system. Its release is
+          # 0.bootstrap, below the real build, so this is belt and braces.
+          find repository -name '*-0.bootstrap.*.rpm' -print -delete
           createrepo_c --update repository
           curl -fsSL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o cosign
           install -m 0755 cosign /usr/local/bin/cosign

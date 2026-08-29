@@ -107,8 +107,8 @@ repository the next stage resolves against:
 | 0 | everything with no in-set dependency, plus `wayland-protocols`, `accountsservice`, `gsettings-desktop-schemas` |
 | 1 | `gtk4` |
 | 2 | `libadwaita`, `mutter` |
-| 3 | `gnome-shell`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome`, `malcontent` |
-| 4 | `gnome-control-center` |
+| 3 | `gnome-shell`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome`, `malcontent-bootstrap` |
+| 4 | `malcontent`, `gnome-control-center` |
 
 `malcontent` is in the set for a reason worth recording, because it is the
 first package pulled in by an ABI break rather than by a version floor.
@@ -126,9 +126,36 @@ package accountsservice-libs-23.13.9-16.fc44 from fedora is filtered out
 
 Fedora has already made this transition: Rawhide ships the same malcontent
 0.14.0 at release 7, rebuilt against accountsservice 26. So this is a rebuild,
-not a version bump -- exactly the case the `.N` convention exists for. It needs
-gtk4 and libadwaita, so it cannot go earlier than stage 3, which is why
-`gnome-control-center` moves to a stage of its own.
+not a version bump -- exactly the case the `.N` convention exists for.
+
+Rebuilding it is not enough on its own, though, because malcontent transitively
+BuildRequires itself:
+
+```
+package flatpak-libs-1.18.1-1.fc44 from updates requires
+  libmalcontent-0.so.0, but none of the providers can be installed
+```
+
+`malcontent` BuildRequires `pkgconfig(flatpak)`; `flatpak-devel` needs
+`flatpak-libs`; and `flatpak-libs` needs `libmalcontent-0.so.0`, which only
+malcontent provides. In Fedora that closes, because Fedora's own
+`malcontent-libs` installs. Here it cannot, for the soname reason above -- so
+neither malcontent nor `gnome-control-center` could resolve a buildroot at all.
+
+It breaks the way upstream intended. `flatpak` appears exactly once in
+malcontent's build, in `libmalcontent-ui/meson.build`, which meson enters only
+under `if get_option('ui').enabled()`; upstream separates the two deliberately
+and ships a `use_system_libmalcontent` option described in `meson_options.txt`
+as "used in distros to break a dependency cycle". So `malcontent-bootstrap`
+builds the same sources with `-Dui=disabled` at stage 3, needing no flatpak,
+and produces a `malcontent-libs` linked against accountsservice 26. At stage 4
+that is in `[stages]`, `flatpak-libs` resolves against it, and the full
+malcontent and `gnome-control-center` both build.
+
+The bootstrap's release is `0.bootstrap`, which sorts below the real `1.utah`:
+at stage 4 it is the only malcontent available and so is used, and anywhere both
+exist the full build wins on version. `publish` deletes it regardless, since a
+malcontent with no parental controls UI should not reach anyone's system.
 
 This is the same shape as Hummingbird's toolchain ordering, one layer up.
 
