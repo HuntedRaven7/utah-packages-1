@@ -1,11 +1,6 @@
 name: Bootstrap direct upstream sources
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - tools/bootstrap_upstream_sources.py
-      - .github/workflows/bootstrap-direct-sources.yml
   workflow_dispatch:
     inputs:
       source_ref:
