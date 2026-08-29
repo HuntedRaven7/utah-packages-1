@@ -149,18 +149,31 @@ Genuine gaps, which must themselves be built:
 | --- | --- | --- | --- |
 | `wayland-protocols` | 1.47 | >= 1.48 | gtk4, mutter |
 | `accountsservice` | 23.13.9 | >= 26.27.3 | gnome-control-center |
+| `pango` | 1.57.1 | >= 1.58.0 | gtk4 |
+
+The `pango` row was not predicted from the meson files; it was found by the
+stage-1 build failing on `No match for argument: pkgconfig(pango) >= 1.58.0`.
+That is the expensive way to learn it. The `preflight` job in
+`rebuild-rpms.yml` now resolves every recipe's BuildRequires in the real build
+root on each run, so the whole gap list arrives at once rather than one entry
+per half-hour round. Its output is a worklist, not a gate: a later-stage
+package requiring something an earlier stage has not built yet shows up there
+too, and is not a gap.
 
 Note that `glib2` is **not** a blocker. GNOME 51 asks for 2.86, not the 2.89
 that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
 
 ## Open, and deliberately not asserted
 
-- **Step 3 of the ladder is not implemented.** `rebuild-rpms.yml` builds in a
-  Rawhide container and enables nothing else — not the factory repository,
-  not Hummingbird. Until it does, output carries Rawhide's ABI regardless of
-  intent.
+- **Step 3 of the ladder is implemented but only partly proven.**
+  `rebuild-rpms.yml` now builds in a Fedora 44 container with Hummingbird's
+  Pulp repository layered over it, and the job prints `buildroot openssl` as
+  its own check: run 33243934353 reported `3.5.7-2.fc44`, which is
+  `libcrypto.so.3` — Hummingbird's ABI, not Rawhide's `libcrypto.so.4`. What
+  is not proven is that output linked against that root installs cleanly on a
+  Hummingbird image; nothing has tested that yet.
 - **Nothing sets a Hummingbird-style disttag or `.N` release bump.** Built
-  RPMs carry Fedora's `.fc46`, so they neither identify as this factory's nor
+  RPMs carry Fedora's `.fc44`, so they neither identify as this factory's nor
   sort against Fedora as Hummingbird's own rebuilds do.
 - **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
   Hummingbird root is confirmed correct, and every failure observed so far has

@@ -52,6 +52,63 @@ jobs:
               config/upstream-sources.json)" >> "$GITHUB_OUTPUT"
           done
 
+  preflight:
+    # Every missing platform dependency has so far been found the slow way: a
+    # stage fails, we read one "No match for argument" line, add one package,
+    # and wait another half hour for the next one. gtk4 needed pango >= 1.58.0
+    # that Fedora 44 does not carry. This job resolves every recipe's
+    # BuildRequires in the real build root up front, so one run enumerates all
+    # of the gaps instead of one per round.
+    #
+    # It never gates a build. A requirement listed here may be perfectly fine:
+    # a later-stage package legitimately BuildRequires something an earlier
+    # stage has not built yet, and that is indistinguishable from a real gap
+    # without resolving against the staged output. Read it as a worklist.
+    needs: prepare
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve every recipe's BuildRequires against Fedora 44 + Hummingbird
+        env:
+          FACTORY_REPO: ${{ vars.FACTORY_REPO }}
+        run: |
+          mkdir -p work/reports
+          docker run --rm \
+            -e FACTORY_REPO \
+            -v "$PWD/work:/work:Z" \
+            -v "$PWD/packages:/packages:ro,Z" \
+            -v "$PWD/config:/repos:ro,Z" \
+            quay.io/fedora/fedora:44 bash -exc '
+              disable=--disablerepo=fedora-cisco-openh264
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              if [ -n "${FACTORY_REPO:-}" ]; then
+                printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
+                  "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
+              fi
+              dnf -y $disable install dnf-plugins-core rpm-build @buildsys-build
+              rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              : > /work/reports/preflight.txt
+              for dir in /packages/*/; do
+                package=$(basename "$dir")
+                spec=$(find "$dir" -maxdepth 1 -name "*.spec" -print -quit)
+                test -n "$spec" || continue
+                # --assumeno resolves the transaction and reports what is
+                # unsatisfiable without installing any of it.
+                if ! output=$(dnf $disable --assumeno builddep "$spec" 2>&1); then
+                  printf "%s\n" "$package" >> /work/reports/preflight.txt
+                  printf "%s\n" "$output" | grep -E "No match for argument|nothing provides|cannot install" \
+                    | sed "s/^/    /" >> /work/reports/preflight.txt || true
+                fi
+              done
+              echo "=== recipes with unresolved BuildRequires ==="
+              cat /work/reports/preflight.txt
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preflight-buildrequires
+          path: work/reports/preflight.txt
+          if-no-files-found: warn
   rebuild0:
     needs: prepare
     if: needs.prepare.outputs.stage0 != '[]'

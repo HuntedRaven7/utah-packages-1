@@ -241,6 +241,13 @@
       "sha512": "7b0805040bc5f31870155fbfc8d273e7cd0df692816b4ad7f3ff1da492365c015dfddbc8299444a1f7315eebb0e8663ddf5a8ccf023b6cd2648ee8a85159fe0d"
     },
     {
+      "name": "pango",
+      "version": "1.58.2",
+      "url": "https://download.gnome.org/sources/pango/1.58/pango-1.58.2.tar.xz",
+      "filename": "pango-1.58.2.tar.xz",
+      "sha512": "19c88d07c547312bde647cb5d43c300d1750c5b21904c4c066c0ddba30fcfddc9cad463c40bddbe1df228eb33475ff5396ce9921df5347e8187fe3ede8d075a8"
+    },
+    {
       "name": "rust-just",
       "version": "1.57.0",
       "url": "https://crates.io/api/v1/crates/just/1.57.0/download#/just-1.57.0.crate",
