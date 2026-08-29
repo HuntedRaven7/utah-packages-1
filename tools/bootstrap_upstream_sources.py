@@ -53,6 +53,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=Path("config/upstream-sources.json"))
     parser.add_argument("--report", type=Path, default=Path("reports/direct-source-bootstrap.json"))
     parser.add_argument("--provided-packages", type=Path, help="newline-delimited package names already supplied by Hummingbird")
+    parser.add_argument("--provided-sources", type=Path, help="JSON inventory of source packages already supplied by Hummingbird")
     args = parser.parse_args()
     root = args.root.resolve()
     packages = (root / args.packages).resolve()
@@ -67,6 +68,10 @@ def main() -> int:
         for source, binaries in requested_by_source.items()
         if binaries and binaries <= provided_names
     }
+    if args.provided_sources:
+        supplied_sources = json.loads(args.provided_sources.read_text()).get("sources", [])
+        for source in supplied_sources:
+            already_supplied.setdefault(source, sorted(requested_by_source.get(source, [])))
     candidates, rejected = [], []
     for package in sorted(path for path in packages.iterdir() if path.is_dir()):
         if package.name in already_supplied:
