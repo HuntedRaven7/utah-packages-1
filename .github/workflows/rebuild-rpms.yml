@@ -73,8 +73,18 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
+              # An imported spec keeps its dist-git PatchN and auxiliary SourceN
+              # files next to itself, while the verified upstream archive lands in
+              # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
+              # recipe files first, then the verified archive, which therefore wins
+              # over anything of the same name carried in the import.
+              staged=/work/staged/$PACKAGE
+              rm -rf "$staged"
+              mkdir -p "$staged"
+              cp -a "/packages/$PACKAGE/." "$staged/"
+              cp -a "/work/sources/$PACKAGE/." "$staged/"
               rpmbuild -ba "$spec" \
-                --define "_sourcedir /work/sources/$PACKAGE" \
+                --define "_sourcedir $staged" \
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
