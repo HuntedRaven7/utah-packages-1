@@ -177,9 +177,33 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   `libcrypto.so.3` — Hummingbird's ABI, not Rawhide's `libcrypto.so.4`. What
   is not proven is that output linked against that root installs cleanly on a
   Hummingbird image; nothing has tested that yet.
-- **Nothing sets a Hummingbird-style disttag or `.N` release bump.** Built
-  RPMs carry Fedora's `.fc44`, so they neither identify as this factory's nor
-  sort against Fedora as Hummingbird's own rebuilds do.
+- **The disttag is set; the `.N` release bump is not.** Every build now passes
+  `--define "dist .utah"`, so output is `pango-1.58.2-1.utah` rather than
+  `-1.fc44` and a package is identifiable as this factory's on sight. What is
+  still missing is Hummingbird's `.N` convention, and the gap is visible in
+  rpm's own ordering (verified against rpmvercmp):
+
+  ```
+  1.utah  >  1.fc44      1.utah  >  1.fc45      1.utah  >  1.hum1
+  1.utah  <  2.fc44
+  ```
+
+  So `.utah` outranks any same-numbered Fedora or Hummingbird release, because
+  rpm compares equal-position alphabetic segments as strings and `utah` sorts
+  above `fc44` and `hum1`. But a Fedora **release bump** overtakes us: once
+  Fedora ships `2.fc44`, our `1.utah` loses. Hummingbird's answer is to rebuild
+  as `2.1.hum1`, which sits above `2.fc44` and below `3.fc44`. We do not do
+  that yet, so a package we build at the same version as Fedora needs its
+  release bumped by hand when Fedora rebuilds.
+
+  In the repositories this does not decide anything: dnf priority does, and the
+  factory repository sits above both Fedora and Hummingbird. The disttag is
+  provenance, not precedence.
+
+  One consequence worth stating: `1.utah > 1.hum1` means a package we rebuild
+  would outrank Hummingbird's own build of it. We should not be rebuilding base
+  OS packages Hummingbird owns; the desktop stack it does not ship is the whole
+  remit.
 - **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
   Hummingbird root is confirmed correct. Run 33243934353 built
   `gnome-session`, `gnome-settings-daemon` and `xdg-desktop-portal-gnome`,

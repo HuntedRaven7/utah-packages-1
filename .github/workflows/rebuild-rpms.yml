@@ -213,6 +213,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # Everything this factory builds carries .utah rather than the
+              # container Fedora .fc44, so a package is identifiable as ours on
+              # sight and in `rpm -q`. It also sorts correctly by accident of the
+              # alphabet: rpm compares equal-numbered release segments as
+              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
+              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
+              # Priority still decides in the repositories; this is provenance.
+              DISTTAG=".utah"
+              echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
               # connect: No such file or directory" -- a plain container has no
@@ -249,13 +258,15 @@ jobs:
               # requirement fails instead of looping.
               for _ in 1 2 3 4 5; do
                 rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
-                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                if rpmbuild -br "$spec" --define "_sourcedir $staged" \
+                     --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
+                --define "dist $DISTTAG" \
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
@@ -354,6 +365,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # Everything this factory builds carries .utah rather than the
+              # container Fedora .fc44, so a package is identifiable as ours on
+              # sight and in `rpm -q`. It also sorts correctly by accident of the
+              # alphabet: rpm compares equal-numbered release segments as
+              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
+              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
+              # Priority still decides in the repositories; this is provenance.
+              DISTTAG=".utah"
+              echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
               # connect: No such file or directory" -- a plain container has no
@@ -390,13 +410,15 @@ jobs:
               # requirement fails instead of looping.
               for _ in 1 2 3 4 5; do
                 rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
-                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                if rpmbuild -br "$spec" --define "_sourcedir $staged" \
+                     --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
+                --define "dist $DISTTAG" \
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
@@ -495,6 +517,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # Everything this factory builds carries .utah rather than the
+              # container Fedora .fc44, so a package is identifiable as ours on
+              # sight and in `rpm -q`. It also sorts correctly by accident of the
+              # alphabet: rpm compares equal-numbered release segments as
+              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
+              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
+              # Priority still decides in the repositories; this is provenance.
+              DISTTAG=".utah"
+              echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
               # connect: No such file or directory" -- a plain container has no
@@ -531,13 +562,15 @@ jobs:
               # requirement fails instead of looping.
               for _ in 1 2 3 4 5; do
                 rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
-                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                if rpmbuild -br "$spec" --define "_sourcedir $staged" \
+                     --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
+                --define "dist $DISTTAG" \
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
@@ -636,6 +669,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # Everything this factory builds carries .utah rather than the
+              # container Fedora .fc44, so a package is identifiable as ours on
+              # sight and in `rpm -q`. It also sorts correctly by accident of the
+              # alphabet: rpm compares equal-numbered release segments as
+              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
+              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
+              # Priority still decides in the repositories; this is provenance.
+              DISTTAG=".utah"
+              echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
               # connect: No such file or directory" -- a plain container has no
@@ -672,13 +714,15 @@ jobs:
               # requirement fails instead of looping.
               for _ in 1 2 3 4 5; do
                 rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
-                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                if rpmbuild -br "$spec" --define "_sourcedir $staged" \
+                     --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
+                --define "dist $DISTTAG" \
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
