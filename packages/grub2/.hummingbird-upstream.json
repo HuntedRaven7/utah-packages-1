@@ -1,0 +1,8 @@
+{
+  "package": "grub2",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/grub2.git",
+  "commit": "0eb7960db81d587c867f7b0f8317b61b86a1049c",
+  "tree": "aff36f6cc31a07a1ad190a8d0fc2052e1c8d43b4",
+  "imported_at": "2026-08-29T06:02:38.306913+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "package": "zsh",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/zsh.git",
+  "commit": "4a2d5294300503e84cb349010b8358b9bb1dee7e",
+  "tree": "e4a35b5f3e64c22c059745928b0e582dbcc72cbf",
+  "imported_at": "2026-08-29T06:03:11.328992+00:00"
+}

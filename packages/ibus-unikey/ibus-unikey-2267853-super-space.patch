@@ -1,0 +1,29 @@
+From 5316c926fc24dbbdf0aeac8a360a95ca061df760 Mon Sep 17 00:00:00 2001
+From: Takao Fujiwara <takao.fujiwara1@gmail.com>
+Date: Tue, 12 Mar 2024 09:16:15 +0900
+Subject: [PATCH] Do not process Super modifier key
+
+Super-space key is used by the GNOME desktop session to switch IMEs
+and ibus-unikey does not need to process Super modifier key.
+---
+ src/engine.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/engine.cpp b/src/engine.cpp
+index 3ae6b01..39b89f9 100644
+--- a/src/engine.cpp
++++ b/src/engine.cpp
+@@ -476,7 +476,9 @@ static gboolean ibus_unikey_engine_process_key_event_preedit(IBusEngine* engine,
+                                                              guint keycode,
+                                                              guint modifiers)
+ {
+-    if (modifiers & IBUS_RELEASE_MASK)
++    // Super-space shortcut key can be sent to the engine earlier
++    // than gnome-shell/mutter in Wayland.
++    if (modifiers & IBUS_RELEASE_MASK || modifiers & IBUS_MOD4_MASK)
+     {
+         return false;
+     }
+-- 
+2.43.2
+

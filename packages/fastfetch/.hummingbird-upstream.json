@@ -1,0 +1,8 @@
+{
+  "package": "fastfetch",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/fastfetch.git",
+  "commit": "2e24340ecbd4f0add53bce33fd8b44f57e08f6b7",
+  "tree": "c3c74b8ffb32fd7b3d8642446f29e0e3b104052f",
+  "imported_at": "2026-08-29T06:02:22.690686+00:00"
+}

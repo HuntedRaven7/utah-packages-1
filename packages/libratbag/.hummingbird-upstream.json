@@ -1,0 +1,8 @@
+{
+  "package": "libratbag",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libratbag.git",
+  "commit": "9997bbdc6411c9093ffcb311c156c8333fab50a8",
+  "tree": "336566fe656f1f2c84ebad2a45463ca10261569e",
+  "imported_at": "2026-08-29T06:02:52.954705+00:00"
+}

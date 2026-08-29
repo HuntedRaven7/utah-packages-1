@@ -1,0 +1,5 @@
+/libxcrypt-*/
+/libxcrypt-*.rpm
+/libxcrypt-*.tar.xz
+/libxcrypt-gpgkey.gpg
+/results_libxcrypt/

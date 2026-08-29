@@ -1,0 +1,8 @@
+{
+  "package": "input-remapper",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/input-remapper.git",
+  "commit": "5840e9cd2d3f2ca3ddbeb5c1c73b6d743e2a5259",
+  "tree": "9aa181c88143a93a618c54db2be334a23a0ee473",
+  "imported_at": "2026-08-29T06:02:42.948085+00:00"
+}

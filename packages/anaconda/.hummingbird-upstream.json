@@ -1,0 +1,8 @@
+{
+  "package": "anaconda",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/anaconda.git",
+  "commit": "f97ff3f822b205586112de067c9d61287fd97a2b",
+  "tree": "cd87dc6caea90fdcd04966a3bf57f8738e935fe8",
+  "imported_at": "2026-08-29T06:02:16.323101+00:00"
+}

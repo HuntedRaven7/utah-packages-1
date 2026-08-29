@@ -1,0 +1,8 @@
+{
+  "package": "squashfs-tools",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/squashfs-tools.git",
+  "commit": "882f80ec4161f77dfaceff7eb3bb72d3db6b6b1c",
+  "tree": "a64c24f47c58acc1c56355630d54bda1411b77aa",
+  "imported_at": "2026-08-29T06:03:06.436818+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "package": "libheif",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libheif.git",
+  "commit": "596445c050da8dbc9cf3f02b4db58add84d6f5bf",
+  "tree": "65e2f621ffd6029cc139862fc6270b325e1f921c",
+  "imported_at": "2026-08-29T06:02:51.585678+00:00"
+}

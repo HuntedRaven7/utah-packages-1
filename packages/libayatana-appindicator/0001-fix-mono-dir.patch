@@ -1,0 +1,80 @@
+diff --git a/bindings/mono/CMakeLists.txt b/bindings/mono/CMakeLists.txt
+index af25c72..030f5ba 100644
+--- a/bindings/mono/CMakeLists.txt
++++ b/bindings/mono/CMakeLists.txt
+@@ -12,7 +12,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${ayatana_appindicator_gtkver}-sharp-
+ # ayatana-appindicator{,3}-sharp.dll.config
+ 
+ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/${ayatana_appindicator_gtkver}-sharp.dll.config" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/${ayatana_appindicator_gtkver}-sharp.dll.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
++install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/${ayatana_appindicator_gtkver}-sharp.dll.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ # app-indicator-gtk{2,3}.sources.xml
+ 
+@@ -230,13 +230,12 @@ elseif (FLAVOUR_GTK2)
+ endif()
+ 
+ find_program(GACUTIL gacutil)
+-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
+-install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND ${GACUTIL} -i ${CMAKE_CURRENT_BINARY_DIR}/${ayatana_appindicator_gtkver}-sharp.dll -package ${ayatana_appindicator_gtkver}-sharp -root ${CMAKE_INSTALL_FULL_LIBDIR})")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ # policy.0.0.ayatana-appindicator{,3}-sharp.config
+ 
+ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.config.in" "${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.config" @ONLY)
+-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ # policy.0.0.ayatana-appindicator{,3}-sharp.dll
+ 
+@@ -253,13 +252,12 @@ add_custom_command(
+     -keyfile:"${CMAKE_CURRENT_SOURCE_DIR}/${ayatana_appindicator_gtkver}-sharp.snk"
+ )
+ 
+-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
+-install(CODE "execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND ${GACUTIL} -i ${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.dll -package ${ayatana_appindicator_gtkver}-sharp -root ${CMAKE_INSTALL_FULL_LIBDIR})")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.0.${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ # policy.0.1.ayatana-appindicator{,3}-sharp.config
+ 
+ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.config.in" "${CMAKE_CURRENT_BINARY_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.config" @ONLY)
+-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.config" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ # policy.0.1.ayatana-appindicator{,3}-sharp.dll
+ 
+@@ -276,7 +274,7 @@ add_custom_command(
+     -keyfile:"${CMAKE_CURRENT_SOURCE_DIR}/${ayatana_appindicator_gtkver}-sharp.snk"
+ )
+ 
+-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/cli/${ayatana_appindicator_gtkver}-sharp-0.1")
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/policy.0.1.${ayatana_appindicator_gtkver}-sharp.dll" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/${ayatana_appindicator_gtkver}-sharp-0.1")
+ 
+ add_custom_target("bindings-mono" ALL DEPENDS "policy.0.1.${ayatana_appindicator_gtkver}-sharp.dll")
+ 
+diff --git a/bindings/mono/ayatana-appindicator-sharp-0.1.pc.in b/bindings/mono/ayatana-appindicator-sharp-0.1.pc.in
+index 3e1e3cb..dd42693 100644
+--- a/bindings/mono/ayatana-appindicator-sharp-0.1.pc.in
++++ b/bindings/mono/ayatana-appindicator-sharp-0.1.pc.in
+@@ -1,7 +1,7 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+ libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+-assemblies_dir=@CMAKE_INSTALL_FULL_LIBDIR@/cli/ayatana-appindicator-sharp-0.1
++assemblies_dir=@CMAKE_INSTALL_FULL_LIBDIR@/ayatana-appindicator-sharp-0.1
+ 
+ Name: ayatana-appindicator-sharp
+ Description: application indicators for .NET (GTK-2+ variant)
+diff --git a/bindings/mono/ayatana-appindicator3-sharp-0.1.pc.in b/bindings/mono/ayatana-appindicator3-sharp-0.1.pc.in
+index 0fdde34..1516bf3 100644
+--- a/bindings/mono/ayatana-appindicator3-sharp-0.1.pc.in
++++ b/bindings/mono/ayatana-appindicator3-sharp-0.1.pc.in
+@@ -1,7 +1,7 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+ libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+-assemblies_dir=@CMAKE_INSTALL_FULL_LIBDIR@/cli/ayatana-appindicator3-sharp-0.1
++assemblies_dir=@CMAKE_INSTALL_FULL_LIBDIR@/ayatana-appindicator3-sharp-0.1
+ 
+ Name: ayatana-appindicator3-sharp
+ Description: application indicators for .NET (GTK-3+ variant)
