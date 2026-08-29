@@ -152,7 +152,15 @@ jobs:
               cp /repos/hummingbird.repo /etc/yum.repos.d/
               # RPMs from earlier stages become a local repo, so a later stage
               # can satisfy a BuildRequires on something this run just built.
-              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+              # The guard must recurse: upload-artifact takes the common parent
+              # of its path globs as the artifact root, so an artifact declaring
+              # work/result/*.rpm and work/reports/*.json unpacks as
+              # prior/result/*.rpm, not prior/*.rpm. A non-recursive glob matched
+              # nothing, this block was silently skipped in every stage, and
+              # mutter resolved gsettings-desktop-schemas to Fedora 50.1 instead
+              # of the 51.beta stage 0 had just built. createrepo_c itself walks
+              # the tree, so only the test needed fixing.
+              if [ -n "$(find /work/prior -name "*.rpm" -print -quit 2>/dev/null)" ]; then
                 dnf -y $disable install createrepo_c
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
@@ -257,7 +265,15 @@ jobs:
               cp /repos/hummingbird.repo /etc/yum.repos.d/
               # RPMs from earlier stages become a local repo, so a later stage
               # can satisfy a BuildRequires on something this run just built.
-              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+              # The guard must recurse: upload-artifact takes the common parent
+              # of its path globs as the artifact root, so an artifact declaring
+              # work/result/*.rpm and work/reports/*.json unpacks as
+              # prior/result/*.rpm, not prior/*.rpm. A non-recursive glob matched
+              # nothing, this block was silently skipped in every stage, and
+              # mutter resolved gsettings-desktop-schemas to Fedora 50.1 instead
+              # of the 51.beta stage 0 had just built. createrepo_c itself walks
+              # the tree, so only the test needed fixing.
+              if [ -n "$(find /work/prior -name "*.rpm" -print -quit 2>/dev/null)" ]; then
                 dnf -y $disable install createrepo_c
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
@@ -362,7 +378,15 @@ jobs:
               cp /repos/hummingbird.repo /etc/yum.repos.d/
               # RPMs from earlier stages become a local repo, so a later stage
               # can satisfy a BuildRequires on something this run just built.
-              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+              # The guard must recurse: upload-artifact takes the common parent
+              # of its path globs as the artifact root, so an artifact declaring
+              # work/result/*.rpm and work/reports/*.json unpacks as
+              # prior/result/*.rpm, not prior/*.rpm. A non-recursive glob matched
+              # nothing, this block was silently skipped in every stage, and
+              # mutter resolved gsettings-desktop-schemas to Fedora 50.1 instead
+              # of the 51.beta stage 0 had just built. createrepo_c itself walks
+              # the tree, so only the test needed fixing.
+              if [ -n "$(find /work/prior -name "*.rpm" -print -quit 2>/dev/null)" ]; then
                 dnf -y $disable install createrepo_c
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
@@ -467,7 +491,15 @@ jobs:
               cp /repos/hummingbird.repo /etc/yum.repos.d/
               # RPMs from earlier stages become a local repo, so a later stage
               # can satisfy a BuildRequires on something this run just built.
-              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+              # The guard must recurse: upload-artifact takes the common parent
+              # of its path globs as the artifact root, so an artifact declaring
+              # work/result/*.rpm and work/reports/*.json unpacks as
+              # prior/result/*.rpm, not prior/*.rpm. A non-recursive glob matched
+              # nothing, this block was silently skipped in every stage, and
+              # mutter resolved gsettings-desktop-schemas to Fedora 50.1 instead
+              # of the 51.beta stage 0 had just built. createrepo_c itself walks
+              # the tree, so only the test needed fixing.
+              if [ -n "$(find /work/prior -name "*.rpm" -print -quit 2>/dev/null)" ]; then
                 dnf -y $disable install createrepo_c
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \

@@ -147,9 +147,14 @@ Genuine gaps, which must themselves be built:
 
 | package | available | GNOME 51 needs | required by |
 | --- | --- | --- | --- |
-| `wayland-protocols` | 1.47 | >= 1.48 | gtk4, mutter |
+| `gsettings-desktop-schemas` | 50.1 | >= 51.alpha | mutter |
 | `accountsservice` | 23.13.9 | >= 26.27.3 | gnome-control-center |
 | `pango` | 1.57.1 | >= 1.58.0 | gtk4 |
+
+`wayland-protocols` was previously listed here as a gap at 1.47. That is no
+longer true: Fedora 44 carries 1.49, the same version we fork, so gtk4's
+`>= 1.48` resolves without us. We still build it, which costs nothing and
+keeps it under this factory's control, but it is not what is blocking anything.
 
 The `pango` row was not predicted from the meson files; it was found by the
 stage-1 build failing on `No match for argument: pkgconfig(pango) >= 1.58.0`.
@@ -176,9 +181,16 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   RPMs carry Fedora's `.fc44`, so they neither identify as this factory's nor
   sort against Fedora as Hummingbird's own rebuilds do.
 - **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
-  Hummingbird root is confirmed correct, and every failure observed so far has
-  been build ordering within our own package set rather than a missing Fedora
-  dependency. The staged build addresses that; it has not yet been proven.
+  Hummingbird root is confirmed correct. Run 33243934353 built
+  `gnome-session`, `gnome-settings-daemon` and `xdg-desktop-portal-gnome`,
+  but that does not demonstrate staging: those three resolve entirely against
+  Fedora 44. Staging had in fact never run at all -- the guard that decides
+  whether to build the local `[stages]` repository used a non-recursive glob
+  against a directory where `download-artifact` had nested the RPMs one level
+  down, so it silently found nothing in every stage of every run. `mutter`
+  resolving `gsettings-desktop-schemas` to Fedora's 50.1 is what exposed it.
+  The guard now recurses; the mechanism is still unproven until a later-stage
+  package is observed consuming an earlier stage's output.
 - **TunaOS Hummingbird (`repo.tunaos.org`) is a different, abandoned project.**
   It is not Red Hat Hummingbird and must not be used. Any leftover reference
   to it is a bug.
