@@ -1,6 +1,10 @@
 name: Recalculate Hummingbird package gaps
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/recalculate-hummingbird-gaps.yml
   workflow_dispatch:
   schedule:
     - cron: '23 */6 * * *'
