@@ -1,0 +1,15 @@
+# v4l2-compat.so is special
+addFilter("W: shlib-unversioned-lib v4l2-compat.so")
+addFilter("W: shlib-fixed-dependency libcamera")
+addFilter("W: dangling-relative-symlink")
+# This is for re-signing the IPAs
+addFilter("E: rpm-buildroot-usage")
+# The python bindings have no docs, this is expected
+addFilter("W: no-documentation")
+# This useless error really should be removed from rpmlint
+addFilter("E: incorrect-fsf-address")
+# The -doc subpackage has been dropped due to exotic buildrequires for the docs
+addFilter("W: obsolete-not-provided libcamera-doc")
+# Meh
+addFilter("W: no-manual-page-for-binary")
+addFilter("W: no-%check-section")

@@ -1,0 +1,53 @@
+name: Recalculate Hummingbird package gaps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/recalculate-hummingbird-gaps.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hummingbird-gap-measurement
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    env:
+      HUMMINGBIRD_IMAGE: quay.io/hummingbird-community/bootc-os:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull Hummingbird image and inspect installed RPMs
+        run: |
+          mkdir -p reports
+          podman pull "$HUMMINGBIRD_IMAGE"
+          podman run --rm --entrypoint rpm "$HUMMINGBIRD_IMAGE" -qa --qf '%{NAME}\n' | sort -u > reports/hummingbird-image-packages.txt
+      - name: Query the live Hummingbird RPM repository
+        run: |
+          podman run --rm \
+            -v "$PWD/config/hummingbird.repo:/etc/yum.repos.d/hummingbird.repo:ro,Z" \
+            -v "$PWD/reports:/reports:Z" \
+            fedora:rawhide bash -exc '
+              dnf -y install dnf-plugins-core
+              dnf repoquery --repo tunaos-hummingbird --qf "%{name}" | sort -u > /reports/hummingbird-repo-packages.txt
+            '
+      - name: Recalculate Bluefin parity gaps
+        run: |
+          python3 tools/recalculate_hummingbird_gaps.py \
+            --image-packages reports/hummingbird-image-packages.txt \
+            --repo-packages reports/hummingbird-repo-packages.txt \
+            --image "$HUMMINGBIRD_IMAGE"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hummingbird-gap-report
+          path: reports/hummingbird-*-packages.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hummingbird-gap-summary
+          path: reports/hummingbird-gap.json

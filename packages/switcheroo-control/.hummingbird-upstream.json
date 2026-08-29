@@ -1,0 +1,8 @@
+{
+  "package": "switcheroo-control",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/switcheroo-control.git",
+  "commit": "9b769fb4d95f504521c04b950ae1145b37f153ac",
+  "tree": "bed7939a50de77ad154bb279c581e4ff99a6f645",
+  "imported_at": "2026-08-29T06:03:07.077291+00:00"
+}

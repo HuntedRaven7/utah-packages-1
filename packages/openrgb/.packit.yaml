@@ -1,0 +1,27 @@
+copy_upstream_release_description: false
+downstream_package_name: openrgb
+upstream_package_name: OpenRGB
+upstream_project_url: https://gitlab.com/CalcProgrammer1/OpenRGB
+upstream_tag_template: release_{version}
+
+jobs:
+  - job: pull_from_upstream
+    trigger: release
+    dist_git_branches:
+      - fedora-rawhide
+      # - fedora-development
+      # - fedora-all
+
+  - job: koji_build
+    trigger: commit
+    allowed_pr_authors: ["packit", "atim"]
+    allowed_committers: ["packit", "atim"]
+    dist_git_branches:
+      - fedora-all
+      # - epel-9
+
+  - job: bodhi_update
+    trigger: commit
+    dist_git_branches:
+      - fedora-branched
+      # - epel-9

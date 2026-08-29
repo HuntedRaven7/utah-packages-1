@@ -1,0 +1,13 @@
+grub-*.tar.?z
+*.rpm
+clog
+/unifont-*.pcf.?z
+/theme.tar.bz2
+kojilogs
+/grub-*/
+.build*.log
+.*.git/
+tmp/
+.*.sw?
+results_grub2/
+/gnulib-*.tar.?z

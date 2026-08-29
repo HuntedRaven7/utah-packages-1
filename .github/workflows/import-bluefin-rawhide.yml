@@ -1,0 +1,57 @@
+name: Import Bluefin Rawhide package sources
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - config/bluefin-packages.toml
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve and import Rawhide sources
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace:Z" \
+            -w /workspace \
+            fedora:rawhide bash -exc '
+              dnf -y install dnf-plugins-core git python3
+              python3 tools/import_bluefin_rawhide.py
+            '
+      - name: Create issues for unavailable packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jq -c '.unavailable[]?, .import_failures[]?' reports/bluefin-rawhide-resolution.json | while read -r entry; do
+            package=$(jq -r '.binary // .source' <<< "$entry")
+            reason=$(jq -r '.reason' <<< "$entry")
+            title="Rawhide unavailable: $package"
+            if ! gh issue list --state open --search "$title in:title" --json title --jq '.[].title' | grep -Fxq "$title"; then
+              gh issue create --title "$title" --body "Bluefin package import could not resolve \`$package\` from Fedora Rawhide.\n\nResolver evidence:\n\n\`\`\`\n$reason\n\`\`\`"
+            fi
+          done
+      - name: Commit imported dist-git snapshots
+        env:
+          BRANCH: import/bluefin-rawhide
+        run: |
+          git switch -C "$BRANCH"
+          git add packages reports
+          git diff --cached --quiet || git -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot] commit -m 'import: Bluefin Rawhide package sources'
+          git push --force origin "$BRANCH"
+      - name: Open import pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create --base main --head import/bluefin-rawhide \
+            --title 'import: Bluefin Rawhide package sources' \
+            --body 'Imports the Rawhide dist-git sources resolved from Bluefin’s current package manifest.' || true

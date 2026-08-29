@@ -1,0 +1,8 @@
+{
+  "package": "distrobox",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/distrobox.git",
+  "commit": "1082bf90c3d7cfee942b79c0d245c01be8184364",
+  "tree": "0049cf50717dcd0955f4ebeecbf1f82340456062",
+  "imported_at": "2026-08-29T06:02:19.531259+00:00"
+}

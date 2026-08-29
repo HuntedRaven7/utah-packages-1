@@ -1,0 +1,8 @@
+{
+  "package": "igt-gpu-tools",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/igt-gpu-tools.git",
+  "commit": "a02737aebcf184098dd26d8cc8b6ad006923b8c4",
+  "tree": "03c6c5648c4e77978ac45ba0054ca6576761ce04",
+  "imported_at": "2026-08-29T06:02:42.393802+00:00"
+}

@@ -1,0 +1,11 @@
+# PACKAGE;FONT_ALIAS;FONT_LANG;FONT_WIDTH;FONT_FAMILY;DEFAULT_SANS;DEFAULT_SERIF;DEFAULT_MONO;DEFAULT_EMOJI;DEFAULT_MATH;FONT_LANG_EXCLUDE_FILES;FONT_VALIDATE_EXCLUDE_FILES;FONT_CONF_EXCLUDE_FILES;FONT_VALIDATE_INDEXES;
+google-noto-sans-cjk-vf-fonts;sans-serif;ja;normal;Noto Sans CJK JP;1;0;0;0;0;;;;0,131072,196608,262144,327680,393216,458752;
+google-noto-sans-cjk-vf-fonts;sans-serif;ko;normal;Noto Sans CJK KR;1;0;0;0;0;;;;1,131073,196609,262145,327681,393217,458753;
+google-noto-sans-cjk-vf-fonts;sans-serif;zh-cn,zh-sg;normal;Noto Sans CJK SC;1;0;0;0;0;;;;2,131074,196610,262146,327682,393218,458754;
+google-noto-sans-cjk-vf-fonts;sans-serif;zh-hk,zh-mo;normal;Noto Sans CJK HK;1;0;0;0;0;;;;4,131076,196612,262148,327684,393220,458756;
+google-noto-sans-cjk-vf-fonts;sans-serif;zh-tw;normal;Noto Sans CJK TC;1;0;0;0;0;;;;3,131075,196611,262147,327683,393219,458755;
+google-noto-sans-mono-cjk-vf-fonts;monospace;ja;normal;Noto Sans Mono CJK JP;0;0;1;0;0;;;;0,131072,196608;
+google-noto-sans-mono-cjk-vf-fonts;monospace;ko;normal;Noto Sans Mono CJK KR;0;0;1;0;0;;;;1,131073,196609;
+google-noto-sans-mono-cjk-vf-fonts;monospace;zh-cn,zh-sg;normal;Noto Sans Mono CJK SC;0;0;1;0;0;;;;2,131074,196610;
+google-noto-sans-mono-cjk-vf-fonts;monospace;zh-hk,zh-mo;normal;Noto Sans Mono CJK HK;0;0;1;0;0;;;;4,131076,196612;
+google-noto-sans-mono-cjk-vf-fonts;monospace;zh-tw;normal;Noto Sans Mono CJK TC;0;0;1;0;0;;;;3,131075,196611;

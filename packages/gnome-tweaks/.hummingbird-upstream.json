@@ -1,0 +1,8 @@
+{
+  "package": "gnome-tweaks",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-tweaks.git",
+  "commit": "4b6353130d564440ec1c1b63a6eb89e9ada72304",
+  "tree": "aa59dc853b473643c2a7ef936cde93eb6740201b",
+  "imported_at": "2026-08-29T06:02:35.156141+00:00"
+}

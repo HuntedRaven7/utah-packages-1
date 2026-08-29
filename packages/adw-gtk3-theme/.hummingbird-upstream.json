@@ -1,0 +1,8 @@
+{
+  "package": "adw-gtk3-theme",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/adw-gtk3-theme.git",
+  "commit": "8b898fa2efe3fd6a1344c69a40a86901a77e333e",
+  "tree": "5a9beefcef30c8ee7a67f7e2a2963174f4dda1a8",
+  "imported_at": "2026-08-29T06:02:11.267170+00:00"
+}

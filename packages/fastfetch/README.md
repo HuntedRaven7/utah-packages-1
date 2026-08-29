@@ -1,0 +1,3 @@
+# fastfetch
+
+The fastfetch package

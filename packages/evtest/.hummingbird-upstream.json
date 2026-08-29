@@ -1,0 +1,8 @@
+{
+  "package": "evtest",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/evtest.git",
+  "commit": "8f072fd84916da86462bb16a5e7ecbc8c810d86a",
+  "tree": "f5a36fdac514e5ef730c1ce4a1a25e5593176e24",
+  "imported_at": "2026-08-29T06:02:21.926911+00:00"
+}

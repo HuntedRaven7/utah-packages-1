@@ -1,0 +1,8 @@
+{
+  "package": "adwaita-fonts",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/adwaita-fonts.git",
+  "commit": "7bf79e553c59e846a2588bef9f2ef1593c224152",
+  "tree": "61d1b3fcf7c4a17a23df251d60799dfb267ff13f",
+  "imported_at": "2026-08-29T06:02:11.948911+00:00"
+}

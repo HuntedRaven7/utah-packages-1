@@ -1,0 +1,8 @@
+{
+  "package": "libcamera",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libcamera.git",
+  "commit": "99486641b80eea3c1460ded5cf852ef38ab03261",
+  "tree": "89cc6549029021f1b4a05a6cead8e718e807ada7",
+  "imported_at": "2026-08-29T06:02:50.857283+00:00"
+}

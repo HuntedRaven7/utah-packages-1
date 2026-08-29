@@ -1,0 +1,8 @@
+{
+  "package": "ibus-unikey",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/ibus-unikey.git",
+  "commit": "cc8270791200d992f611a45407462932e7972611",
+  "tree": "0cc97d7233117252076fa3e0a39fe68d5537be1e",
+  "imported_at": "2026-08-29T06:02:41.388162+00:00"
+}

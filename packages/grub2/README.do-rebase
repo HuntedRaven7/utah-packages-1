@@ -1,0 +1,21 @@
+do-rebase script
+================
+
+The `do-rebase` is a useful script that helps the developers to take patches from
+a remote repository & branch, apply those and create a commit. Although this sounds like
+easy steps, each may take time and it is prone to errors (as any manual work).
+
+To see in action, supposed you have a one or more patches for `f42` release that fixes (or
+enhances) a bug at the repository `git@github.com:someuser/grub2.git` with branch
+name `hotfix`; the way to call the script is by
+
+    $ ./do-rebase --dist=f42 --repo=git@github.com:someuser/grub2.git --branch=hotfix
+
+the script will then fetch the repository in a separate directory (`.rhboot.git`), compare
+those `hotfix` commits that has not been merged in `master` (`git format-patch master..hotfix`
+on the `.rhboot.git` repo), replace these with the ones in current working dir, finally create
+a commit that you can of course amend.
+
+The script supports other useful options: `--amend --commit --nocommit --bumpspec --nobumpspec --pkgtool=<PACKAGE_TOOL>`.
+Worth mentioning that you do not have to specify a --pkgtool option: it is infered from the --dist parameter but in
+case you want to override it, the options is there.

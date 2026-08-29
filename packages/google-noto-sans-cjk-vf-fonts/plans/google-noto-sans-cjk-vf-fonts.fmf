@@ -1,0 +1,14 @@
+summary: Fonts related tests
+discover:
+    how: fmf
+    url: https://src.fedoraproject.org/tests/fonts
+prepare:
+    name: tmt
+    how: install
+    package: 
+        - google-noto-sans-mono-cjk-vf-fonts
+        - google-noto-sans-cjk-vf-fonts
+execute:
+    how: tmt
+environment:
+    VARLIST: google-noto-sans-cjk-vf-fonts.list

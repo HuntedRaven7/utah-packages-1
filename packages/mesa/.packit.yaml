@@ -1,0 +1,34 @@
+upstream_project_url: https://gitlab.freedesktop.org/mesa/mesa.git
+upstream_tag_template: mesa-{version}
+
+jobs:
+  - job: pull_from_upstream
+    upstream_tag_include: "^mesa-26\\.2\\..*$"
+    trigger: release
+    dist_git_branches:
+      - rawhide
+
+  - job: pull_from_upstream
+    upstream_tag_include: "^mesa-26\\.1\\..*$"
+    trigger: release
+    dist_git_branches:
+      - f44
+
+  - job: pull_from_upstream
+    upstream_tag_include: "^mesa-25\\.3\\..*$"
+    trigger: release
+    dist_git_branches:
+      - f43
+
+  - job: koji_build
+    trigger: commit
+    dist_git_branches:
+      - fedora-all
+
+  - job: bodhi_update
+    trigger: commit
+    dist_git_branches:
+      - fedora-branched
+    bodhi_extra_params:
+      autokarma: false
+      autotime: false

@@ -1,0 +1,19 @@
+Once input-remapper has been installed, it needs to be configured and its 
+service unit enabled and started:
+
+sudo systemctl enable --now input-remapper
+sudo systemctl start input-remapper
+
+
+For detailed configuration instructions, please see:
+https://github.com/sezanzeb/input-remapper/blob/main/readme/usage.md
+and
+https://github.com/sezanzeb/input-remapper/blob/main/readme/examples.md
+
+
+When making configuration changes using the graphical user interface, these can
+be enabled in place (by clicking on "Apply").
+
+On systems without a graphical environment, the configuration files will have
+to be created manually and placed in /home/<user>/.config/input-remapper-2/
+When the service unit is restarted, it should pick up these settings.
