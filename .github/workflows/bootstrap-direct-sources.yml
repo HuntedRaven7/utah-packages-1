@@ -15,8 +15,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
 
 jobs:
   bootstrap:
@@ -47,11 +45,13 @@ jobs:
           git -C ../candidate push origin "HEAD:$BRANCH"
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
         id: candidate
-      - name: Open direct-source conversion PR
+      - name: Publish candidate handoff
         env:
-          GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ steps.candidate.outputs.branch }}
         run: |
-          gh pr create --base main --head "$BRANCH" \
-            --title 'chore: bootstrap direct upstream sources for Bluefin parity' \
-            --body 'Generated from imported RPM recipes. Direct sources are downloaded from Source0 and SHA-512 locked; records rejected by the bootstrap report require an explicit upstream mapping before build admission.'
+          {
+            echo '## Direct-source bootstrap candidate'
+            echo
+            echo "Branch: \`$BRANCH\`"
+            echo 'A GitHub App creates the pull request after this job. The Actions token deliberately has no pull-request authority in this organization.'
+          } >> "$GITHUB_STEP_SUMMARY"
