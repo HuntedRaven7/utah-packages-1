@@ -2,6 +2,13 @@
   "schema": 1,
   "packages": [
     {
+      "name": "accountsservice",
+      "version": "26.27.3",
+      "url": "https://gitlab.freedesktop.org/accountsservice/accountsservice/-/archive/26.27.3/accountsservice-26.27.3.tar.bz2",
+      "filename": "accountsservice-26.27.3.tar.bz2",
+      "sha512": "443cb2f3e418ea028828a7ac53b101c9888ba4750d053e11a3d0678f7269dcba0f1d8f2426e772c0795ee15622953692893eaec92667f217c9caa57bbc4a0c8d"
+    },
+    {
       "name": "anaconda",
       "version": "45.22",
       "url": "https://github.com/rhinstaller/anaconda/releases/download/anaconda-45.22/anaconda-45.22.tar.bz2",
@@ -253,6 +260,13 @@
       "url": "https://gitlab.freedesktop.org/hadess/switcheroo-control/-/releases/3.0/downloads/switcheroo-control-3.0.tar.xz",
       "filename": "switcheroo-control-3.0.tar.xz",
       "sha512": "f2b3df3f0254a13f2e046269b612f90d15c4f6ce22f9e6463b156a03de271d30519fed9002f7faae76ca84a5e6001550d8003901d5a228694375ae56a640ad61"
+    },
+    {
+      "name": "wayland-protocols",
+      "version": "1.49",
+      "url": "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.49/downloads/wayland-protocols-1.49.tar.xz",
+      "filename": "wayland-protocols-1.49.tar.xz",
+      "sha512": "c6f58586c4e3046fb545f31959eb662426ddf94cab627a136bec905c3a1c75087ed2850d49e44964241a9158a3559ad02607647a19fb5f1c1fb254160b04806c"
     },
     {
       "name": "wireguard-tools",
