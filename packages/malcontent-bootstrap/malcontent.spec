@@ -19,7 +19,7 @@
 # no flatpak, and produces a malcontent-libs linked against accountsservice 26.
 # The full build one stage later resolves against it.
 #
-# Release is 0.bootstrap so it sorts BELOW the real 1.fc44.bfin build: at the next
+# Release is 0.bootstrap so it sorts BELOW the real 1.hum1.bfin build: at the next
 # stage this is the only malcontent in [stages] and so gets used, and anywhere
 # both exist the full one wins on version. publish deletes it rather than
 # shipping a malcontent with no parental controls UI.

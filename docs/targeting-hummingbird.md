@@ -152,7 +152,7 @@ and produces a `malcontent-libs` linked against accountsservice 26. At stage 4
 that is in `[stages]`, `flatpak-libs` resolves against it, and the full
 malcontent and `gnome-control-center` both build.
 
-The bootstrap's release is `0.bootstrap`, which sorts below the real `1.fc44.bfin`:
+The bootstrap's release is `0.bootstrap`, which sorts below the real `1.hum1.bfin`:
 at stage 4 it is the only malcontent available and so is used, and anywhere both
 exist the full build wins on version. `publish` deletes it regardless, since a
 malcontent with no parental controls UI should not reach anyone's system.
@@ -161,64 +161,64 @@ This is the same shape as Hummingbird's toolchain ordering, one layer up.
 
 ## Release numbering
 
-Packages built here are tagged the way AlmaLinux tags its rebuilds of Red Hat's:
-keep the upstream release *and* dist, then append. Their `dnf` is
-`4.14.0-34.el9_8.alma.1` against Red Hat's `34.el9_8`, and both `.alma` and
-`.alma.N` are in their repositories. Ours is the same shape one distro over:
+Packages built here are tagged the way AlmaLinux tags its rebuilds: keep the
+vendor release and dist, then append. Their `dnf` is `4.14.0-34.el9_8.alma.1`
+against Red Hat's `34.el9_8`, and both `.alma` and `.alma.N` appear in their
+repositories.
+
+The vendor here is **Hummingbird**, not Fedora:
 
 ```
-pango-1.58.2-1.fc44.bfin        Fedora's 1.fc44, rebuilt here
-pango-1.58.2-1.fc44.bfin.1      ... and rebuilt again against the same Fedora
+pango-1.58.2-1.hum1.bfin        built for Hummingbird, by this factory
+pango-1.58.2-1.hum1.bfin.1      ... and rebuilt again against the same base
 ```
 
-Appending rather than replacing is the point. `1.fc44.bfin` records which Fedora
-build it derives from; a disttag that replaces `.fc44` throws that away. The
-`dist` is read from the buildroot rather than hardcoded, so it follows the
-container to Fedora 45 on its own.
+These packages are built for Hummingbird and installed on Hummingbird. Fedora 44
+is the other half of the buildroot, the way a compiler is -- not what the output
+targets. An earlier version of this tagged them `.fc44.bfin`, which named the
+distribution they are not for.
 
-The `.N` counter is per package, so it lives beside the package's source entry
-as `"dist_bump": 1` in `config/upstream-sources.json`. Most packages never need
-one; it is only for when the Fedora release we derive from has not moved but our
-own build of it has to.
+`hum1` is read from the Hummingbird packages present in the buildroot rather than
+hardcoded, so a move to `hum2` carries itself. A buildroot with none of them is a
+repository misconfiguration -- the exact failure this factory exists to catch --
+so the build stops rather than quietly tagging something else.
+
+The `.N` counter is per package, as `"dist_bump": 1` beside the package's source
+entry in `config/upstream-sources.json`. Most never need one; it is for when the
+base we derive from has not moved but our own build of it has to.
 
 Verified against rpm's ordering rather than assumed -- the comparison was
-reimplemented from rpmvercmp's rules and every row below checked, including the
-ones we lose:
+reimplemented from rpmvercmp's rules and every row checked, including the ones we
+lose:
 
 | ours | theirs | winner |
 | --- | --- | --- |
-| `1.fc44.bfin` | `1.fc44` | ours |
-| `1.fc44.bfin` | `1.fc44.bfin.1` | the `.1` rebuild |
-| `1.fc44.bfin` | `2.fc44` | **Fedora** |
-| `2.fc44.bfin` | `2.fc44` | ours |
-| `1.fc44.bfin` | `1.hum1` | **Hummingbird** |
+| `1.hum1.bfin` | `1.fc44` | ours |
+| `1.hum1.bfin` | `1.hum1` | ours |
+| `1.hum1.bfin` | `1.hum1.bfin.1` | the `.1` rebuild |
+| `1.hum1.bfin` | `2.fc44` | **theirs** |
+| `1.hum1.bfin` | `2.hum1` | **theirs** |
+| `2.hum1.bfin` | `2.hum1` | ours |
 
-Two of those go against us, and they mean different things.
+Losing to a `2.` release is the ordinary case of the thing we forked moving on.
+The answer is to rebase the spec, which raises the leading segment. No disttag
+can fix that one, because the leading segment comes from the spec.
 
-Losing to `2.fc44` is the ordinary case of Fedora moving past the build we forked.
-The answer is to rebase the spec on the newer dist-git, which raises the leading
-release segment. No disttag can fix this one, because the leading segment comes
-from the spec.
+Note what changed with the vendor tag. Under `.fc44.bfin` we *lost* to `.hum1` at
+equal release, and that was being relied on to surface packages we should not be
+building at all -- the remit is the desktop stack Hummingbird does not ship, so a
+name in both sets is a mistake. `.hum1.bfin` outranks `.hum1`, which is correct
+for an overlay but means ordering no longer reveals the overlap. So `precedence`
+now reports it directly, as a note rather than a failure: it lists any name the
+`public-hummingbird` repository also provides.
 
-Losing to `1.hum1` is deliberate. AlmaLinux's convention defers to Red Hat, and
-ours defers to Hummingbird the same way: `fc` sorts below `hum`, so at equal
-release Hummingbird's build wins. That is the behaviour we want, because this
-factory exists for the desktop stack Hummingbird does not ship. If one of our
-packages loses to a `.hum1` build, the finding is not "bump the release" but
-"stop building this" -- we are rebuilding something the base OS owns.
-
-The previous scheme, `.1.utah`, outranked Hummingbird instead. That looked
-stronger and was worse: it let us silently override base-OS packages, which the
-remit says we should not be touching at all.
-
-None of this is self-enforcing, so it is checked. The `precedence` job resolves
-every RPM the run produced against Fedora 44 and Hummingbird -- with our own
-output deliberately absent from the repository set -- and fails if what they
-offer ranks at or above ours, naming the repository so the two cases above can
-be told apart. A package that loses still installs; dnf simply installs the
-other build, so the rebuild we went to the trouble of making is never used and
-nothing says so. Every offender is reported before the job fails, so one run
-gives the whole worklist.
+The gate itself is unchanged and still enforces the invariant the disttag only
+approximates. `precedence` resolves every RPM the run produced against Fedora 44
+and Hummingbird -- with our own output deliberately absent from the repository
+set -- and fails if what they offer ranks at or above ours. A package that loses
+still installs; dnf simply installs the other build, so the rebuild we went to
+the trouble of making is never used and nothing says so. It passed on its first
+run, over all 48 packages run 38 produced.
 
 `malcontent-bootstrap` is exempt: its `0.bootstrap` release is meant to lose to
 the real build, and `publish` deletes it.
@@ -306,8 +306,9 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   is not proven is that output linked against that root installs cleanly on a
   Hummingbird image; nothing has tested that yet.
 - **Release numbering is settled.** See *Release numbering* above. Builds carry
-  `.fc44.bfin`, AlmaLinux's append-don't-replace convention, and a `precedence`
-  job enforces the invariant the disttag only approximates.
+  `.hum1.bfin` -- AlmaLinux's append-don't-replace convention, applied to the
+  vendor these packages actually target -- and a `precedence` job enforces the
+  invariant the disttag only approximates.
 
   This section previously claimed the disttag decided nothing, because "dnf
   priority does, and the factory repository sits above both Fedora and
@@ -319,12 +320,11 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   package. It is not a guarantee, so version ordering has to be right on its
   own, and the `precedence` job is what checks that it is.
 
-  This also resolves something the earlier scheme got backwards. `1.1.utah`
-  outranked `1.hum1`, so a package we rebuilt would silently override
-  Hummingbird's own build of it. `1.fc44.bfin` sorts below `1.hum1`, so the base
-  OS wins and `precedence` reports the overlap instead. We should not be
-  rebuilding base OS packages Hummingbird owns; the desktop stack it does not
-  ship is the whole remit.
+  One consequence to keep in view: `1.hum1.bfin` outranks `1.hum1`, so a package
+  we rebuild takes precedence over Hummingbird's own build of it. That is right
+  for an overlay, but we should not be rebuilding base OS packages Hummingbird
+  owns in the first place -- the desktop stack it does not ship is the whole
+  remit -- so `precedence` reports any such overlap as a note.
 - **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
   Hummingbird root is confirmed correct. Run 33243934353 built
   `gnome-session`, `gnome-settings-daemon` and `xdg-desktop-portal-gnome`,

@@ -243,25 +243,29 @@ jobs:
               # Three apostrophes in this very comment took out all 36 stage 0
               # jobs at once, in under two minutes, with no clue in the log.
               #
-              # The AlmaLinux convention, one distro over. They keep the Red Hat
+              # The AlmaLinux convention, one distro over. They keep the vendor
               # release and dist and append to it -- their dnf is
               # 4.14.0-34.el9_8.alma.1 against 34.el9_8 from Red Hat, and both
-              # .alma and .alma.N appear in their repositories. So ours is the
-              # Fedora release and dist, then .bfin, then .N when we have to
-              # rebuild the same Fedora build more than once.
+              # .alma and .alma.N appear in their repositories.
               #
-              # Appending rather than replacing keeps the derivation legible:
-              # 1.fc44.bfin says which Fedora build this was made from, which
-              # a replacement disttag throws away.
+              # The vendor here is Hummingbird, not Fedora. These packages are
+              # built for Hummingbird and installed on Hummingbird; Fedora 44 is
+              # only the other half of the buildroot, the way a compiler is. An
+              # earlier version of this tagged them .fc44.bfin, which named the
+              # distribution they are not for.
               #
-              # dist comes from the buildroot rather than being hardcoded, so
-              # this follows the container when it moves to Fedora 45.
-              FEDORA_DIST="$(rpm --eval %{dist})"
-              case "$FEDORA_DIST" in
-                .fc*) ;;
-                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
-              esac
-              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
+              # The tag is read from the Hummingbird packages present in the
+              # buildroot rather than hardcoded, so a move to hum2 carries
+              # itself. A buildroot containing none of them is a repository
+              # misconfiguration -- the exact failure this factory exists to
+              # avoid -- so it stops rather than quietly tagging something else.
+              HUM_TAG="$(rpm -qa --qf "%{RELEASE}\n" | grep -oE "hum[0-9]+$" | sort -u | head -n1)"
+              if [ -z "$HUM_TAG" ]; then
+                echo "No Hummingbird package in the buildroot; cannot derive a disttag" >&2
+                rpm -qa --qf "%{NAME} %{RELEASE}\n" | sort | head -20 >&2
+                exit 1
+              fi
+              DISTTAG=".${HUM_TAG}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -435,25 +439,29 @@ jobs:
               # Three apostrophes in this very comment took out all 36 stage 0
               # jobs at once, in under two minutes, with no clue in the log.
               #
-              # The AlmaLinux convention, one distro over. They keep the Red Hat
+              # The AlmaLinux convention, one distro over. They keep the vendor
               # release and dist and append to it -- their dnf is
               # 4.14.0-34.el9_8.alma.1 against 34.el9_8 from Red Hat, and both
-              # .alma and .alma.N appear in their repositories. So ours is the
-              # Fedora release and dist, then .bfin, then .N when we have to
-              # rebuild the same Fedora build more than once.
+              # .alma and .alma.N appear in their repositories.
               #
-              # Appending rather than replacing keeps the derivation legible:
-              # 1.fc44.bfin says which Fedora build this was made from, which
-              # a replacement disttag throws away.
+              # The vendor here is Hummingbird, not Fedora. These packages are
+              # built for Hummingbird and installed on Hummingbird; Fedora 44 is
+              # only the other half of the buildroot, the way a compiler is. An
+              # earlier version of this tagged them .fc44.bfin, which named the
+              # distribution they are not for.
               #
-              # dist comes from the buildroot rather than being hardcoded, so
-              # this follows the container when it moves to Fedora 45.
-              FEDORA_DIST="$(rpm --eval %{dist})"
-              case "$FEDORA_DIST" in
-                .fc*) ;;
-                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
-              esac
-              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
+              # The tag is read from the Hummingbird packages present in the
+              # buildroot rather than hardcoded, so a move to hum2 carries
+              # itself. A buildroot containing none of them is a repository
+              # misconfiguration -- the exact failure this factory exists to
+              # avoid -- so it stops rather than quietly tagging something else.
+              HUM_TAG="$(rpm -qa --qf "%{RELEASE}\n" | grep -oE "hum[0-9]+$" | sort -u | head -n1)"
+              if [ -z "$HUM_TAG" ]; then
+                echo "No Hummingbird package in the buildroot; cannot derive a disttag" >&2
+                rpm -qa --qf "%{NAME} %{RELEASE}\n" | sort | head -20 >&2
+                exit 1
+              fi
+              DISTTAG=".${HUM_TAG}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -627,25 +635,29 @@ jobs:
               # Three apostrophes in this very comment took out all 36 stage 0
               # jobs at once, in under two minutes, with no clue in the log.
               #
-              # The AlmaLinux convention, one distro over. They keep the Red Hat
+              # The AlmaLinux convention, one distro over. They keep the vendor
               # release and dist and append to it -- their dnf is
               # 4.14.0-34.el9_8.alma.1 against 34.el9_8 from Red Hat, and both
-              # .alma and .alma.N appear in their repositories. So ours is the
-              # Fedora release and dist, then .bfin, then .N when we have to
-              # rebuild the same Fedora build more than once.
+              # .alma and .alma.N appear in their repositories.
               #
-              # Appending rather than replacing keeps the derivation legible:
-              # 1.fc44.bfin says which Fedora build this was made from, which
-              # a replacement disttag throws away.
+              # The vendor here is Hummingbird, not Fedora. These packages are
+              # built for Hummingbird and installed on Hummingbird; Fedora 44 is
+              # only the other half of the buildroot, the way a compiler is. An
+              # earlier version of this tagged them .fc44.bfin, which named the
+              # distribution they are not for.
               #
-              # dist comes from the buildroot rather than being hardcoded, so
-              # this follows the container when it moves to Fedora 45.
-              FEDORA_DIST="$(rpm --eval %{dist})"
-              case "$FEDORA_DIST" in
-                .fc*) ;;
-                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
-              esac
-              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
+              # The tag is read from the Hummingbird packages present in the
+              # buildroot rather than hardcoded, so a move to hum2 carries
+              # itself. A buildroot containing none of them is a repository
+              # misconfiguration -- the exact failure this factory exists to
+              # avoid -- so it stops rather than quietly tagging something else.
+              HUM_TAG="$(rpm -qa --qf "%{RELEASE}\n" | grep -oE "hum[0-9]+$" | sort -u | head -n1)"
+              if [ -z "$HUM_TAG" ]; then
+                echo "No Hummingbird package in the buildroot; cannot derive a disttag" >&2
+                rpm -qa --qf "%{NAME} %{RELEASE}\n" | sort | head -20 >&2
+                exit 1
+              fi
+              DISTTAG=".${HUM_TAG}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -819,25 +831,29 @@ jobs:
               # Three apostrophes in this very comment took out all 36 stage 0
               # jobs at once, in under two minutes, with no clue in the log.
               #
-              # The AlmaLinux convention, one distro over. They keep the Red Hat
+              # The AlmaLinux convention, one distro over. They keep the vendor
               # release and dist and append to it -- their dnf is
               # 4.14.0-34.el9_8.alma.1 against 34.el9_8 from Red Hat, and both
-              # .alma and .alma.N appear in their repositories. So ours is the
-              # Fedora release and dist, then .bfin, then .N when we have to
-              # rebuild the same Fedora build more than once.
+              # .alma and .alma.N appear in their repositories.
               #
-              # Appending rather than replacing keeps the derivation legible:
-              # 1.fc44.bfin says which Fedora build this was made from, which
-              # a replacement disttag throws away.
+              # The vendor here is Hummingbird, not Fedora. These packages are
+              # built for Hummingbird and installed on Hummingbird; Fedora 44 is
+              # only the other half of the buildroot, the way a compiler is. An
+              # earlier version of this tagged them .fc44.bfin, which named the
+              # distribution they are not for.
               #
-              # dist comes from the buildroot rather than being hardcoded, so
-              # this follows the container when it moves to Fedora 45.
-              FEDORA_DIST="$(rpm --eval %{dist})"
-              case "$FEDORA_DIST" in
-                .fc*) ;;
-                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
-              esac
-              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
+              # The tag is read from the Hummingbird packages present in the
+              # buildroot rather than hardcoded, so a move to hum2 carries
+              # itself. A buildroot containing none of them is a repository
+              # misconfiguration -- the exact failure this factory exists to
+              # avoid -- so it stops rather than quietly tagging something else.
+              HUM_TAG="$(rpm -qa --qf "%{RELEASE}\n" | grep -oE "hum[0-9]+$" | sort -u | head -n1)"
+              if [ -z "$HUM_TAG" ]; then
+                echo "No Hummingbird package in the buildroot; cannot derive a disttag" >&2
+                rpm -qa --qf "%{NAME} %{RELEASE}\n" | sort | head -20 >&2
+                exit 1
+              fi
+              DISTTAG=".${HUM_TAG}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -1011,25 +1027,29 @@ jobs:
               # Three apostrophes in this very comment took out all 36 stage 0
               # jobs at once, in under two minutes, with no clue in the log.
               #
-              # The AlmaLinux convention, one distro over. They keep the Red Hat
+              # The AlmaLinux convention, one distro over. They keep the vendor
               # release and dist and append to it -- their dnf is
               # 4.14.0-34.el9_8.alma.1 against 34.el9_8 from Red Hat, and both
-              # .alma and .alma.N appear in their repositories. So ours is the
-              # Fedora release and dist, then .bfin, then .N when we have to
-              # rebuild the same Fedora build more than once.
+              # .alma and .alma.N appear in their repositories.
               #
-              # Appending rather than replacing keeps the derivation legible:
-              # 1.fc44.bfin says which Fedora build this was made from, which
-              # a replacement disttag throws away.
+              # The vendor here is Hummingbird, not Fedora. These packages are
+              # built for Hummingbird and installed on Hummingbird; Fedora 44 is
+              # only the other half of the buildroot, the way a compiler is. An
+              # earlier version of this tagged them .fc44.bfin, which named the
+              # distribution they are not for.
               #
-              # dist comes from the buildroot rather than being hardcoded, so
-              # this follows the container when it moves to Fedora 45.
-              FEDORA_DIST="$(rpm --eval %{dist})"
-              case "$FEDORA_DIST" in
-                .fc*) ;;
-                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
-              esac
-              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
+              # The tag is read from the Hummingbird packages present in the
+              # buildroot rather than hardcoded, so a move to hum2 carries
+              # itself. A buildroot containing none of them is a repository
+              # misconfiguration -- the exact failure this factory exists to
+              # avoid -- so it stops rather than quietly tagging something else.
+              HUM_TAG="$(rpm -qa --qf "%{RELEASE}\n" | grep -oE "hum[0-9]+$" | sort -u | head -n1)"
+              if [ -z "$HUM_TAG" ]; then
+                echo "No Hummingbird package in the buildroot; cannot derive a disttag" >&2
+                rpm -qa --qf "%{NAME} %{RELEASE}\n" | sort | head -20 >&2
+                exit 1
+              fi
+              DISTTAG=".${HUM_TAG}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -1126,6 +1146,7 @@ jobs:
               disable=--disablerepo=fedora-cisco-openh264
               fmt="%|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}"
               : > /tmp/losers
+              : > /tmp/overlap
               find /built -name "*.rpm" -type f | sort | while read -r rpm; do
                 case "$rpm" in
                   *.src.rpm) continue ;;
@@ -1145,27 +1166,36 @@ jobs:
                 # 11 means the first argument is newer, which is what we need.
                 # 0 (equal) and 12 (theirs newer) both mean ours will not win.
                 [ "$rc" = 11 ] || echo "  $name: ours $ours, $repo has $theirs" >> /tmp/losers
+                # .hum1.bfin outranks .hum1 at equal release by construction, so
+                # a package the base OS also ships no longer appears as a loser.
+                # It is still worth knowing about: this factory is for the
+                # desktop stack Hummingbird does not ship.
+                case "$repo" in
+                  *hummingbird*) echo "  $name: ours $ours, $repo also has $theirs" >> /tmp/overlap ;;
+                esac
               done
               if [ -s /tmp/losers ]; then
                 echo "These builds do not outrank what the repositories already offer,"
                 echo "so dnf would install the other one:"
                 cat /tmp/losers
                 echo
-                echo "Two different problems look the same here, and the repository"
-                echo "column tells them apart."
+                echo "Our disttag outranks both Fedora and Hummingbird at an equal"
+                echo "release, so a loser here means the thing we forked has moved on:"
+                echo "its leading release segment is now higher than ours. Rebase the"
+                echo "spec on the newer dist-git, which raises ours to match."
                 echo
-                echo "  ...hum1 from public-hummingbird: Hummingbird owns this package."
-                echo "  .fc44.bfin sorts below .hum1 by design, the same way AlmaLinux"
-                echo "  defers to Red Hat. The fix is to stop building it -- this factory"
-                echo "  exists for the desktop stack Hummingbird does not ship."
-                echo
-                echo "  ...fc44 from fedora or updates: Fedora has moved past the build we"
-                echo "  derive from. Rebase the spec on the newer dist-git, which raises"
-                echo "  the leading release segment. If the Fedora release has NOT moved"
-                echo "  and we simply need to rebuild it again, add \"dist_bump\" to the"
-                echo "  package in config/upstream-sources.json instead; that appends .N"
-                echo "  after .bfin, which is what AlmaLinux does with .alma.1."
+                echo "If the release has NOT moved and we simply need to build it again,"
+                echo "add \"dist_bump\" to the package in config/upstream-sources.json"
+                echo "instead. That appends .N after .bfin, which is what AlmaLinux does"
+                echo "with .alma.1. It cannot help with a release bump, because the"
+                echo "leading segment comes from the spec."
                 exit 1
+              fi
+              if [ -s /tmp/overlap ]; then
+                echo "Note: Hummingbird also ships these, and we outrank it:"
+                cat /tmp/overlap
+                echo "The remit is the desktop stack Hummingbird does not ship, so each of"
+                echo "these is worth checking. Not a failure."
               fi
               echo "every build outranks what Fedora 44 and Hummingbird offer"
             '
