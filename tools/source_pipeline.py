@@ -72,10 +72,16 @@ def main() -> int:
     config = json.loads(args.config.read_text())
     succeeded = True
     for package in selected(config, args.package):
-        missing = {"name", "url", "sha512"} - package.keys()
+        missing = {"name", "sha512"} - package.keys()
         if missing:
             raise SystemExit(f"invalid direct-source entry: missing {', '.join(sorted(missing))}")
-        name, url, expected = package["name"], package["url"], package["sha512"].lower()
+        if "url" in package:
+            url = package["url"]
+        elif "url_template" in package and "version" in package:
+            url = package["url_template"].format(version=package["version"])
+        else:
+            raise SystemExit("invalid direct-source entry: require url or url_template plus version")
+        name, expected = package["name"], package["sha512"].lower()
         target_dir = args.output / name
         target_dir.mkdir(parents=True, exist_ok=True)
         filename = package.get("filename") or Path(urllib.parse.urlparse(url).path).name or f"{name}.source"
