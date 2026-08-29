@@ -22,7 +22,12 @@ permissions:
   pages: write
 
 concurrency:
-  group: upstream-rpm-build
+  # Scoped per ref. With a constant group every run cancelled whatever was in
+  # flight on any other branch, so a PR build, a main build and a Renovate
+  # build cancelled each other in turn and none of them ever finished.
+  # Publishing is still serialised: it only runs on main, behind the
+  # github-pages environment.
+  group: upstream-rpm-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
