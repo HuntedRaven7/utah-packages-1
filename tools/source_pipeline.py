@@ -15,6 +15,8 @@ import json
 import shutil
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
@@ -29,10 +31,38 @@ def digest(path: Path, algorithm: str) -> str:
     return value.hexdigest()
 
 
+# An upstream that answers but sends nothing is the failure mode worth naming.
+# git.zx2c4.com returned zero bytes for wireguard-tools, and because the
+# pipeline hashed whatever arrived, the build reported
+#
+#   SHA-512 mismatch: expected ab56199..., got cf83e1357eefb8bd...
+#
+# cf83e135... is the SHA-512 of the empty string. That reads as a tampered or
+# re-rolled tarball, which is alarming and wrong: nothing was served at all.
+# An empty body is transient, so it is retried, and if it persists it is
+# reported as what it is rather than as a digest mismatch.
+FETCH_ATTEMPTS = 3
+
+
+class EmptyDownload(RuntimeError):
+    """The server answered but sent no bytes."""
+
+
 def fetch(url: str, destination: Path) -> None:
     request = urllib.request.Request(url, headers={"User-Agent": "hummingbird-github-source-pipeline/1"})
-    with urllib.request.urlopen(request, timeout=60) as response, destination.open("wb") as output:
-        shutil.copyfileobj(response, output)
+    last: Exception | None = None
+    for attempt in range(1, FETCH_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response, destination.open("wb") as output:
+                shutil.copyfileobj(response, output)
+            if destination.stat().st_size == 0:
+                raise EmptyDownload(f"{url} returned an empty body")
+            return
+        except (EmptyDownload, urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            last = error
+            if attempt < FETCH_ATTEMPTS:
+                time.sleep(2 ** attempt)
+    raise RuntimeError(f"failed to fetch {url} after {FETCH_ATTEMPTS} attempts: {last}") from last
 
 
 def verify_signature(package: dict, target: Path, directory: Path) -> None:
