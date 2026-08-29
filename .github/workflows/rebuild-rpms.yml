@@ -162,8 +162,12 @@ jobs:
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
+          # Per-package, so it is resolved out here rather than inside the
+          # container, which only sees config/ and packages/.
+          DIST_BUMP="$(python3 tools/dist_bump.py "$PACKAGE")"
+          export DIST_BUMP
           docker run --rm --privileged \
-            -e PACKAGE -e FACTORY_REPO \
+            -e PACKAGE -e FACTORY_REPO -e DIST_BUMP \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -230,28 +234,25 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
-              # Everything this factory builds carries .utah rather than the
-              # container Fedora .fc44, so a package is identifiable as ours on
-              # sight and in `rpm -q`. It also sorts correctly by accident of the
-              # alphabet: rpm compares equal-numbered release segments as
-              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
-              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
-              # Priority still decides in the repositories; this is provenance.
-              # Hummingbird's own form: Fedora's release with .N appended, then
-              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
-              # 3.0-45. N counts our rebuilds within one Fedora release.
+              # AlmaLinux's convention, one distro over. They keep Red Hat's
+              # release and dist and append to it -- their dnf is
+              # 4.14.0-34.el9_8.alma.1 against Red Hat's 34.el9_8, and both
+              # .alma and .alma.N appear in their repositories. So ours is
+              # Fedora's release and dist, then .bfin, then .N when we have to
+              # rebuild the same Fedora build more than once.
               #
-              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
-              # only because rpmvercmp compares "utah" and "fc44" as text and
-              # "u" sorts after "f" -- an accident of spelling. With .1 in
-              # front, the comparison is a numeric segment against an alphabetic
-              # one, and rpm always ranks the number higher, whatever the other
-              # disttag happens to be spelled.
+              # Appending rather than replacing keeps the derivation legible:
+              # 1.fc44.bfin says which Fedora build this was made from, which
+              # a replacement disttag throws away.
               #
-              # It does not survive Fedora bumping its own release: 1.1.utah
-              # loses to 2.fc44, since the leading segment comes from the spec.
-              # The precedence job is what catches that.
-              DISTTAG=".1.utah"
+              # dist comes from the buildroot rather than being hardcoded, so
+              # this follows the container when it moves to Fedora 45.
+              FEDORA_DIST="$(rpm --eval %{dist})"
+              case "$FEDORA_DIST" in
+                .fc*) ;;
+                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
+              esac
+              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -346,8 +347,12 @@ jobs:
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
+          # Per-package, so it is resolved out here rather than inside the
+          # container, which only sees config/ and packages/.
+          DIST_BUMP="$(python3 tools/dist_bump.py "$PACKAGE")"
+          export DIST_BUMP
           docker run --rm --privileged \
-            -e PACKAGE -e FACTORY_REPO \
+            -e PACKAGE -e FACTORY_REPO -e DIST_BUMP \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -414,28 +419,25 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
-              # Everything this factory builds carries .utah rather than the
-              # container Fedora .fc44, so a package is identifiable as ours on
-              # sight and in `rpm -q`. It also sorts correctly by accident of the
-              # alphabet: rpm compares equal-numbered release segments as
-              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
-              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
-              # Priority still decides in the repositories; this is provenance.
-              # Hummingbird's own form: Fedora's release with .N appended, then
-              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
-              # 3.0-45. N counts our rebuilds within one Fedora release.
+              # AlmaLinux's convention, one distro over. They keep Red Hat's
+              # release and dist and append to it -- their dnf is
+              # 4.14.0-34.el9_8.alma.1 against Red Hat's 34.el9_8, and both
+              # .alma and .alma.N appear in their repositories. So ours is
+              # Fedora's release and dist, then .bfin, then .N when we have to
+              # rebuild the same Fedora build more than once.
               #
-              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
-              # only because rpmvercmp compares "utah" and "fc44" as text and
-              # "u" sorts after "f" -- an accident of spelling. With .1 in
-              # front, the comparison is a numeric segment against an alphabetic
-              # one, and rpm always ranks the number higher, whatever the other
-              # disttag happens to be spelled.
+              # Appending rather than replacing keeps the derivation legible:
+              # 1.fc44.bfin says which Fedora build this was made from, which
+              # a replacement disttag throws away.
               #
-              # It does not survive Fedora bumping its own release: 1.1.utah
-              # loses to 2.fc44, since the leading segment comes from the spec.
-              # The precedence job is what catches that.
-              DISTTAG=".1.utah"
+              # dist comes from the buildroot rather than being hardcoded, so
+              # this follows the container when it moves to Fedora 45.
+              FEDORA_DIST="$(rpm --eval %{dist})"
+              case "$FEDORA_DIST" in
+                .fc*) ;;
+                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
+              esac
+              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -530,8 +532,12 @@ jobs:
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
+          # Per-package, so it is resolved out here rather than inside the
+          # container, which only sees config/ and packages/.
+          DIST_BUMP="$(python3 tools/dist_bump.py "$PACKAGE")"
+          export DIST_BUMP
           docker run --rm --privileged \
-            -e PACKAGE -e FACTORY_REPO \
+            -e PACKAGE -e FACTORY_REPO -e DIST_BUMP \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -598,28 +604,25 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
-              # Everything this factory builds carries .utah rather than the
-              # container Fedora .fc44, so a package is identifiable as ours on
-              # sight and in `rpm -q`. It also sorts correctly by accident of the
-              # alphabet: rpm compares equal-numbered release segments as
-              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
-              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
-              # Priority still decides in the repositories; this is provenance.
-              # Hummingbird's own form: Fedora's release with .N appended, then
-              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
-              # 3.0-45. N counts our rebuilds within one Fedora release.
+              # AlmaLinux's convention, one distro over. They keep Red Hat's
+              # release and dist and append to it -- their dnf is
+              # 4.14.0-34.el9_8.alma.1 against Red Hat's 34.el9_8, and both
+              # .alma and .alma.N appear in their repositories. So ours is
+              # Fedora's release and dist, then .bfin, then .N when we have to
+              # rebuild the same Fedora build more than once.
               #
-              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
-              # only because rpmvercmp compares "utah" and "fc44" as text and
-              # "u" sorts after "f" -- an accident of spelling. With .1 in
-              # front, the comparison is a numeric segment against an alphabetic
-              # one, and rpm always ranks the number higher, whatever the other
-              # disttag happens to be spelled.
+              # Appending rather than replacing keeps the derivation legible:
+              # 1.fc44.bfin says which Fedora build this was made from, which
+              # a replacement disttag throws away.
               #
-              # It does not survive Fedora bumping its own release: 1.1.utah
-              # loses to 2.fc44, since the leading segment comes from the spec.
-              # The precedence job is what catches that.
-              DISTTAG=".1.utah"
+              # dist comes from the buildroot rather than being hardcoded, so
+              # this follows the container when it moves to Fedora 45.
+              FEDORA_DIST="$(rpm --eval %{dist})"
+              case "$FEDORA_DIST" in
+                .fc*) ;;
+                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
+              esac
+              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -714,8 +717,12 @@ jobs:
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
+          # Per-package, so it is resolved out here rather than inside the
+          # container, which only sees config/ and packages/.
+          DIST_BUMP="$(python3 tools/dist_bump.py "$PACKAGE")"
+          export DIST_BUMP
           docker run --rm --privileged \
-            -e PACKAGE -e FACTORY_REPO \
+            -e PACKAGE -e FACTORY_REPO -e DIST_BUMP \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -782,28 +789,25 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
-              # Everything this factory builds carries .utah rather than the
-              # container Fedora .fc44, so a package is identifiable as ours on
-              # sight and in `rpm -q`. It also sorts correctly by accident of the
-              # alphabet: rpm compares equal-numbered release segments as
-              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
-              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
-              # Priority still decides in the repositories; this is provenance.
-              # Hummingbird's own form: Fedora's release with .N appended, then
-              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
-              # 3.0-45. N counts our rebuilds within one Fedora release.
+              # AlmaLinux's convention, one distro over. They keep Red Hat's
+              # release and dist and append to it -- their dnf is
+              # 4.14.0-34.el9_8.alma.1 against Red Hat's 34.el9_8, and both
+              # .alma and .alma.N appear in their repositories. So ours is
+              # Fedora's release and dist, then .bfin, then .N when we have to
+              # rebuild the same Fedora build more than once.
               #
-              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
-              # only because rpmvercmp compares "utah" and "fc44" as text and
-              # "u" sorts after "f" -- an accident of spelling. With .1 in
-              # front, the comparison is a numeric segment against an alphabetic
-              # one, and rpm always ranks the number higher, whatever the other
-              # disttag happens to be spelled.
+              # Appending rather than replacing keeps the derivation legible:
+              # 1.fc44.bfin says which Fedora build this was made from, which
+              # a replacement disttag throws away.
               #
-              # It does not survive Fedora bumping its own release: 1.1.utah
-              # loses to 2.fc44, since the leading segment comes from the spec.
-              # The precedence job is what catches that.
-              DISTTAG=".1.utah"
+              # dist comes from the buildroot rather than being hardcoded, so
+              # this follows the container when it moves to Fedora 45.
+              FEDORA_DIST="$(rpm --eval %{dist})"
+              case "$FEDORA_DIST" in
+                .fc*) ;;
+                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
+              esac
+              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -898,8 +902,12 @@ jobs:
         run: |
           test -d "packages/$PACKAGE"
           mkdir -p work/result
+          # Per-package, so it is resolved out here rather than inside the
+          # container, which only sees config/ and packages/.
+          DIST_BUMP="$(python3 tools/dist_bump.py "$PACKAGE")"
+          export DIST_BUMP
           docker run --rm --privileged \
-            -e PACKAGE -e FACTORY_REPO \
+            -e PACKAGE -e FACTORY_REPO -e DIST_BUMP \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -966,28 +974,25 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
-              # Everything this factory builds carries .utah rather than the
-              # container Fedora .fc44, so a package is identifiable as ours on
-              # sight and in `rpm -q`. It also sorts correctly by accident of the
-              # alphabet: rpm compares equal-numbered release segments as
-              # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
-              # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
-              # Priority still decides in the repositories; this is provenance.
-              # Hummingbird's own form: Fedora's release with .N appended, then
-              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
-              # 3.0-45. N counts our rebuilds within one Fedora release.
+              # AlmaLinux's convention, one distro over. They keep Red Hat's
+              # release and dist and append to it -- their dnf is
+              # 4.14.0-34.el9_8.alma.1 against Red Hat's 34.el9_8, and both
+              # .alma and .alma.N appear in their repositories. So ours is
+              # Fedora's release and dist, then .bfin, then .N when we have to
+              # rebuild the same Fedora build more than once.
               #
-              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
-              # only because rpmvercmp compares "utah" and "fc44" as text and
-              # "u" sorts after "f" -- an accident of spelling. With .1 in
-              # front, the comparison is a numeric segment against an alphabetic
-              # one, and rpm always ranks the number higher, whatever the other
-              # disttag happens to be spelled.
+              # Appending rather than replacing keeps the derivation legible:
+              # 1.fc44.bfin says which Fedora build this was made from, which
+              # a replacement disttag throws away.
               #
-              # It does not survive Fedora bumping its own release: 1.1.utah
-              # loses to 2.fc44, since the leading segment comes from the spec.
-              # The precedence job is what catches that.
-              DISTTAG=".1.utah"
+              # dist comes from the buildroot rather than being hardcoded, so
+              # this follows the container when it moves to Fedora 45.
+              FEDORA_DIST="$(rpm --eval %{dist})"
+              case "$FEDORA_DIST" in
+                .fc*) ;;
+                *) echo "buildroot dist is [$FEDORA_DIST], not a Fedora one" >&2; exit 1 ;;
+              esac
+              DISTTAG="${FEDORA_DIST}.bfin${DIST_BUMP:-}"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -1093,23 +1098,36 @@ jobs:
                 esac
                 name=$(rpm -qp --qf "%{NAME}" "$rpm" 2>/dev/null) || continue
                 ours=$(rpm -qp --qf "$fmt" "$rpm")
-                theirs=$(dnf -q $disable repoquery --latest-limit=1 \
-                           --qf "$fmt" "$name" 2>/dev/null | tail -n1)
+                line=$(dnf -q $disable repoquery --latest-limit=1 \
+                         --qf "$fmt %{reponame}" "$name" 2>/dev/null | tail -n1)
+                theirs=${line%% *}
+                repo=${line##* }
                 # Nothing else ships this name, so there is nothing to outrank.
                 [ -n "$theirs" ] || continue
                 rc=0; rpmdev-vercmp "$ours" "$theirs" >/dev/null 2>&1 || rc=$?
                 # 11 means the first argument is newer, which is what we need.
                 # 0 (equal) and 12 (theirs newer) both mean ours will not win.
-                [ "$rc" = 11 ] || echo "  $name: ours $ours, available $theirs" >> /tmp/losers
+                [ "$rc" = 11 ] || echo "  $name: ours $ours, $repo has $theirs" >> /tmp/losers
               done
               if [ -s /tmp/losers ]; then
                 echo "These builds do not outrank what the repositories already offer,"
                 echo "so dnf would install the other one:"
                 cat /tmp/losers
                 echo
-                echo "Bump the release in each spec until its leading segment exceeds"
-                echo "the available one. The .N disttag cannot do it, because the"
-                echo "leading segment comes from the spec."
+                echo "Two different problems look the same here, and the repository"
+                echo "column tells them apart."
+                echo
+                echo "  ...hum1 from public-hummingbird: Hummingbird owns this package."
+                echo "  .fc44.bfin sorts below .hum1 by design, the same way AlmaLinux"
+                echo "  defers to Red Hat. The fix is to stop building it -- this factory"
+                echo "  exists for the desktop stack Hummingbird does not ship."
+                echo
+                echo "  ...fc44 from fedora or updates: Fedora has moved past the build we"
+                echo "  derive from. Rebase the spec on the newer dist-git, which raises"
+                echo "  the leading release segment. If the Fedora release has NOT moved"
+                echo "  and we simply need to rebuild it again, add \"dist_bump\" to the"
+                echo "  package in config/upstream-sources.json instead; that appends .N"
+                echo "  after .bfin, which is what AlmaLinux does with .alma.1."
                 exit 1
               fi
               echo "every build outranks what Fedora 44 and Hummingbird offer"
