@@ -1,0 +1,64 @@
+name: Bootstrap direct upstream sources
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - config/hummingbird.repo
+      - tools/bootstrap_upstream_sources.py
+      - .github/workflows/bootstrap-direct-sources.yml
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Imported package branch to convert
+        default: import/bluefin-rawhide
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: "github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'ci: bootstrap direct sources'"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Create candidate branch from imported package recipes
+        env:
+          SOURCE_REF: ${{ inputs.source_ref || 'import/bluefin-rawhide' }}
+          BRANCH: source-bootstrap/${{ github.run_id }}
+        run: |
+          git fetch origin "$SOURCE_REF"
+          git worktree add ../candidate FETCH_HEAD
+          docker run --rm \
+            -v "$PWD/tools:/tools:ro,Z" \
+            -v "$PWD/config/hummingbird.repo:/etc/yum.repos.d/hummingbird.repo:ro,Z" \
+            -v "$PWD/config/hummingbird-provided-sources.json:/config/hummingbird-provided-sources.json:ro,Z" \
+            -v "$PWD/../candidate:/workspace:Z" \
+            -w /workspace fedora:rawhide bash -exc '
+              dnf -y install dnf-plugins-core python3 rpm-build
+              dnf repoquery --repo tunaos-hummingbird --qf "%{name}" | sort -u > reports/hummingbird-provided-packages.txt
+              python3 /tools/bootstrap_upstream_sources.py \
+                --provided-packages reports/hummingbird-provided-packages.txt \
+                --provided-sources /config/hummingbird-provided-sources.json
+            '
+          git -C ../candidate switch -c "$BRANCH"
+          git -C ../candidate add config/upstream-sources.json reports/direct-source-bootstrap.json reports/hummingbird-provided-packages.txt
+          git -C ../candidate -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot] \
+            commit -m 'chore: bootstrap verified direct upstream sources'
+          git -C ../candidate push origin "HEAD:$BRANCH"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+        id: candidate
+      - name: Publish candidate handoff
+        env:
+          BRANCH: ${{ steps.candidate.outputs.branch }}
+        run: |
+          {
+            echo '## Direct-source bootstrap candidate'
+            echo
+            echo "Branch: \`$BRANCH\`"
+            echo 'A GitHub App creates the pull request after this job. The Actions token deliberately has no pull-request authority in this organization.'
+          } >> "$GITHUB_STEP_SUMMARY"
