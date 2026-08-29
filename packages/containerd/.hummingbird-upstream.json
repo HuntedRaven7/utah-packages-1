@@ -1,0 +1,8 @@
+{
+  "package": "containerd",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/containerd.git",
+  "commit": "065fb13f6d67d2599c97c1553c944b446ccfce43",
+  "tree": "82065108e9a14d860071398f67f5660dfbe9aacf",
+  "imported_at": "2026-08-29T06:02:18.108330+00:00"
+}

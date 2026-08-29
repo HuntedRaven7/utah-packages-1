@@ -1,0 +1,8 @@
+{
+  "package": "livesys-scripts",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/livesys-scripts.git",
+  "commit": "1ef3679e81b07cf9d24d445cd6e7c5746f624c92",
+  "tree": "79e0fcc3fe5c33105de20899c93cfd4f4c2a5f58",
+  "imported_at": "2026-08-29T06:02:56.489661+00:00"
+}

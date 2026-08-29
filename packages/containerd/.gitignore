@@ -1,0 +1,7 @@
+# go build artifacts
+tags
+# fedpkg artifacts
+*.rpm
+/results_*
+containerd-*.tar.*
+clog

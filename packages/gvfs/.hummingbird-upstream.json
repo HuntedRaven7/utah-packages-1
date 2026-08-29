@@ -1,0 +1,8 @@
+{
+  "package": "gvfs",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gvfs.git",
+  "commit": "d1cb7575cf621e10b2219be614b085c31bd75248",
+  "tree": "d510a37f1fe175cc44a5410fc3d40dcc21901e0e",
+  "imported_at": "2026-08-29T06:02:40.705470+00:00"
+}

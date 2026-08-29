@@ -1,0 +1,8 @@
+{
+  "package": "flatpak-xdg-utils",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/flatpak-xdg-utils.git",
+  "commit": "fafe3d4879386916c7c5f84956754094241089b8",
+  "tree": "5f107d5a983d0c014e97c5c22c15fbef468439e2",
+  "imported_at": "2026-08-29T06:02:27.755635+00:00"
+}

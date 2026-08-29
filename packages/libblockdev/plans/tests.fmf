@@ -1,0 +1,52 @@
+summary: libblockdev gating tests
+
+prepare:
+    how: install
+    package:
+      - cryptsetup
+      - device-mapper-multipath
+      - dosfstools
+      - e2fsprogs
+      - glibc-all-langpacks
+      - lvm2-dbusd
+      - mdadm
+      - ndctl
+      - nss-tools
+      - nvme-cli
+      - nvmetcli
+      - python3-bytesize
+      - python3-dbus
+      - python3-packaging
+      - python3-yaml
+      - smartmontools
+      - targetcli
+      - vdo
+      - volume_key
+      - xfsprogs
+
+discover:
+    how: shell
+    dist-git-source: true
+    dist-git-install-builddeps: true
+    tests:
+      - name: upstream test suite
+        duration: 2h
+        test: |
+          set -x
+          if [ -z "$PKG_VER" ]; then
+              PKG_VER=`rpmspec -q --srpm --qf "%{version}" libblockdev.spec`
+          fi
+          if [ -z "$PKG_VER" ]; then
+              echo "Error: Unable to extract package version"
+              exit 1
+          fi
+          pushd $TMT_SOURCE_DIR/libblockdev-${PKG_VER}
+
+          python3 tests/run_tests.py --installed
+
+execute:
+  - how: tmt
+
+provision:
+  - hardware:
+      memory: ">= 3 GB"

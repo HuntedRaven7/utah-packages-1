@@ -1,0 +1,42 @@
+* Sun Jun 28 2026 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.2.1-1
+- Update to v2.2.1
+- Remove unneeded explicit dependencies
+- Rework locale handling
+
+* Mon Feb 24 2025 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.1.1-1
+- Update to v2.1.1
+- Disable tests
+- Remove explicit glib2 dependencies
+- Clean up spec files
+- Remove shebang lines from non-executable files
+
+* Tue Sep 19 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.1-1
+- Update to v2.0.1
+
+* Mon May 29 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.0-5
+- Work around non-standard location of localization files
+
+* Tue May 23 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.0-4
+- Import into Fedora proper (fedora#2180418)
+
+* Tue May 23 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.0-3
+- Remove duplicate files
+- Add README.Fedora
+- Drop direct systemctl calls
+
+* Sun May 21 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.0-2
+- Rename package to input-remapper
+- Switch to autorelease and autochangelog
+- Use find_lang macro
+- Remove explicit python runtime dependencies
+
+* Mon Mar 20 2023 Alexander Ploumistos <alexpl@fedoraproject.org> - 2.0.0-1
+- Update to 2.0.0
+
+* Thu Nov 17 2022 Alexander Ploumistos <alexpl@fedoraproject.org> - 1.5.0-2
+- Rework files stanza
+
+* Wed Nov 16 2022 Alexander Ploumistos <alexpl@fedoraproject.org> - 1.5.0-1
+- Version 1.5.0
+- Spec file based on Paweł Marciniak's <sunwire+repo@gmail.com> work
+- Fix license

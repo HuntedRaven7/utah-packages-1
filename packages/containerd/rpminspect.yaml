@@ -1,0 +1,7 @@
+---
+# temporarily skip broken branch protection test. should be fixed in
+# annochec annobin-13.14
+ annocheck:
+    extra_opts:
+        - hardened: --skip-branch-protection
+...

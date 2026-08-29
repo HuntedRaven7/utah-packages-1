@@ -1,0 +1,8 @@
+{
+  "package": "google-noto-sans-cjk-vf-fonts",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/google-noto-sans-cjk-vf-fonts.git",
+  "commit": "55a1e9ca72fc0e17f51fbefb04e2a1de471db3f8",
+  "tree": "9f89015b2746b6cd3718f566b45dc4293d06cda2",
+  "imported_at": "2026-08-29T06:02:35.922788+00:00"
+}

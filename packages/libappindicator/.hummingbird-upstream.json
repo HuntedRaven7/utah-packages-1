@@ -1,0 +1,8 @@
+{
+  "package": "libappindicator",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libappindicator.git",
+  "commit": "c8808aeff0a39345b0de9563fd39edc65714d736",
+  "tree": "b9e28b288c4141f40f23fde6bfca38f93a8beeb8",
+  "imported_at": "2026-08-29T06:02:47.124229+00:00"
+}

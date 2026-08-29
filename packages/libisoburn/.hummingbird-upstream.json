@@ -1,0 +1,8 @@
+{
+  "package": "libisoburn",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libisoburn.git",
+  "commit": "74c3acfc8d256706c901826a65ebb0412b1d71d7",
+  "tree": "0a2a174935ab0b75cc539d78b6d1d37456a2f90a",
+  "imported_at": "2026-08-29T06:02:52.252271+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "package": "gnome-ponytail-daemon",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-ponytail-daemon.git",
+  "commit": "4585fc435199f7f0faa72bdd261a17c555c37755",
+  "tree": "bd7099c03a119462c6a1d1b5752b8d50bb70b838",
+  "imported_at": "2026-08-29T06:02:33.497293+00:00"
+}

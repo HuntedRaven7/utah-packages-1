@@ -1,0 +1,92 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+
+usage() {
+    echo "Usage $0 <pkgtool>:<dist_git_branch>:<git_branch>:<git_base_commit>"
+    echo "Generates a (rhboot) grub2 branch which contains latest patches from dist-git based on specific Fedora/RHEL version"
+    echo "Command expects a single parameter delimited with colons, with the following meanings:"
+    echo "    pkgtool: Package tool, e.g. fedpkg, rhpkg, etc."
+    echo "    dist_git_branch: The dist-git branch/release to sync"
+    echo "    git_branch: The git branch/release to sync"
+    echo "    git_base_commit: base commit where git_branch is based on"
+    echo
+    echo "Examples:"
+    echo
+    echo "    $0 fedpkg:rawhide:fedora-43:grub-2.12"
+    echo "    $0 fedpkg:f42:fedora-42:grub-2.12"
+    echo "    $0 fedpkg:f41:fedora-41:grub-2.12"
+    echo "    $0 fedpkg:f40:fedora-40:grub-2.12"
+    echo
+    echo "Also handles RHEL branches:"
+    echo
+    echo "    $0 rhpkg:rhel-10-main:rhel-10-main:grub-2.12"
+    echo "    $0 rhpkg:rhel-9-main:rhel-9-main:grub-2.06"
+    echo "    $0 rhpkg:rhel-8-main:rhel-8-main:f28-branchpoint"
+    exit 1
+}
+
+# check params
+[ $# -eq 1 ] || usage
+
+args=$1
+
+pkgtool=$(echo "$args" | awk -F ':' '{print $1}')
+dist_git_branch=$(echo "$args" | awk -F ':' '{print $2}')
+git_branch=$(echo "$args" | awk -F ':' '{print $3}')
+git_base_commit=$(echo "$args" | awk -F ':' '{print $4}')
+
+# working dirs
+dist_git_dir=/tmp/grub/dist-git
+git_dir=/tmp/grub/git
+
+rm -rf $dist_git_dir $git_dir
+mkdir -p $dist_git_dir $git_dir
+
+
+pushd $dist_git_dir > /dev/null
+{
+    # clone grub2 package anonymously
+    $pkgtool clone -a grub2 . 2>/dev/null
+
+    # create a local branch, all fine if already exists
+    git checkout -q -b "$dist_git_branch" origin/"$dist_git_branch" 2> /dev/null || true
+}
+popd > /dev/null
+
+
+pushd $git_dir > /dev/null
+{
+    git clone -q git@github.com:rhboot/grub2.git . 2>/dev/null
+
+    dist_git_sync_branch=${git_branch}-dist-git-$(date +"%Y-%m-%d-%H_%M_%S")
+    git checkout -q -b "$dist_git_sync_branch" "$git_base_commit"
+
+    # This automatically assigns the first word, e.g. Patch0XXX to 'ignored' and the second to 'p'
+    while read -r ignored p || [ -n "$p" ]; do
+	if [ -n "$p" ]; then
+            git am -q "$dist_git_dir/$p" 2>/dev/null
+	fi
+    done < "$dist_git_dir/grub.patches"
+
+    # brach current git_branch based on upstream git_branch
+    git branch -D "$git_branch" 2>/dev/null || true
+    git checkout -q -b "$git_branch" origin/"$git_branch"
+
+    missing_commits=$(git cherry "${git_branch}" "${dist_git_sync_branch}" | grep ^+ | wc -l)
+    if [[ $missing_commits -eq 0 ]]; then
+        echo "Branch $git_branch is up-to-date, no need to sync"
+    else
+        echo "Missing commits ($missing_commits) which would be integrated in final branch"
+        git cherry "$git_branch" "$dist_git_sync_branch" -v | grep ^+
+        # finally cherry pick those missing patches
+        git cherry "$git_branch" "$dist_git_sync_branch" 2>/dev/null | grep ^+ | sed 's/\+ //' | xargs git cherry-pick 2>/dev/null
+
+        echo "Pushing latest commits"
+        cd "$git_dir"
+        git push -v origin "$git_branch"
+    fi
+}
+popd > /dev/null
+

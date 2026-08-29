@@ -1,0 +1,8 @@
+{
+  "package": "slitherer",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/slitherer.git",
+  "commit": "ae63e255883dca9a8c1e3469f9707ff05e281e20",
+  "tree": "82ccddd86ffce404555f9ac8d7934b7f534c7863",
+  "imported_at": "2026-08-29T06:03:05.595691+00:00"
+}

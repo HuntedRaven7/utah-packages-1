@@ -1,0 +1,37 @@
+inspections:
+    # GCC subpackages are inter-dependent but without requesting an explicit
+    # version - which rpmdeps dislikes and creates huge reports. We can't fix
+    # it easily and it's not a practical problem anyway. Unfortunately we
+    # can't tell rpmdeps to ignore just that particular warning. Switching off
+    # the rpmdeps checks looks like a lesser evil.
+    rpmdeps: off
+
+badfuncs:
+    # GCC doesn't use the so called bad functions "much". If they appear then
+    # - it is instrumenting them in sanitizers
+    # - in languages that don't move further downstream.
+    # We are OK with that.
+    ignore:
+      - /usr/lib*/libasan.so.*.*.*
+      - /usr/lib*/libtsan.so.*.*.*
+      - /usr/lib*/libgnat-*.so
+      - /usr/lib*/libgphobos.so.*.*.*
+      - /usr/lib*/libm2iso.so.*.*.*
+      - /usr/lib*/libm2pim.so.*.*.*
+
+pathmigration:
+    # Incomplete UsrMove, known but not planned at the moment
+    ignore:
+      - /lib*/libgcc_s-*.so.*
+      - /lib*/libgcc_s.so.*
+
+debuginfo:
+    # Skip the Go binaries, they ship unstripped
+    ignore:
+      - /usr/bin/go.gcc
+      - /usr/bin/gofmt.gcc
+      - /usr/lib*/libgo.so.*.*.*
+      - /usr/libexec/gcc/*-redhat-linux/*/buildid
+      - /usr/libexec/gcc/*-redhat-linux/*/cgo
+      - /usr/libexec/gcc/*-redhat-linux/*/test2json
+      - /usr/libexec/gcc/*-redhat-linux/*/vet

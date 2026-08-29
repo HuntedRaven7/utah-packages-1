@@ -1,0 +1,28 @@
+From 7af70ecf09c33232d838f648f652cd81f698e08c Mon Sep 17 00:00:00 2001
+From: Takao Fujiwara <fujiwara@redhat.com>
+Date: Thu, 14 Nov 2024 10:48:17 +0900
+Subject: [PATCH] src: Fix SEGV in GSettings
+
+GSettings updates can happen even if the instance of the engine
+does not exist.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=2257688
+---
+ src/engine.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/engine.cpp b/src/engine.cpp
+index 39b89f9..45dd34f 100644
+--- a/src/engine.cpp
++++ b/src/engine.cpp
+@@ -269,6 +269,7 @@ static void ibus_unikey_engine_disable(IBusEngine* engine)
+ 
+ static void ibus_unikey_config_value_changed(gchar* name, gpointer user_data)
+ {
++    g_return_if_fail (unikey);
+     ibus_unikey_engine_load_config(unikey);
+ 
+     UnikeySetInputMethod(unikey->im);
+-- 
+2.47.0
+
