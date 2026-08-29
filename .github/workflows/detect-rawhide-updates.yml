@@ -1,0 +1,41 @@
+name: Observe Fedora build-root availability
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Avoid the top of the hour, where scheduled GitHub jobs are commonly delayed.
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fedora-build-root-observation
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve current Fedora build-root package state
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace:Z" \
+            -w /workspace \
+            fedora:rawhide bash -exc '
+              dnf -y install dnf-plugins-core python3
+              python3 tools/scan_rawhide_state.py
+            '
+      - name: Explain update policy
+        run: |
+          echo 'Fedora is a compatibility build root, not a source-update feed.'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rawhide-availability
+          path: |
+            config/rawhide-state.json
+            reports/rawhide-changed-sources.txt
+          if-no-files-found: error
