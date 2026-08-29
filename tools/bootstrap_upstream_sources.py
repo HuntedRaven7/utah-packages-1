@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Create direct-source candidates from imported RPM recipes.
 
 This deliberately does not consult Fedora's lookaside cache. A candidate is
@@ -26,10 +25,9 @@ def rpm_value(spec: Path, query: str) -> str:
     return subprocess.check_output(["rpmspec", "-q", "--qf", query, str(spec)], text=True).splitlines()[0]
 
 
-def source0(spec: Path) -> str | None:
+def sources(spec: Path) -> list[tuple[int, str]]:
     parsed = subprocess.check_output(["rpmspec", "--parse", str(spec)], text=True, stderr=subprocess.STDOUT)
-    match = re.search(r"^Source0:\s*(\S+)\s*$", parsed, flags=re.MULTILINE)
-    return match.group(1) if match else None
+    return [(int(index or 0), url) for index, url in re.findall(r"^Source(\d*):\s*(\S+)\s*$", parsed, flags=re.MULTILINE)]
 
 
 def sha512(url: str) -> tuple[str, str]:
@@ -60,9 +58,12 @@ def main() -> int:
         spec = specs[0]
         try:
             name, version = rpm_value(spec, "%{NAME}"), rpm_value(spec, "%{VERSION}")
-            url = source0(spec)
+            declared_sources = sources(spec)
+            url = next((value for index, value in declared_sources if index == 0), None)
             if not url or not url.startswith(("http://", "https://")):
                 raise ValueError("Source0 is not a direct HTTP(S) URL")
+            if len(declared_sources) > 1:
+                raise ValueError("additional Source entries require an explicit verified source-closure mapping")
             if urllib.parse.urlparse(url).hostname in FEDORA_HOSTS:
                 raise ValueError("Source0 points at Fedora infrastructure, not the upstream")
             digest, filename = sha512(url)
