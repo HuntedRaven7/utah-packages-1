@@ -74,7 +74,11 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
-              dnf -y $disable install dnf-plugins-core mock rpm-build
+              # The plain fedora image is not a build root: it lacks the group mock
+              # installs, so /usr/bin/echo and friends are missing. Most packages pull
+              # them in transitively; squashfs-tools calls echo directly from its
+              # manpage installer and fails without it.
+              dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
@@ -88,6 +92,18 @@ jobs:
               mkdir -p "$staged"
               cp -a "/packages/$PACKAGE/." "$staged/"
               cp -a "/work/sources/$PACKAGE/." "$staged/"
+              # Packages with %generate_buildrequires -- every Rust one -- compute
+              # their real BuildRequires during the build, so the spec alone does not
+              # list them and rpmbuild exits 11 asking to be re-run. Install what the
+              # generated source RPM declares and retry, bounded so an unsatisfiable
+              # requirement fails instead of looping.
+              for _ in 1 2 3 4 5; do
+                rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
+                test -n "$generated"
+                dnf -y $disable builddep "$generated"
+              done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
                 --define "_rpmdir /work/result"
@@ -103,7 +119,10 @@ jobs:
           if-no-files-found: error
 
   publish:
-    if: github.ref == 'refs/heads/main' && needs.prepare.outputs.packages != '[]'
+    # Publish the packages that built. Without !cancelled() a single failing
+    # package skips this job entirely and the overlay repository never updates,
+    # which held the whole set back for the sake of one broken build.
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.prepare.outputs.packages != '[]' }}
     needs: rebuild
     runs-on: ubuntu-24.04
     environment:
