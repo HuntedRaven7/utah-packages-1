@@ -60,10 +60,60 @@ Hummingbird provides `libcrypto.so.3`. The package installs nowhere.
 **A package is ported only when its whole dependency closure resolves on
 Hummingbird** — not when it merely compiles.
 
+## The build root, per Hummingbird's own documentation
+
+Hummingbird builds in **mock hermetic mode** (network-isolated, dependencies
+pre-fetched). Its `mock/mock.cfg` composes the root from the `[fedora]` and
+`[fedora-updates]` repositories of a pinned Fedora release, with Hummingbird's
+own Pulp repositories shadowing them by priority. Their rebase runbook warns
+that if "Hummingbird's own Pulp repos still serve the _old_ toolchain at a
+higher priority than the new Fedora repos during the transition window, this
+becomes a real chicken-and-egg problem" -- priority ordering is load-bearing.
+
+A rebase rebuilds the core toolchain in strict order: glibc, gcc, llvm,
+annobin, libtool.
+
+This factory mirrors that composition: Fedora 44 plus `public-hummingbird` at
+higher priority. Measured in the build itself, that root reports
+
+```
+buildroot openssl: 3.5.7-2.fc44          -> libcrypto.so.3, matching Hummingbird
+177 packages from public-hummingbird-x86_64-rpms
+python3-3.14.7-1.hum1                    -> not Rawhide's 3.15
+gio-2.0 2.89.3, graphene 1.10.8, pixman 0.46.2
+```
+
+Each build prints its root's `openssl-libs`, so the ABI a package compiled
+against is visible in the log rather than assumed. That check is what caught
+the Rawhide root producing packages needing `libcrypto.so.4`.
+
+## Build order is part of the port
+
+Several ported packages BuildRequire each other, so a flat parallel matrix
+cannot build them:
+
+```
+mutter       needs gsettings-desktop-schemas >= 51.alpha   (found 50.1)
+gnome-shell  needs mutter-devel >= 51~alpha                (no match)
+gtk4, mutter needs wayland-protocols >= 1.48
+libadwaita, gnome-control-center  need gtk4 >= 4.23.x
+```
+
+Builds therefore run in stages, each stage publishing its RPMs into a local
+repository the next stage resolves against:
+
+| stage | packages |
+| --- | --- |
+| 0 | everything with no in-set dependency, plus `wayland-protocols`, `accountsservice`, `gsettings-desktop-schemas` |
+| 1 | `gtk4` |
+| 2 | `libadwaita`, `mutter` |
+| 3 | `gnome-shell`, `gnome-control-center`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome` |
+
+This is the same shape as Hummingbird's toolchain ordering, one layer up.
+
 ## The bootstrap ladder
 
-`README.md` states the policy and `docs/architecture.md` draws it. Restating
-it here because the ordering is what keeps getting lost:
+Restating it here because the ordering is what keeps getting lost:
 
 1. A new gap is introduced using the **Rawhide build root** — its compiler,
    macros, and BuildRequires establish the first RPM.
@@ -112,8 +162,10 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
 - **Nothing sets a Hummingbird-style disttag or `.N` release bump.** Built
   RPMs carry Fedora's `.fc46`, so they neither identify as this factory's nor
   sort against Fedora as Hummingbird's own rebuilds do.
-- **Whether GNOME 51 compiles against Fedora 44 is untested.** Every declared
-  minimum is met, but meson enforces more than a spec pins.
+- **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
+  Hummingbird root is confirmed correct, and every failure observed so far has
+  been build ordering within our own package set rather than a missing Fedora
+  dependency. The staged build addresses that; it has not yet been proven.
 - **TunaOS Hummingbird (`repo.tunaos.org`) is a different, abandoned project.**
   It is not Red Hat Hummingbird and must not be used. Any leftover reference
   to it is a bug.

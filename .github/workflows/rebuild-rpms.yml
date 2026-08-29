@@ -34,20 +34,31 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     outputs:
-      packages: ${{ steps.matrix.outputs.packages }}
+      stage0: ${{ steps.matrix.outputs.stage0 }}
+      stage1: ${{ steps.matrix.outputs.stage1 }}
+      stage2: ${{ steps.matrix.outputs.stage2 }}
+      stage3: ${{ steps.matrix.outputs.stage3 }}
     steps:
       - uses: actions/checkout@v4
       - id: matrix
         run: |
-          packages=$(jq -c '[.packages[].name]' config/upstream-sources.json)
-          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+          # Packages are built in stages because several of them BuildRequire
+          # each other: mutter needs gsettings-desktop-schemas >= 51.alpha and
+          # gnome-shell needs mutter-devel >= 51~alpha. A flat matrix builds
+          # them in parallel, so those requirements can never be satisfied.
+          for n in 0 1 2 3; do
+            echo "stage$n=$(jq -c --argjson n "$n" \
+              '[.packages[] | select((.stage // 0) == $n) | .name]' \
+              config/upstream-sources.json)" >> "$GITHUB_OUTPUT"
+          done
 
-  rebuild:
+  rebuild0:
     needs: prepare
+    if: needs.prepare.outputs.stage0 != '[]'
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJSON(needs.prepare.outputs.packages) }}
+        package: ${{ fromJSON(needs.prepare.outputs.stage0) }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +79,7 @@ jobs:
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
-            fedora:rawhide bash -exc '
+            quay.io/fedora/fedora:44 bash -exc '
               # The fedora:rawhide image ships fedora-cisco-openh264 enabled, but
               # its packages are signed with Cisco key, which the image does not
               # trust -- so any builddep graph reaching gstreamer/pipewire dies on
@@ -76,16 +87,20 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
-              # Rawhide is the bootstrap build root, per the policy in README.md:
-              # it supplies the compiler, macros and BuildRequires that introduce
-              # a gap, and nothing else. Hummingbird and this factory own
-              # repository are layered over it at a higher priority so that a
-              # package already built for Hummingbird is preferred to Rawhide,
-              # which is step 3 of the ladder in docs/targeting-hummingbird.md.
-              # Without this the output silently carries Rawhide ABI: gnome-shell
-              # built here pulled a pipewire-libs needing libcrypto.so.4, which
-              # Hummingbird (OpenSSL 3.5.6) cannot provide.
+              # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
+              # Fedora release repos with its own Pulp repos shadowing them by
+              # priority. Proven correct by this job own diagnostic below --
+              # openssl 3.5.7 means libcrypto.so.3, the ABI Hummingbird has.
+              # A Rawhide root produced RPMs needing libcrypto.so.4 instead.
               cp /repos/hummingbird.repo /etc/yum.repos.d/
+              # RPMs from earlier stages become a local repo, so a later stage
+              # can satisfy a BuildRequires on something this run just built.
+              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+                dnf -y $disable install createrepo_c
+                createrepo_c /work/prior
+                printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
+                  > /etc/yum.repos.d/stages.repo
+              fi
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
@@ -129,7 +144,322 @@ jobs:
             '
       - uses: actions/upload-artifact@v4
         with:
-          name: rpm-${{ matrix.package }}
+          name: rpm-s0-${{ matrix.package }}
+          path: |
+            work/result/*.rpm
+            work/reports/*.json
+          if-no-files-found: error
+
+  rebuild1:
+    needs: [prepare, rebuild0]
+    if: ${{ !cancelled() && needs.prepare.outputs.stage1 != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.prepare.outputs.stage1) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect RPMs built by earlier stages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: work/prior
+          merge-multiple: true
+        continue-on-error: true
+      - name: Fetch and verify direct upstream source
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          python3 tools/source_pipeline.py "$PACKAGE" --output work/sources --report-dir work/reports
+      - name: Build the verified source with its RPM recipe
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FACTORY_REPO: ${{ vars.FACTORY_REPO }}
+        run: |
+          test -d "packages/$PACKAGE"
+          mkdir -p work/result
+          docker run --rm --privileged \
+            -e PACKAGE -e FACTORY_REPO \
+            -v "$PWD/work:/work:Z" \
+            -v "$PWD/packages:/packages:ro,Z" \
+            -v "$PWD/config:/repos:ro,Z" \
+            quay.io/fedora/fedora:44 bash -exc '
+              # The fedora:rawhide image ships fedora-cisco-openh264 enabled, but
+              # its packages are signed with Cisco key, which the image does not
+              # trust -- so any builddep graph reaching gstreamer/pipewire dies on
+              # "Import of the key did not help, wrong key?". openh264 is a runtime
+              # codec, never a build requirement, and Fedora own noopenh264 provides
+              # the same libopenh264.so.8 soname, so disabling the repo resolves.
+              disable=--disablerepo=fedora-cisco-openh264
+              # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
+              # Fedora release repos with its own Pulp repos shadowing them by
+              # priority. Proven correct by this job own diagnostic below --
+              # openssl 3.5.7 means libcrypto.so.3, the ABI Hummingbird has.
+              # A Rawhide root produced RPMs needing libcrypto.so.4 instead.
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              # RPMs from earlier stages become a local repo, so a later stage
+              # can satisfy a BuildRequires on something this run just built.
+              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+                dnf -y $disable install createrepo_c
+                createrepo_c /work/prior
+                printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
+                  > /etc/yum.repos.d/stages.repo
+              fi
+              if [ -n "${FACTORY_REPO:-}" ]; then
+                printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
+                  "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
+              fi
+              # The plain fedora image is not a build root: it lacks the group mock
+              # installs, so /usr/bin/echo and friends are missing. Most packages pull
+              # them in transitively; squashfs-tools calls echo directly from its
+              # manpage installer and fails without it.
+              dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
+              rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
+              test -n "$spec"
+              dnf -y $disable builddep "$spec"
+              # An imported spec keeps its dist-git PatchN and auxiliary SourceN
+              # files next to itself, while the verified upstream archive lands in
+              # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
+              # recipe files first, then the verified archive, which therefore wins
+              # over anything of the same name carried in the import.
+              staged=/work/staged/$PACKAGE
+              rm -rf "$staged"
+              mkdir -p "$staged"
+              cp -a "/packages/$PACKAGE/." "$staged/"
+              cp -a "/work/sources/$PACKAGE/." "$staged/"
+              # Packages with %generate_buildrequires -- every Rust one -- compute
+              # their real BuildRequires during the build, so the spec alone does not
+              # list them and rpmbuild exits 11 asking to be re-run. Install what the
+              # generated source RPM declares and retry, bounded so an unsatisfiable
+              # requirement fails instead of looping.
+              for _ in 1 2 3 4 5; do
+                rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
+                test -n "$generated"
+                dnf -y $disable builddep "$generated"
+              done
+              rpmbuild -ba "$spec" \
+                --define "_sourcedir $staged" \
+                --define "_rpmdir /work/result"
+              find /work/result -name "*.rpm" -type f -print0 | \
+                xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm-s1-${{ matrix.package }}
+          path: |
+            work/result/*.rpm
+            work/reports/*.json
+          if-no-files-found: error
+
+  rebuild2:
+    needs: [prepare, rebuild0, rebuild1]
+    if: ${{ !cancelled() && needs.prepare.outputs.stage2 != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.prepare.outputs.stage2) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect RPMs built by earlier stages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: work/prior
+          merge-multiple: true
+        continue-on-error: true
+      - name: Fetch and verify direct upstream source
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          python3 tools/source_pipeline.py "$PACKAGE" --output work/sources --report-dir work/reports
+      - name: Build the verified source with its RPM recipe
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FACTORY_REPO: ${{ vars.FACTORY_REPO }}
+        run: |
+          test -d "packages/$PACKAGE"
+          mkdir -p work/result
+          docker run --rm --privileged \
+            -e PACKAGE -e FACTORY_REPO \
+            -v "$PWD/work:/work:Z" \
+            -v "$PWD/packages:/packages:ro,Z" \
+            -v "$PWD/config:/repos:ro,Z" \
+            quay.io/fedora/fedora:44 bash -exc '
+              # The fedora:rawhide image ships fedora-cisco-openh264 enabled, but
+              # its packages are signed with Cisco key, which the image does not
+              # trust -- so any builddep graph reaching gstreamer/pipewire dies on
+              # "Import of the key did not help, wrong key?". openh264 is a runtime
+              # codec, never a build requirement, and Fedora own noopenh264 provides
+              # the same libopenh264.so.8 soname, so disabling the repo resolves.
+              disable=--disablerepo=fedora-cisco-openh264
+              # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
+              # Fedora release repos with its own Pulp repos shadowing them by
+              # priority. Proven correct by this job own diagnostic below --
+              # openssl 3.5.7 means libcrypto.so.3, the ABI Hummingbird has.
+              # A Rawhide root produced RPMs needing libcrypto.so.4 instead.
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              # RPMs from earlier stages become a local repo, so a later stage
+              # can satisfy a BuildRequires on something this run just built.
+              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+                dnf -y $disable install createrepo_c
+                createrepo_c /work/prior
+                printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
+                  > /etc/yum.repos.d/stages.repo
+              fi
+              if [ -n "${FACTORY_REPO:-}" ]; then
+                printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
+                  "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
+              fi
+              # The plain fedora image is not a build root: it lacks the group mock
+              # installs, so /usr/bin/echo and friends are missing. Most packages pull
+              # them in transitively; squashfs-tools calls echo directly from its
+              # manpage installer and fails without it.
+              dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
+              rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
+              test -n "$spec"
+              dnf -y $disable builddep "$spec"
+              # An imported spec keeps its dist-git PatchN and auxiliary SourceN
+              # files next to itself, while the verified upstream archive lands in
+              # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
+              # recipe files first, then the verified archive, which therefore wins
+              # over anything of the same name carried in the import.
+              staged=/work/staged/$PACKAGE
+              rm -rf "$staged"
+              mkdir -p "$staged"
+              cp -a "/packages/$PACKAGE/." "$staged/"
+              cp -a "/work/sources/$PACKAGE/." "$staged/"
+              # Packages with %generate_buildrequires -- every Rust one -- compute
+              # their real BuildRequires during the build, so the spec alone does not
+              # list them and rpmbuild exits 11 asking to be re-run. Install what the
+              # generated source RPM declares and retry, bounded so an unsatisfiable
+              # requirement fails instead of looping.
+              for _ in 1 2 3 4 5; do
+                rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
+                test -n "$generated"
+                dnf -y $disable builddep "$generated"
+              done
+              rpmbuild -ba "$spec" \
+                --define "_sourcedir $staged" \
+                --define "_rpmdir /work/result"
+              find /work/result -name "*.rpm" -type f -print0 | \
+                xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm-s2-${{ matrix.package }}
+          path: |
+            work/result/*.rpm
+            work/reports/*.json
+          if-no-files-found: error
+
+  rebuild3:
+    needs: [prepare, rebuild0, rebuild1, rebuild2]
+    if: ${{ !cancelled() && needs.prepare.outputs.stage3 != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.prepare.outputs.stage3) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect RPMs built by earlier stages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: work/prior
+          merge-multiple: true
+        continue-on-error: true
+      - name: Fetch and verify direct upstream source
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          python3 tools/source_pipeline.py "$PACKAGE" --output work/sources --report-dir work/reports
+      - name: Build the verified source with its RPM recipe
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FACTORY_REPO: ${{ vars.FACTORY_REPO }}
+        run: |
+          test -d "packages/$PACKAGE"
+          mkdir -p work/result
+          docker run --rm --privileged \
+            -e PACKAGE -e FACTORY_REPO \
+            -v "$PWD/work:/work:Z" \
+            -v "$PWD/packages:/packages:ro,Z" \
+            -v "$PWD/config:/repos:ro,Z" \
+            quay.io/fedora/fedora:44 bash -exc '
+              # The fedora:rawhide image ships fedora-cisco-openh264 enabled, but
+              # its packages are signed with Cisco key, which the image does not
+              # trust -- so any builddep graph reaching gstreamer/pipewire dies on
+              # "Import of the key did not help, wrong key?". openh264 is a runtime
+              # codec, never a build requirement, and Fedora own noopenh264 provides
+              # the same libopenh264.so.8 soname, so disabling the repo resolves.
+              disable=--disablerepo=fedora-cisco-openh264
+              # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
+              # Fedora release repos with its own Pulp repos shadowing them by
+              # priority. Proven correct by this job own diagnostic below --
+              # openssl 3.5.7 means libcrypto.so.3, the ABI Hummingbird has.
+              # A Rawhide root produced RPMs needing libcrypto.so.4 instead.
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              # RPMs from earlier stages become a local repo, so a later stage
+              # can satisfy a BuildRequires on something this run just built.
+              if [ -d /work/prior ] && ls /work/prior/*.rpm >/dev/null 2>&1; then
+                dnf -y $disable install createrepo_c
+                createrepo_c /work/prior
+                printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
+                  > /etc/yum.repos.d/stages.repo
+              fi
+              if [ -n "${FACTORY_REPO:-}" ]; then
+                printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
+                  "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
+              fi
+              # The plain fedora image is not a build root: it lacks the group mock
+              # installs, so /usr/bin/echo and friends are missing. Most packages pull
+              # them in transitively; squashfs-tools calls echo directly from its
+              # manpage installer and fails without it.
+              dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
+              rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
+              test -n "$spec"
+              dnf -y $disable builddep "$spec"
+              # An imported spec keeps its dist-git PatchN and auxiliary SourceN
+              # files next to itself, while the verified upstream archive lands in
+              # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
+              # recipe files first, then the verified archive, which therefore wins
+              # over anything of the same name carried in the import.
+              staged=/work/staged/$PACKAGE
+              rm -rf "$staged"
+              mkdir -p "$staged"
+              cp -a "/packages/$PACKAGE/." "$staged/"
+              cp -a "/work/sources/$PACKAGE/." "$staged/"
+              # Packages with %generate_buildrequires -- every Rust one -- compute
+              # their real BuildRequires during the build, so the spec alone does not
+              # list them and rpmbuild exits 11 asking to be re-run. Install what the
+              # generated source RPM declares and retry, bounded so an unsatisfiable
+              # requirement fails instead of looping.
+              for _ in 1 2 3 4 5; do
+                rm -f /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+                if rpmbuild -br "$spec" --define "_sourcedir $staged"; then break; fi
+                generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
+                test -n "$generated"
+                dnf -y $disable builddep "$generated"
+              done
+              rpmbuild -ba "$spec" \
+                --define "_sourcedir $staged" \
+                --define "_rpmdir /work/result"
+              find /work/result -name "*.rpm" -type f -print0 | \
+                xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm-s3-${{ matrix.package }}
           path: |
             work/result/*.rpm
             work/reports/*.json
@@ -139,8 +469,8 @@ jobs:
     # Publish the packages that built. Without !cancelled() a single failing
     # package skips this job entirely and the overlay repository never updates,
     # which held the whole set back for the sake of one broken build.
-    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.prepare.outputs.packages != '[]' }}
-    needs: rebuild
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.prepare.outputs.stage0 != '[]' }}
+    needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3]
     runs-on: ubuntu-24.04
     environment:
       name: github-pages

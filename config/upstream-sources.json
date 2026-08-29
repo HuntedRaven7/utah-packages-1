@@ -56,7 +56,8 @@
       "url": "https://download.gnome.org/sources/gnome-control-center/51/gnome-control-center-51.beta.tar.xz",
       "filename": "gnome-control-center-51.beta.tar.xz",
       "sha512": "ef20ee2a5528853114ba65f9be364fa29493e23397d239f92530036b57ba3ae8a9fac20ee16e8e2e471e4bdd3c0c4b8e1a9cb42b997d2fff30f7a290e38cbcf1",
-      "sha256_url": "https://download.gnome.org/sources/gnome-control-center/51/gnome-control-center-51.beta.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/gnome-control-center/51/gnome-control-center-51.beta.sha256sum",
+      "stage": 3
     },
     {
       "name": "gnome-ponytail-daemon",
@@ -71,7 +72,8 @@
       "url": "https://download.gnome.org/sources/gnome-session/51/gnome-session-51.beta.tar.xz",
       "filename": "gnome-session-51.beta.tar.xz",
       "sha512": "93bc86b68dca7e687d406dae0338a7673978052675d596b472491a9db0babec82d36fe5d37504a0fa0f648a377f5adb21b9bd6fdd552d63a15dcd37352b89dee",
-      "sha256_url": "https://download.gnome.org/sources/gnome-session/51/gnome-session-51.beta.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/gnome-session/51/gnome-session-51.beta.sha256sum",
+      "stage": 3
     },
     {
       "name": "gnome-settings-daemon",
@@ -79,7 +81,8 @@
       "url": "https://download.gnome.org/sources/gnome-settings-daemon/51/gnome-settings-daemon-51.beta.tar.xz",
       "filename": "gnome-settings-daemon-51.beta.tar.xz",
       "sha512": "a6282f2719504876639f22076b573e4e229f7d6a5be134fb42d3d0497b3552d1f0d38500906ebc452059cd0e675696bfd631b4ea8156b29a4f3e69c1a1a4c7a6",
-      "sha256_url": "https://download.gnome.org/sources/gnome-settings-daemon/51/gnome-settings-daemon-51.beta.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/gnome-settings-daemon/51/gnome-settings-daemon-51.beta.sha256sum",
+      "stage": 3
     },
     {
       "name": "gnome-shell",
@@ -87,7 +90,8 @@
       "url": "https://download.gnome.org/sources/gnome-shell/51/gnome-shell-51.beta.tar.xz",
       "filename": "gnome-shell-51.beta.tar.xz",
       "sha512": "0f4dfdf4a8ea050c902b7bcc22e141932b1a33cf6c61f83d478d8495fb21711c8d639b0956ef2a5b7bae5580d88b0a3f7a53abccd544ff17d4ae2137542f77c2",
-      "sha256_url": "https://download.gnome.org/sources/gnome-shell/51/gnome-shell-51.beta.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/gnome-shell/51/gnome-shell-51.beta.sha256sum",
+      "stage": 3
     },
     {
       "name": "gnome-tweaks",
@@ -110,7 +114,8 @@
       "url": "https://download.gnome.org/sources/gtk/4.23/gtk-4.23.3.tar.xz",
       "filename": "gtk-4.23.3.tar.xz",
       "sha512": "68667688d1f818f5c50a545e7960fcac9ed244d27468a7086cfbce3fb0caefa4a97a69ea45ae7e271a0b4d2d46a105d2f3cd4edec2cb61af939c3027e51501f9",
-      "sha256_url": "https://download.gnome.org/sources/gtk/4.23/gtk-4.23.3.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/gtk/4.23/gtk-4.23.3.sha256sum",
+      "stage": 1
     },
     {
       "name": "gvfs",
@@ -160,7 +165,8 @@
       "url": "https://download.gnome.org/sources/libadwaita/1.10/libadwaita-1.10.beta.1.tar.xz",
       "filename": "libadwaita-1.10.beta.1.tar.xz",
       "sha512": "233e4c1fbdb086f19efe01fc9fa45ae86c37dc804d6e40b926c4768ad76ffd4473ce257ba99e305ee7a40095d7f76d741fa5c64ffb5b1fa244e13e368b95eab8",
-      "sha256_url": "https://download.gnome.org/sources/libadwaita/1.10/libadwaita-1.10.beta.1.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/libadwaita/1.10/libadwaita-1.10.beta.1.sha256sum",
+      "stage": 2
     },
     {
       "name": "libappindicator",
@@ -224,7 +230,8 @@
       "url": "https://download.gnome.org/sources/mutter/51/mutter-51.beta.tar.xz",
       "filename": "mutter-51.beta.tar.xz",
       "sha512": "dea4ad2de6ae83f7488f5330281c26c4e4cd2439f34700546b3ca44729a8762275b94260b6cc72e02990231b9b1afb00d58df5def9734426a01cd33aed4bde8a",
-      "sha256_url": "https://download.gnome.org/sources/mutter/51/mutter-51.beta.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/mutter/51/mutter-51.beta.sha256sum",
+      "stage": 2
     },
     {
       "name": "openrgb",
@@ -288,7 +295,8 @@
       "url": "https://download.gnome.org/sources/xdg-desktop-portal-gnome/51/xdg-desktop-portal-gnome-51.alpha.tar.xz",
       "filename": "xdg-desktop-portal-gnome-51.alpha.tar.xz",
       "sha512": "3efb510c4cb84eaffd16385938e84e176654fd04077763f2a4f58ccc8c051786cfc1c5c96d1527d8af95e4d09f9bc1290727ba15da543bf00ed75b3fe84f56f6",
-      "sha256_url": "https://download.gnome.org/sources/xdg-desktop-portal-gnome/51/xdg-desktop-portal-gnome-51.alpha.sha256sum"
+      "sha256_url": "https://download.gnome.org/sources/xdg-desktop-portal-gnome/51/xdg-desktop-portal-gnome-51.alpha.sha256sum",
+      "stage": 3
     },
     {
       "name": "xdg-terminal-exec",
