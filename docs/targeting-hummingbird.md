@@ -107,7 +107,28 @@ repository the next stage resolves against:
 | 0 | everything with no in-set dependency, plus `wayland-protocols`, `accountsservice`, `gsettings-desktop-schemas` |
 | 1 | `gtk4` |
 | 2 | `libadwaita`, `mutter` |
-| 3 | `gnome-shell`, `gnome-control-center`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome` |
+| 3 | `gnome-shell`, `gnome-session`, `gnome-settings-daemon`, `xdg-desktop-portal-gnome`, `malcontent` |
+| 4 | `gnome-control-center` |
+
+`malcontent` is in the set for a reason worth recording, because it is the
+first package pulled in by an ABI break rather than by a version floor.
+`accountsservice` 26.27.3 bumped its library soname from
+`libaccountsservice.so.0` to `.so.1`. Fedora 44's `malcontent-libs` is built
+against `.so.0`, so once the Fedora build of accountsservice is excluded in
+favour of ours, nothing provides what malcontent needs:
+
+```
+package malcontent-libs-0.14.0-1.fc44 from fedora requires
+  libaccountsservice.so.0, but none of the providers can be installed
+package accountsservice-libs-23.13.9-16.fc44 from fedora is filtered out
+  by exclude filtering
+```
+
+Fedora has already made this transition: Rawhide ships the same malcontent
+0.14.0 at release 7, rebuilt against accountsservice 26. So this is a rebuild,
+not a version bump -- exactly the case the `.N` convention exists for. It needs
+gtk4 and libadwaita, so it cannot go earlier than stage 3, which is why
+`gnome-control-center` moves to a stage of its own.
 
 This is the same shape as Hummingbird's toolchain ordering, one layer up.
 
