@@ -184,13 +184,19 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   Hummingbird root is confirmed correct. Run 33243934353 built
   `gnome-session`, `gnome-settings-daemon` and `xdg-desktop-portal-gnome`,
   but that does not demonstrate staging: those three resolve entirely against
-  Fedora 44. Staging had in fact never run at all -- the guard that decides
-  whether to build the local `[stages]` repository used a non-recursive glob
-  against a directory where `download-artifact` had nested the RPMs one level
-  down, so it silently found nothing in every stage of every run. `mutter`
-  resolving `gsettings-desktop-schemas` to Fedora's 50.1 is what exposed it.
-  The guard now recurses; the mechanism is still unproven until a later-stage
-  package is observed consuming an earlier stage's output.
+  Fedora 44. Staging was broken twice over, by the same kind of mistake in two
+  places. The guard deciding whether to build the local `[stages]` repository
+  used a non-recursive glob against a directory where `download-artifact` had
+  nested the RPMs one level down, so it silently found nothing. Fixing that
+  exposed the second: `rpmbuild --define "_rpmdir /work/result"` writes to
+  `/work/result/<arch>/`, but the upload declared `work/result/*.rpm`, also
+  non-recursive. Every artifact this workflow ever produced held only its JSON
+  report -- pango built five RPMs and its artifact was 397 bytes.
+  `if-no-files-found: error` could not catch it, because the artifact also
+  carries `work/reports/*.json`, so one file always matched and the upload
+  reported success while shipping nothing. Both globs now recurse and the build
+  fails outright if it produced no RPM. The mechanism is still unproven until a
+  later-stage package is observed consuming an earlier stage's output.
 - **TunaOS Hummingbird (`repo.tunaos.org`) is a different, abandoned project.**
   It is not Red Hat Hummingbird and must not be used. Any leftover reference
   to it is a bug.
