@@ -1,14 +1,29 @@
-name: Rebuild Rawhide RPMs
+name: Build verified upstream RPMs
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - config/upstream-sources.json
+      - packages/**
+  pull_request:
+    paths:
+      - config/upstream-sources.json
+      - packages/**
+      - tools/source_pipeline.py
+      - .github/workflows/rebuild-rpms.yml
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '41 6 * * *'
 
 permissions:
   contents: read
   id-token: write
   pages: write
+
+concurrency:
+  group: upstream-rpm-build
+  cancel-in-progress: true
 
 jobs:
   prepare:
@@ -19,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: matrix
         run: |
-          packages=$(sed -e '/^#/d' -e '/^$/d' config/bootstrap-packages.txt | jq -Rsc 'split("\n") | map(select(length > 0))')
+          packages=$(jq -c '[.packages[].name]' config/upstream-sources.json)
           echo "packages=$packages" >> "$GITHUB_OUTPUT"
 
   rebuild:
@@ -31,21 +46,29 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch and lock source RPM
+      - name: Fetch and verify direct upstream source
         env:
           PACKAGE: ${{ matrix.package }}
         run: |
-          mkdir -p work/{source,result,lock}
+          python3 tools/source_pipeline.py "$PACKAGE" --output work/sources --report-dir work/reports
+      - name: Build the verified source with its RPM recipe
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          test -d "packages/$PACKAGE"
+          mkdir -p work/result
           docker run --rm --privileged \
             -e PACKAGE \
             -v "$PWD/work:/work:Z" \
-            -v "$PWD/config/rawhide.repo:/etc/yum.repos.d/rawhide.repo:ro,Z" \
+            -v "$PWD/packages:/packages:ro,Z" \
             fedora:rawhide bash -exc '
-              dnf -y install dnf-plugins-core mock
-              dnf -y download --source --destdir /work/source "$PACKAGE"
-              sha256sum /work/source/*.src.rpm | tee "/work/lock/${PACKAGE}.sha256"
-              mock --isolation=simple -r fedora-rawhide-x86_64 \
-                --rebuild /work/source/*.src.rpm --resultdir /work/result
+              dnf -y install dnf-plugins-core mock rpm-build
+              spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
+              test -n "$spec"
+              dnf -y builddep "$spec"
+              rpmbuild -ba "$spec" \
+                --define "_sourcedir /work/sources/$PACKAGE" \
+                --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
             '
@@ -54,11 +77,11 @@ jobs:
           name: rpm-${{ matrix.package }}
           path: |
             work/result/*.rpm
-            work/lock/*.sha256
+            work/reports/*.json
           if-no-files-found: error
 
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.prepare.outputs.packages != '[]'
     needs: rebuild
     runs-on: ubuntu-24.04
     environment:
