@@ -7,6 +7,12 @@ on:
     paths:
       - config/upstream-sources.json
       - packages/**
+  pull_request:
+    paths:
+      - config/upstream-sources.json
+      - packages/**
+      - tools/source_pipeline.py
+      - .github/workflows/rebuild-rpms.yml
   schedule:
     - cron: '41 6 * * *'
 
