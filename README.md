@@ -55,6 +55,13 @@ deliberately contains no entries until each package has an agreed source URL
 and verification policy; that is a deliberate admission gate, not a Rawhide
 fallback.
 
+Each release-tracked entry uses `version` plus `url_template` (with
+`{version}`), and a `renovate` object containing its `datasource` and `depName`.
+Renovate therefore proposes updates from the real upstream. Its
+`upstream-source` PRs can automerge only after the verified RPM build gate; the
+pipeline refuses publication until the PR also records the newly downloaded
+source digest (and signature result, when configured).
+
 This is an in-factory fork with upstream provenance. Mirroring each source into
 an independent GitHub repository is intentionally optional: GitHub Actions'
 `GITHUB_TOKEN` cannot create repositories. It can be added later with a
