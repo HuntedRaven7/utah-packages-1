@@ -22,19 +22,19 @@ jobs:
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{{ github.actor }}
-          password: ${{{ secrets.GITHUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - id: build
         uses: docker/build-push-action@v6
         with:
           context: containers/base
-          push: ${{{ github.ref == 'refs/heads/main' }}
-          tags: ghcr.io/${{{ github.repository_owner }}/hummingbird-github-base:rawhide
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ghcr.io/${{ github.repository_owner }}/hummingbird-github-base:rawhide
           build-args: |
-            REPOSITORY_URL=https://${{{ github.repository_owner }}.github.io/${{{ github.event.repository.name }}/
-            VERSION=${{{ github.sha }}
+            REPOSITORY_URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            VERSION=${{ github.sha }}
       - uses: actions/attest-build-provenance@v2
         if: github.ref == 'refs/heads/main'
         with:
-          subject-name: ghcr.io/${{{ github.repository_owner }}/hummingbird-github-base
-          subject-digest: ${{{ steps.build.outputs.digest }}
+          subject-name: ghcr.io/${{ github.repository_owner }}/hummingbird-github-base
+          subject-digest: ${{ steps.build.outputs.digest }}
