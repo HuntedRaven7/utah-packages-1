@@ -202,6 +202,22 @@ jobs:
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
                   > /etc/yum.repos.d/stages.repo
+                # priority alone does not keep Fedora out. gnome-control-center
+                # pulled Fedora accountsservice 23.13.9 even though stage 0 had
+                # built 26.27.3 and [stages] was priority 1: the Fedora main
+                # package entered the transaction and pinned accountsservice-libs
+                # to its exact NEVR, so our libs could not be installed and our
+                # devel, which needs them, was dropped --
+                #   cannot install both accountsservice-libs-26.27.3 from stages
+                #                   and accountsservice-libs-23.13.9-16.fc44 from fedora
+                # Excluding by name is what settles it: whatever an earlier stage
+                # built, Fedora must not answer for. Names come from rpm rather
+                # than from parsing filenames, which stops working the moment a
+                # disttag changes.
+                EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
+                  | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
+                  | sort -u | paste -sd, -)
+                echo "excluding from Fedora: $EXCLUDE"
               fi
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
@@ -240,7 +256,8 @@ jobs:
               export LOGNAME="${LOGNAME:-$USER}"
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
-              dnf -y $disable builddep "$spec"
+              dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -262,7 +279,8 @@ jobs:
                      --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
-                dnf -y $disable builddep "$generated"
+                dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -354,6 +372,22 @@ jobs:
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
                   > /etc/yum.repos.d/stages.repo
+                # priority alone does not keep Fedora out. gnome-control-center
+                # pulled Fedora accountsservice 23.13.9 even though stage 0 had
+                # built 26.27.3 and [stages] was priority 1: the Fedora main
+                # package entered the transaction and pinned accountsservice-libs
+                # to its exact NEVR, so our libs could not be installed and our
+                # devel, which needs them, was dropped --
+                #   cannot install both accountsservice-libs-26.27.3 from stages
+                #                   and accountsservice-libs-23.13.9-16.fc44 from fedora
+                # Excluding by name is what settles it: whatever an earlier stage
+                # built, Fedora must not answer for. Names come from rpm rather
+                # than from parsing filenames, which stops working the moment a
+                # disttag changes.
+                EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
+                  | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
+                  | sort -u | paste -sd, -)
+                echo "excluding from Fedora: $EXCLUDE"
               fi
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
@@ -392,7 +426,8 @@ jobs:
               export LOGNAME="${LOGNAME:-$USER}"
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
-              dnf -y $disable builddep "$spec"
+              dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -414,7 +449,8 @@ jobs:
                      --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
-                dnf -y $disable builddep "$generated"
+                dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -506,6 +542,22 @@ jobs:
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
                   > /etc/yum.repos.d/stages.repo
+                # priority alone does not keep Fedora out. gnome-control-center
+                # pulled Fedora accountsservice 23.13.9 even though stage 0 had
+                # built 26.27.3 and [stages] was priority 1: the Fedora main
+                # package entered the transaction and pinned accountsservice-libs
+                # to its exact NEVR, so our libs could not be installed and our
+                # devel, which needs them, was dropped --
+                #   cannot install both accountsservice-libs-26.27.3 from stages
+                #                   and accountsservice-libs-23.13.9-16.fc44 from fedora
+                # Excluding by name is what settles it: whatever an earlier stage
+                # built, Fedora must not answer for. Names come from rpm rather
+                # than from parsing filenames, which stops working the moment a
+                # disttag changes.
+                EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
+                  | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
+                  | sort -u | paste -sd, -)
+                echo "excluding from Fedora: $EXCLUDE"
               fi
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
@@ -544,7 +596,8 @@ jobs:
               export LOGNAME="${LOGNAME:-$USER}"
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
-              dnf -y $disable builddep "$spec"
+              dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -566,7 +619,8 @@ jobs:
                      --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
-                dnf -y $disable builddep "$generated"
+                dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -658,6 +712,22 @@ jobs:
                 createrepo_c /work/prior
                 printf "[stages]\nname=stages\nbaseurl=file:///work/prior\nenabled=1\ngpgcheck=0\npriority=1\n" \
                   > /etc/yum.repos.d/stages.repo
+                # priority alone does not keep Fedora out. gnome-control-center
+                # pulled Fedora accountsservice 23.13.9 even though stage 0 had
+                # built 26.27.3 and [stages] was priority 1: the Fedora main
+                # package entered the transaction and pinned accountsservice-libs
+                # to its exact NEVR, so our libs could not be installed and our
+                # devel, which needs them, was dropped --
+                #   cannot install both accountsservice-libs-26.27.3 from stages
+                #                   and accountsservice-libs-23.13.9-16.fc44 from fedora
+                # Excluding by name is what settles it: whatever an earlier stage
+                # built, Fedora must not answer for. Names come from rpm rather
+                # than from parsing filenames, which stops working the moment a
+                # disttag changes.
+                EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
+                  | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
+                  | sort -u | paste -sd, -)
+                echo "excluding from Fedora: $EXCLUDE"
               fi
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
@@ -696,7 +766,8 @@ jobs:
               export LOGNAME="${LOGNAME:-$USER}"
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
-              dnf -y $disable builddep "$spec"
+              dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -718,7 +789,8 @@ jobs:
                      --define "dist $DISTTAG"; then break; fi
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
-                dnf -y $disable builddep "$generated"
+                dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \

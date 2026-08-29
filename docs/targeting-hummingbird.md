@@ -221,6 +221,20 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   reported success while shipping nothing. Both globs now recurse and the build
   fails outright if it produced no RPM. The mechanism is still unproven until a
   later-stage package is observed consuming an earlier stage's output.
+
+  That has now happened. Run 33246174021 resolved a stage 3 build against
+  earlier stages, and the transaction table names the repository per package:
+
+  ```
+  gtk4                       x86_64 0:4.23.3-1.fc44       stages
+  gtk4-devel                 x86_64 0:4.23.3-1.fc44       stages
+  libadwaita                 x86_64 0:1.10~beta.1-1.fc44  stages
+  gsettings-desktop-schemas  x86_64 0:51~beta-1.fc44      stages
+  ```
+
+  gtk4 4.23.3 and libadwaita 1.10.beta.1 are this factory's own builds; Fedora
+  44 has 4.22.4 and 1.9.3. mutter 51.beta built against that gtk4, and
+  gnome-control-center configured against both. Staging is demonstrated.
 - **TunaOS Hummingbird (`repo.tunaos.org`) is a different, abandoned project.**
   It is not Red Hat Hummingbird and must not be used. Any leftover reference
   to it is a bug.
