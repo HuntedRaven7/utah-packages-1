@@ -1,0 +1,52 @@
+name: Bootstrap direct upstream sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Imported package branch to convert
+        default: import/bluefin-rawhide
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Create candidate branch from imported package recipes
+        env:
+          SOURCE_REF: ${{ inputs.source_ref }}
+          BRANCH: source-bootstrap/${{ github.run_id }}
+        run: |
+          git fetch origin "$SOURCE_REF"
+          git worktree add ../candidate FETCH_HEAD
+          docker run --rm \
+            -v "$PWD/tools:/tools:ro,Z" \
+            -v "$PWD/../candidate:/workspace:Z" \
+            -w /workspace fedora:rawhide bash -exc '
+              dnf -y install python3 rpm-build
+              python3 /tools/bootstrap_upstream_sources.py
+            '
+          git -C ../candidate switch -c "$BRANCH"
+          git -C ../candidate add config/upstream-sources.json reports/direct-source-bootstrap.json
+          git -C ../candidate -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot] \
+            commit -m 'chore: bootstrap verified direct upstream sources'
+          git -C ../candidate push origin "HEAD:$BRANCH"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+        id: candidate
+      - name: Open direct-source conversion PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.candidate.outputs.branch }}
+        run: |
+          gh pr create --base main --head "$BRANCH" \
+            --title 'chore: bootstrap direct upstream sources for Bluefin parity' \
+            --body 'Generated from imported RPM recipes. Direct sources are downloaded from Source0 and SHA-512 locked; records rejected by the bootstrap report require an explicit upstream mapping before build admission.'
