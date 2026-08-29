@@ -81,6 +81,13 @@ jobs:
             -v "$PWD/config:/repos:ro,Z" \
             quay.io/fedora/fedora:44 bash -exc '
               disable=--disablerepo=fedora-cisco-openh264
+              # The Fedora container images set tsflags=nodocs, so every %doc file is
+              # dropped at install time. rand_core ships its crate docs that way and
+              # its lib.rs does #![doc = include_str!("../README.md")], so rust-just
+              # failed to compile: rustc could not read ../README.md. Nothing was wrong
+              # with the Fedora package: mock installs docs into a build root, and
+              # this container was not. Restore that.
+              sed -i "/^tsflags=nodocs/d" /etc/dnf/dnf.conf
               cp /repos/hummingbird.repo /etc/yum.repos.d/
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
@@ -144,6 +151,13 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
+              # The Fedora container images set tsflags=nodocs, so every %doc file is
+              # dropped at install time. rand_core ships its crate docs that way and
+              # its lib.rs does #![doc = include_str!("../README.md")], so rust-just
+              # failed to compile: rustc could not read ../README.md. Nothing was wrong
+              # with the Fedora package: mock installs docs into a build root, and
+              # this container was not. Restore that.
+              sed -i "/^tsflags=nodocs/d" /etc/dnf/dnf.conf
               # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
               # Fedora release repos with its own Pulp repos shadowing them by
               # priority. Proven correct by this job own diagnostic below --
@@ -176,6 +190,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # libratbag %check starts ratbagd, which calls
+              # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
+              # connect: No such file or directory" -- a plain container has no
+              # system bus socket. Seven of its ten suites already pass and the
+              # failing one is a real test, so give the build root a bus rather
+              # than disabling the test. Non-fatal: no other package needs it.
+              dnf -y $disable install dbus-daemon || true
+              mkdir -p /run/dbus
+              dbus-daemon --system --fork || true
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
@@ -257,6 +280,13 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
+              # The Fedora container images set tsflags=nodocs, so every %doc file is
+              # dropped at install time. rand_core ships its crate docs that way and
+              # its lib.rs does #![doc = include_str!("../README.md")], so rust-just
+              # failed to compile: rustc could not read ../README.md. Nothing was wrong
+              # with the Fedora package: mock installs docs into a build root, and
+              # this container was not. Restore that.
+              sed -i "/^tsflags=nodocs/d" /etc/dnf/dnf.conf
               # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
               # Fedora release repos with its own Pulp repos shadowing them by
               # priority. Proven correct by this job own diagnostic below --
@@ -289,6 +319,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # libratbag %check starts ratbagd, which calls
+              # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
+              # connect: No such file or directory" -- a plain container has no
+              # system bus socket. Seven of its ten suites already pass and the
+              # failing one is a real test, so give the build root a bus rather
+              # than disabling the test. Non-fatal: no other package needs it.
+              dnf -y $disable install dbus-daemon || true
+              mkdir -p /run/dbus
+              dbus-daemon --system --fork || true
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
@@ -370,6 +409,13 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
+              # The Fedora container images set tsflags=nodocs, so every %doc file is
+              # dropped at install time. rand_core ships its crate docs that way and
+              # its lib.rs does #![doc = include_str!("../README.md")], so rust-just
+              # failed to compile: rustc could not read ../README.md. Nothing was wrong
+              # with the Fedora package: mock installs docs into a build root, and
+              # this container was not. Restore that.
+              sed -i "/^tsflags=nodocs/d" /etc/dnf/dnf.conf
               # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
               # Fedora release repos with its own Pulp repos shadowing them by
               # priority. Proven correct by this job own diagnostic below --
@@ -402,6 +448,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # libratbag %check starts ratbagd, which calls
+              # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
+              # connect: No such file or directory" -- a plain container has no
+              # system bus socket. Seven of its ten suites already pass and the
+              # failing one is a real test, so give the build root a bus rather
+              # than disabling the test. Non-fatal: no other package needs it.
+              dnf -y $disable install dbus-daemon || true
+              mkdir -p /run/dbus
+              dbus-daemon --system --fork || true
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
@@ -483,6 +538,13 @@ jobs:
               # codec, never a build requirement, and Fedora own noopenh264 provides
               # the same libopenh264.so.8 soname, so disabling the repo resolves.
               disable=--disablerepo=fedora-cisco-openh264
+              # The Fedora container images set tsflags=nodocs, so every %doc file is
+              # dropped at install time. rand_core ships its crate docs that way and
+              # its lib.rs does #![doc = include_str!("../README.md")], so rust-just
+              # failed to compile: rustc could not read ../README.md. Nothing was wrong
+              # with the Fedora package: mock installs docs into a build root, and
+              # this container was not. Restore that.
+              sed -i "/^tsflags=nodocs/d" /etc/dnf/dnf.conf
               # Fedora 44 plus Hummingbird, mirroring Hummingbird mock.cfg:
               # Fedora release repos with its own Pulp repos shadowing them by
               # priority. Proven correct by this job own diagnostic below --
@@ -515,6 +577,15 @@ jobs:
               # manpage installer and fails without it.
               dnf -y $disable install dnf-plugins-core mock rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
+              # libratbag %check starts ratbagd, which calls
+              # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
+              # connect: No such file or directory" -- a plain container has no
+              # system bus socket. Seven of its ten suites already pass and the
+              # failing one is a real test, so give the build root a bus rather
+              # than disabling the test. Non-fatal: no other package needs it.
+              dnf -y $disable install dbus-daemon || true
+              mkdir -p /run/dbus
+              dbus-daemon --system --fork || true
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable builddep "$spec"
