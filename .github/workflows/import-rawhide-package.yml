@@ -1,0 +1,40 @@
+name: Import Rawhide package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Fedora dist-git package name to import
+        required: true
+        type: string
+      branch:
+        description: Upstream branch
+        required: true
+        default: rawhide
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import Fedora dist-git snapshot
+        run: |
+          python3 tools/import_rawhide.py \
+            "${{ inputs.package }}" \
+            --branch "${{ inputs.branch }}"
+      - name: Open reviewable update
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: import/rawhide-${{ inputs.package }}
+          delete-branch: true
+          title: 'import: Rawhide ${{ inputs.package }}'
+          commit-message: 'import: Rawhide ${{ inputs.package }}'
+          body: |
+            Imports Fedora dist-git at the exact commit recorded in
+            `packages/${{ inputs.package }}/.hummingbird-upstream.json`.
+            Review and patch the snapshot here before enabling it in a rebuild set.
