@@ -1,0 +1,84 @@
+name: Rebuild Rawhide RPMs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      packages: ${{{ steps.matrix.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix
+        run: |
+          packages=$(sed -e '/^#/d' -e '/^$/d' config/bootstrap-packages.txt | jq -Rsc 'split("\n") | map(select(length > 0))')
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
+  rebuild:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{{ fromJSON(needs.prepare.outputs.packages) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and lock source RPM
+        env:
+          PACKAGE: ${{{ matrix.package }}
+        run: |
+          mkdir -p work/{source,result,lock}
+          docker run --rm --privileged \
+            -e PACKAGE \
+            -v "$PWD/work:/work:Z" \
+            -v "$PWD/config/rawhide.repo:/etc/yum.repos.d/rawhide.repo:ro,Z" \
+            fedora:rawhide bash -exc '
+              dnf -y install dnf-plugins-core mock
+              dnf -y download --source --destdir /work/source "$PACKAGE"
+              sha256sum /work/source/*.src.rpm | tee "/work/lock/${{PACKAGE}.sha256"
+              mock --isolation=simple -r fedora-rawhide-x86_64 \
+                --rebuild /work/source/*.src.rpm --resultdir /work/result
+              find /work/result -name "*.rpm" -type f -print0 | \
+                xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+            '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm-${{{ matrix.package }}
+          path: |
+            work/result/*.rpm
+            work/lock/*.sha256
+          if-no-files-found: error
+
+  publish:
+    if: github.ref == 'refs/heads/main'
+    needs: rebuild
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: repository
+          merge-multiple: true
+      - name: Create and keylessly sign repository metadata
+        run: |
+          sudo apt-get update && sudo apt-get install -y createrepo-c
+          createrepo_c --update repository
+          curl -fsSL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o cosign
+          install -m 0755 cosign /usr/local/bin/cosign
+          cosign sign-blob --yes --bundle repository/repodata/repomd.xml.bundle repository/repodata/repomd.xml
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: repository
+      - id: deployment
+        uses: actions/deploy-pages@v4

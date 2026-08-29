@@ -1,0 +1,14 @@
+# Fedora source RPM names, kept dependency-first during bootstrap.
+device-mapper-persistent-data
+fuse
+ntfs-3g
+udisks2
+librsvg2
+glycin
+gdk-pixbuf2
+gvfs
+gnome-shell
+gnome-control-center
+xdg-desktop-portal-gnome
+firefox
+distrobox
