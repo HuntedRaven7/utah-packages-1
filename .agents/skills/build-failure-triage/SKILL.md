@@ -81,6 +81,30 @@ would have answered the question.
 Cancelling is not the same as re-running. Never push an empty commit or close
 and reopen a PR to kick CI.
 
+## Rule 4: an artifact that uploaded is not an artifact that contains anything
+
+Two separate bugs in this workflow were both a non-recursive glob standing in
+for a recursive one, and both were silent for many runs.
+
+`rpmbuild --define "_rpmdir /work/result"` writes to `/work/result/<arch>/`,
+not `/work/result/`. `download-artifact` likewise unpacks an artifact under the
+common parent of its upload globs. A `*.rpm` pattern misses both; only
+`**/*.rpm` matches.
+
+Neither failed loudly. The upload's `if-no-files-found: error` stayed quiet
+because the same artifact carries `work/reports/*.json`, so one file always
+matched. pango built five RPMs and uploaded a 397-byte artifact containing one
+JSON file, and the job went green.
+
+When a later stage cannot see what an earlier stage built, check in this order:
+
+1. Did the earlier job actually write RPMs? Its log ends with `Wrote:` lines
+   naming full paths -- read the directory in them.
+2. What did the upload say? `With the provided path, there will be N file(s)
+   uploaded` is the number that matters, not the step's green tick.
+3. What is the artifact's size? A few hundred bytes means metadata only.
+4. Only then look at the consuming side.
+
 ## Classifying the failure
 
 | What the log shows | What it means | What to do |

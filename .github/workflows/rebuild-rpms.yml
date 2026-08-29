@@ -259,12 +259,17 @@ jobs:
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+              # A build that produced no RPM must fail here. if-no-files-found on
+              # the upload cannot catch it: the artifact also carries
+              # work/reports/*.json, so one file always matches and the upload
+              # reports success while shipping no packages at all.
+              test -n "$(find /work/result -name "*.rpm" -type f -print -quit)"
             '
       - uses: actions/upload-artifact@v4
         with:
           name: rpm-s0-${{ matrix.package }}
           path: |
-            work/result/*.rpm
+            work/result/**/*.rpm
             work/reports/*.json
           if-no-files-found: error
 
@@ -395,12 +400,17 @@ jobs:
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+              # A build that produced no RPM must fail here. if-no-files-found on
+              # the upload cannot catch it: the artifact also carries
+              # work/reports/*.json, so one file always matches and the upload
+              # reports success while shipping no packages at all.
+              test -n "$(find /work/result -name "*.rpm" -type f -print -quit)"
             '
       - uses: actions/upload-artifact@v4
         with:
           name: rpm-s1-${{ matrix.package }}
           path: |
-            work/result/*.rpm
+            work/result/**/*.rpm
             work/reports/*.json
           if-no-files-found: error
 
@@ -531,12 +541,17 @@ jobs:
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+              # A build that produced no RPM must fail here. if-no-files-found on
+              # the upload cannot catch it: the artifact also carries
+              # work/reports/*.json, so one file always matches and the upload
+              # reports success while shipping no packages at all.
+              test -n "$(find /work/result -name "*.rpm" -type f -print -quit)"
             '
       - uses: actions/upload-artifact@v4
         with:
           name: rpm-s2-${{ matrix.package }}
           path: |
-            work/result/*.rpm
+            work/result/**/*.rpm
             work/reports/*.json
           if-no-files-found: error
 
@@ -667,12 +682,17 @@ jobs:
                 --define "_rpmdir /work/result"
               find /work/result -name "*.rpm" -type f -print0 | \
                 xargs -0 -r rpm -qp --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n"
+              # A build that produced no RPM must fail here. if-no-files-found on
+              # the upload cannot catch it: the artifact also carries
+              # work/reports/*.json, so one file always matches and the upload
+              # reports success while shipping no packages at all.
+              test -n "$(find /work/result -name "*.rpm" -type f -print -quit)"
             '
       - uses: actions/upload-artifact@v4
         with:
           name: rpm-s3-${{ matrix.package }}
           path: |
-            work/result/*.rpm
+            work/result/**/*.rpm
             work/reports/*.json
           if-no-files-found: error
 
