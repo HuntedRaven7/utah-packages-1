@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Create direct-source candidates from imported RPM recipes.
 
 This deliberately does not consult Fedora's lookaside cache. A candidate is
@@ -51,11 +52,25 @@ def main() -> int:
     parser.add_argument("--packages", type=Path, default=Path("packages"))
     parser.add_argument("--output", type=Path, default=Path("config/upstream-sources.json"))
     parser.add_argument("--report", type=Path, default=Path("reports/direct-source-bootstrap.json"))
+    parser.add_argument("--provided-packages", type=Path, help="newline-delimited package names already supplied by Hummingbird")
     args = parser.parse_args()
     root = args.root.resolve()
     packages = (root / args.packages).resolve()
+    provided_names = set(args.provided_packages.read_text().split()) if args.provided_packages else set()
+    resolution_path = root / "reports/bluefin-rawhide-resolution.json"
+    resolution = json.loads(resolution_path.read_text()) if resolution_path.exists() else {}
+    requested_by_source: dict[str, set[str]] = {}
+    for binary, source in resolution.get("resolved_binary_to_source", {}).items():
+        requested_by_source.setdefault(source, set()).add(binary)
+    already_supplied = {
+        source: sorted(binaries)
+        for source, binaries in requested_by_source.items()
+        if binaries and binaries <= provided_names
+    }
     candidates, rejected = [], []
     for package in sorted(path for path in packages.iterdir() if path.is_dir()):
+        if package.name in already_supplied:
+            continue
         specs = list(package.glob("*.spec"))
         if len(specs) != 1:
             rejected.append({"package": package.name, "reason": f"expected one spec, found {len(specs)}"})
@@ -79,8 +94,9 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({"schema": 1, "packages": candidates}, indent=2) + "\n")
-    report.write_text(json.dumps({"accepted": len(candidates), "rejected": rejected}, indent=2) + "\n")
-    print(f"accepted direct sources: {len(candidates)}; needs explicit mapping: {len(rejected)}")
+    report.write_text(json.dumps({"accepted": len(candidates), "already_supplied_by_hummingbird": already_supplied,
+                                  "rejected": rejected}, indent=2) + "\n")
+    print(f"accepted direct sources: {len(candidates)}; already supplied: {len(already_supplied)}; needs explicit mapping: {len(rejected)}")
     return 0
 
 
