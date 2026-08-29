@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Create direct-source candidates from imported RPM recipes.
 
 This deliberately does not consult Fedora's lookaside cache. A candidate is
