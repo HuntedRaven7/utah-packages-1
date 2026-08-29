@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Create direct-source candidates from imported RPM recipes.
 
 This deliberately does not consult Fedora's lookaside cache. A candidate is
@@ -23,7 +22,10 @@ FEDORA_HOSTS = ("fedoraproject.org", "src.fedoraproject.org", "kojipkgs.fedorapr
 
 
 def rpm_value(spec: Path, query: str) -> str:
-    return subprocess.check_output(["rpmspec", "-q", "--qf", query, str(spec)], text=True).splitlines()[0]
+    # A spec can emit dozens of binary package records.  Source identity and
+    # Version must come from the one SRPM record, not concatenated binary
+    # subpackages (for example, libblockdev's plugins).
+    return subprocess.check_output(["rpmspec", "-q", "--srpm", "--qf", query, str(spec)], text=True).splitlines()[0]
 
 
 def sources(spec: Path) -> list[tuple[int, str]]:
@@ -35,7 +37,9 @@ def sha512(url: str) -> tuple[str, str]:
     request = urllib.request.Request(url, headers={"User-Agent": "hummingbird-github-bootstrap/1"})
     value = hashlib.sha512()
     with urllib.request.urlopen(request, timeout=120) as response:
-        filename = Path(urllib.parse.urlparse(response.url).path).name
+        # GitHub release redirects end at an opaque object-store name. RPM's
+        # Source0 basename comes from the declared upstream URL, so retain it.
+        filename = Path(urllib.parse.urlparse(url).path).name
         for block in iter(lambda: response.read(1024 * 1024), b""):
             value.update(block)
     return value.hexdigest(), filename
