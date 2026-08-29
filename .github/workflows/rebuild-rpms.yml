@@ -19,6 +19,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
   pages: write
 
 concurrency:
@@ -1204,12 +1205,19 @@ jobs:
     # Publish the packages that built. Without !cancelled() a single failing
     # package skips this job entirely and the overlay repository never updates,
     # which held the whole set back for the sake of one broken build.
-    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.prepare.outputs.stage0 != '[]' }}
+    #
+    # This is no longer main-only. The repository is published as an OCI image
+    # first and to Pages second, and the OCI push is what consumers actually
+    # read. Pages can only deploy from the default branch, which meant nothing
+    # existed to consume until a merge landed -- so an image could never be
+    # tested against the packages it was meant to use before merging either of
+    # them. A registry has no such rule.
+    if: ${{ !cancelled() && needs.prepare.outputs.stage0 != '[]' }}
     needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4]
     runs-on: ubuntu-24.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      ref: ${{ steps.oci.outputs.ref }}
+      digest: ${{ steps.oci.outputs.digest }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -1229,6 +1237,85 @@ jobs:
           curl -fsSL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o cosign
           install -m 0755 cosign /usr/local/bin/cosign
           cosign sign-blob --yes --bundle repository/repodata/repomd.xml.bundle repository/repodata/repomd.xml
+      # The repository as an OCI image, which is how everything else in this
+      # ecosystem ships build output: Utah Containerfile already pulls
+      # projectbluefin/common and ublue-os/brew this way, pinned by digest.
+      #
+      # A registry beats a Pages site here on three counts. It works from any
+      # branch, so an image can be built against a package set before either is
+      # merged. It is addressable by digest, so an image records exactly which
+      # packages went into it rather than whatever the site served that day. And
+      # provenance comes from the registry and a signature over the digest,
+      # rather than from an unsigned directory of RPMs over HTTPS.
+      - name: Publish the repository as an OCI image
+        id: oci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          owner=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          image="ghcr.io/${owner}/utah-packages"
+          # main publishes the tag consumers follow; every other ref publishes
+          # under its own name so it can be tested without touching main.
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            tag=latest
+          else
+            tag=$(echo "${{ github.ref_name }}" | tr "/" "-" | tr -cd "[:alnum:]._-" | cut -c1-96)
+          fi
+          printf "FROM scratch\nCOPY repository /repository\n" > Containerfile.repo
+          echo "${GITHUB_TOKEN}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+          podman build --tag "${image}:${tag}" --file Containerfile.repo .
+          podman push "${image}:${tag}" --digestfile /tmp/digest
+          digest=$(cat /tmp/digest)
+          echo "ref=${image}:${tag}" >> "$GITHUB_OUTPUT"
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+          echo "published ${image}:${tag}"
+          echo "consume it with: ${image}@${digest}"
+          {
+            echo "### Package repository published"
+            echo
+            echo '```'
+            echo "${image}:${tag}"
+            echo "${image}@${digest}"
+            echo '```'
+            echo
+            echo "Consume in a Containerfile:"
+            echo '```dockerfile'
+            echo "FROM ${image}@${digest} AS packages"
+            echo "COPY --from=packages /repository /etc/utah-packages"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Sign the published image
+        env:
+          COSIGN_YES: "true"
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          cosign sign "ghcr.io/${owner}/utah-packages@${{ steps.oci.outputs.digest }}"
+      # Handed to the Pages job rather than deployed here, so that the registry
+      # push never depends on the github-pages environment. That environment
+      # usually carries a deployment branch rule, and inheriting it would have
+      # blocked this job on exactly the branches the OCI push exists to serve.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repository
+          path: repository
+          retention-days: 1
+
+  # A convenience mirror for anything wanting a plain HTTP repository. Pages can
+  # only deploy from the default branch, which is why it is no longer the thing
+  # consumers depend on.
+  publish_pages:
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.publish.result == 'success' }}
+    needs: publish
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: repository
+          path: repository
       - uses: actions/upload-pages-artifact@v3
         with:
           path: repository

@@ -159,6 +159,40 @@ malcontent with no parental controls UI should not reach anyone's system.
 
 This is the same shape as Hummingbird's toolchain ordering, one layer up.
 
+## How the packages are published
+
+The repository is published twice, and only one of them is meant to be consumed.
+
+**As an OCI image**, `ghcr.io/<owner>/utah-packages`, which is what images
+should use. That is how everything else in this ecosystem ships build output --
+Utah own Containerfile already pulls `projectbluefin/common` and `ublue-os/brew`
+exactly this way, pinned by digest:
+
+```dockerfile
+FROM ghcr.io/hanthor/utah-packages@sha256:... AS packages
+COPY --from=packages /repository /etc/utah-packages
+```
+
+A registry beats a Pages site on three counts, and the third is the one that was
+actually blocking:
+
+- it works from any branch, so an image can be built against a package set
+  before either of them is merged;
+- it is addressable by digest, so an image records exactly which packages went
+  into it rather than whatever the site happened to be serving;
+- provenance is a signature over that digest rather than an unsigned directory
+  of RPMs served over HTTPS.
+
+`main` publishes `:latest`. Every other ref publishes under its own branch name,
+which is the point: GitHub Pages can only deploy from the default branch, so
+until this existed nothing could be consumed until a merge had already happened,
+and an image could never be tested against the packages it was meant to use.
+
+**As a Pages site**, still, for anything that wants a plain HTTP repository.
+That deploy is a separate job so the registry push does not inherit the
+`github-pages` environment, which normally carries a deployment branch rule and
+would have blocked the push on precisely the branches it exists to serve.
+
 ## Release numbering
 
 Packages built here are tagged the way AlmaLinux tags its rebuilds: keep the
