@@ -20,6 +20,15 @@ and then acting on them.
 the runner's cleanup, which is worthless. **Ask for 40-70 lines minimum.** The
 real error is typically 20-60 lines above the summary.
 
+Some jobs defeat tailing outright. A repository with git submodules emits a
+couple of hundred lines of credential cleanup after the build, so on Utah a
+125-line tail still had not reached the failure. When a tail comes back as
+nothing but `git config --unset` noise, **do not keep guessing at the depth**:
+ask for a deliberately large `tail_lines` (1000+) so the result exceeds the
+tool's cap and spills to a file, then grep that file for `error:`,
+`##[error]`, `No match for`, `nothing provides` and `Failed to`. Grepping a
+spilled log is fast and certain; escalating the tail line by line is neither.
+
 Two wrong calls were made this way: "Fedora 44 cannot satisfy GNOME 51's
 BuildRequires" (it was a single missing package we build ourselves), and
 "libratbag has no Fedora fix" (its actual failure had moved to a missing
@@ -43,6 +52,35 @@ Check-run events arrive for superseded commits. Compare the event's
 `head_sha` against the PR's current head before spending time on it. A run
 whose conclusion is `cancelled` was superseded by a later push, not broken.
 
+## Rule 3: on a showstopper, kill the runs that cannot pass
+
+A showstopper is a failure that every in-flight job will hit for the same
+reason: a bad repository or key, a broken build root, a missing package early
+in the ordering. It is not one package failing on its own.
+
+When you identify one, **cancel the runs you already know will not build**,
+before writing the fix. Do not let them finish "just in case". Utah's four
+image variants each spend roughly twenty minutes reaching an identical GPG
+failure; three of them were still grinding toward it when the cause was
+already known and understood.
+
+What to cancel:
+
+- Every remaining job in the run whose failure you just diagnosed, when the
+  cause is shared rather than package-specific.
+- Any run on a commit that later pushes have superseded.
+
+This matters more here than in most repositories because `rebuild-rpms.yml`
+sets `cancel-in-progress: false` deliberately, so that a long staged build is
+not thrown away by an unrelated push. The cost of that choice is that a doomed
+run holds the concurrency group and newer runs queue behind it — and GitHub
+keeps only one *pending* run per group, so intermediate ones are dropped. A
+stale run left alone does not just waste its own time; it delays the run that
+would have answered the question.
+
+Cancelling is not the same as re-running. Never push an empty commit or close
+and reopen a PR to kick CI.
+
 ## Classifying the failure
 
 | What the log shows | What it means | What to do |
@@ -54,7 +92,8 @@ whose conclusion is `cancelled` was superseded by a later push, not broken.
 | `Bad exit status ... (%check)` needing a bus, display or device | The container lacks a service the test needs | Give the container the service. **Never** skip or disable the test |
 | rpmbuild exit **11**, `*.buildreqs.nosrc.rpm` written | Dynamic BuildRequires (`%generate_buildrequires`, all Rust packages) | Install what the generated SRPM declares, then retry, bounded |
 | Exit **125**, log under ~1 KB | `docker run` failed before the build; infrastructure | Not the package. Re-run once at most |
-| `Signature verification failed` / `wrong key?` | A repo whose key the image does not trust | Disable that repo for the build if its content is not needed |
+| `Signature verification failed` after a clean download | The repo's `gpgkey` is a multi-key bundle and one key in it fails to import | Point `gpgkey` at the single release key. Verify its fingerprint against the one the failing transaction named. **Keep `gpgcheck=1`** |
+| `wrong key?` on a third-party repo whose content the build does not need | A repo signed by a key the image does not trust | Disable that repo for the build |
 
 ## Verify against primary sources
 
