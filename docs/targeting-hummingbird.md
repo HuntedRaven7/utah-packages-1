@@ -159,6 +159,47 @@ malcontent with no parental controls UI should not reach anyone's system.
 
 This is the same shape as Hummingbird's toolchain ordering, one layer up.
 
+## Release numbering
+
+Every RPM built here carries `.1.utah` where a Fedora package would carry
+`.fc44`. That is Hummingbird's own form -- their `zip` is `3.0-45.1.hum1`
+against Fedora's `3.0-45`: Fedora's release, then `.N`, then the disttag. `N`
+counts our rebuilds within one Fedora release.
+
+The leading `.1` is doing real work. The disttag was `.utah` alone at first,
+which outranked Fedora only because rpmvercmp compares `utah` against `fc44` as
+text and `u` sorts after `f`. That is an accident of spelling, and it does not
+hold in general:
+
+| ours | theirs | winner |
+| --- | --- | --- |
+| `1.utah` | `1.fc44` | ours |
+| `1.utah` | `1.zz99` | **theirs** |
+| `1.1.utah` | `1.fc44` | ours |
+| `1.1.utah` | `1.zz99` | ours |
+| `1.1.utah` | `1.hum1` | ours |
+| `1.1.utah` | `2.fc44` | **theirs** |
+| `2.1.utah` | `2.fc44` | ours |
+
+With `.1` in front, the comparison at that position is a numeric segment against
+an alphabetic one, and rpm ranks the number higher whatever the other tag is
+spelled. What it cannot do is survive Fedora bumping its own release, because
+the leading segment comes from the spec, not the disttag. `1.1.utah` loses to
+`2.fc44`; the answer is to bump the spec, which is also the moment to rebase it
+on the newer dist-git.
+
+So the convention is a good default, not a guarantee, and the guarantee is
+enforced separately. The `precedence` job resolves every RPM this run produced
+against Fedora 44 and Hummingbird -- with our own output deliberately absent
+from the repository set -- and fails if what they offer ranks at or above ours.
+A package that loses here still installs; dnf simply installs the other build,
+so the rebuild we went to the trouble of making is never used and nothing says
+so. It reports every offender before failing, so one run gives the whole
+worklist.
+
+The one build exempt from this is `malcontent-bootstrap`, whose `0.bootstrap`
+release is meant to lose to the real build and which `publish` deletes.
+
 ## The bootstrap ladder
 
 Restating it here because the ordering is what keeps getting lost:
@@ -225,33 +266,24 @@ that Rawhide ships; assuming otherwise sent an earlier attempt down a dead end.
   `libcrypto.so.3` — Hummingbird's ABI, not Rawhide's `libcrypto.so.4`. What
   is not proven is that output linked against that root installs cleanly on a
   Hummingbird image; nothing has tested that yet.
-- **The disttag is set; the `.N` release bump is not.** Every build now passes
-  `--define "dist .utah"`, so output is `pango-1.58.2-1.utah` rather than
-  `-1.fc44` and a package is identifiable as this factory's on sight. What is
-  still missing is Hummingbird's `.N` convention, and the gap is visible in
-  rpm's own ordering (verified against rpmvercmp):
+- **The `.N` release bump is now implemented.** See *Release numbering* above.
+  Builds carry `.1.utah`, and a `precedence` job enforces the invariant the
+  disttag only approximates.
 
-  ```
-  1.utah  >  1.fc44      1.utah  >  1.fc45      1.utah  >  1.hum1
-  1.utah  <  2.fc44
-  ```
+  This section previously claimed the disttag decided nothing, because "dnf
+  priority does, and the factory repository sits above both Fedora and
+  Hummingbird -- the disttag is provenance, not precedence." That was wrong, and
+  this factory produced the counter-example. Priority did not stop Fedora's
+  accountsservice being chosen over the 26.27.3 an earlier stage had just built,
+  even with `[stages]` at priority 1; `excludepkgs` is what settled it. Priority
+  expresses a preference between repositories that both offer an installable
+  package. It is not a guarantee, so version ordering has to be right on its
+  own, and the `precedence` job is what checks that it is.
 
-  So `.utah` outranks any same-numbered Fedora or Hummingbird release, because
-  rpm compares equal-position alphabetic segments as strings and `utah` sorts
-  above `fc44` and `hum1`. But a Fedora **release bump** overtakes us: once
-  Fedora ships `2.fc44`, our `1.utah` loses. Hummingbird's answer is to rebuild
-  as `2.1.hum1`, which sits above `2.fc44` and below `3.fc44`. We do not do
-  that yet, so a package we build at the same version as Fedora needs its
-  release bumped by hand when Fedora rebuilds.
-
-  In the repositories this does not decide anything: dnf priority does, and the
-  factory repository sits above both Fedora and Hummingbird. The disttag is
-  provenance, not precedence.
-
-  One consequence worth stating: `1.utah > 1.hum1` means a package we rebuild
-  would outrank Hummingbird's own build of it. We should not be rebuilding base
-  OS packages Hummingbird owns; the desktop stack it does not ship is the whole
-  remit.
+  One consequence still worth stating: `1.1.utah > 1.hum1` means a package we
+  rebuild outranks Hummingbird's own build of it. We should not be rebuilding
+  base OS packages Hummingbird owns; the desktop stack it does not ship is the
+  whole remit.
 - **GNOME 51 has not yet compiled end to end.** The Fedora 44 plus
   Hummingbird root is confirmed correct. Run 33243934353 built
   `gnome-session`, `gnome-settings-daemon` and `xdg-desktop-portal-gnome`,

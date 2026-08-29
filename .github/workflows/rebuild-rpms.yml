@@ -237,7 +237,21 @@ jobs:
               # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
               # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
               # Priority still decides in the repositories; this is provenance.
-              DISTTAG=".utah"
+              # Hummingbird's own form: Fedora's release with .N appended, then
+              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
+              # 3.0-45. N counts our rebuilds within one Fedora release.
+              #
+              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
+              # only because rpmvercmp compares "utah" and "fc44" as text and
+              # "u" sorts after "f" -- an accident of spelling. With .1 in
+              # front, the comparison is a numeric segment against an alphabetic
+              # one, and rpm always ranks the number higher, whatever the other
+              # disttag happens to be spelled.
+              #
+              # It does not survive Fedora bumping its own release: 1.1.utah
+              # loses to 2.fc44, since the leading segment comes from the spec.
+              # The precedence job is what catches that.
+              DISTTAG=".1.utah"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -407,7 +421,21 @@ jobs:
               # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
               # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
               # Priority still decides in the repositories; this is provenance.
-              DISTTAG=".utah"
+              # Hummingbird's own form: Fedora's release with .N appended, then
+              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
+              # 3.0-45. N counts our rebuilds within one Fedora release.
+              #
+              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
+              # only because rpmvercmp compares "utah" and "fc44" as text and
+              # "u" sorts after "f" -- an accident of spelling. With .1 in
+              # front, the comparison is a numeric segment against an alphabetic
+              # one, and rpm always ranks the number higher, whatever the other
+              # disttag happens to be spelled.
+              #
+              # It does not survive Fedora bumping its own release: 1.1.utah
+              # loses to 2.fc44, since the leading segment comes from the spec.
+              # The precedence job is what catches that.
+              DISTTAG=".1.utah"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -577,7 +605,21 @@ jobs:
               # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
               # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
               # Priority still decides in the repositories; this is provenance.
-              DISTTAG=".utah"
+              # Hummingbird's own form: Fedora's release with .N appended, then
+              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
+              # 3.0-45. N counts our rebuilds within one Fedora release.
+              #
+              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
+              # only because rpmvercmp compares "utah" and "fc44" as text and
+              # "u" sorts after "f" -- an accident of spelling. With .1 in
+              # front, the comparison is a numeric segment against an alphabetic
+              # one, and rpm always ranks the number higher, whatever the other
+              # disttag happens to be spelled.
+              #
+              # It does not survive Fedora bumping its own release: 1.1.utah
+              # loses to 2.fc44, since the leading segment comes from the spec.
+              # The precedence job is what catches that.
+              DISTTAG=".1.utah"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -747,7 +789,21 @@ jobs:
               # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
               # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
               # Priority still decides in the repositories; this is provenance.
-              DISTTAG=".utah"
+              # Hummingbird's own form: Fedora's release with .N appended, then
+              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
+              # 3.0-45. N counts our rebuilds within one Fedora release.
+              #
+              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
+              # only because rpmvercmp compares "utah" and "fc44" as text and
+              # "u" sorts after "f" -- an accident of spelling. With .1 in
+              # front, the comparison is a numeric segment against an alphabetic
+              # one, and rpm always ranks the number higher, whatever the other
+              # disttag happens to be spelled.
+              #
+              # It does not survive Fedora bumping its own release: 1.1.utah
+              # loses to 2.fc44, since the leading segment comes from the spec.
+              # The precedence job is what catches that.
+              DISTTAG=".1.utah"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -917,7 +973,21 @@ jobs:
               # strings, and "utah" > "fc44" > "fc45", so pango-1.58.2-1.utah
               # beats a Fedora 1.58.2-1.fcNN without relying on repo priority.
               # Priority still decides in the repositories; this is provenance.
-              DISTTAG=".utah"
+              # Hummingbird's own form: Fedora's release with .N appended, then
+              # our disttag -- their zip is 3.0-45.1.hum1 against Fedora's
+              # 3.0-45. N counts our rebuilds within one Fedora release.
+              #
+              # The leading .1 is not cosmetic. Plain ".utah" outranked Fedora
+              # only because rpmvercmp compares "utah" and "fc44" as text and
+              # "u" sorts after "f" -- an accident of spelling. With .1 in
+              # front, the comparison is a numeric segment against an alphabetic
+              # one, and rpm always ranks the number higher, whatever the other
+              # disttag happens to be spelled.
+              #
+              # It does not survive Fedora bumping its own release: 1.1.utah
+              # loses to 2.fc44, since the leading segment comes from the spec.
+              # The precedence job is what catches that.
+              DISTTAG=".1.utah"
               echo "disttag: $DISTTAG"
               # libratbag %check starts ratbagd, which calls
               # Gio.bus_get_sync(Gio.BusType.SYSTEM) and dies with "Could not
@@ -982,6 +1052,68 @@ jobs:
             work/result/**/*.rpm
             work/reports/*.json
           if-no-files-found: error
+
+  # A disttag is a convention, not a guarantee. What actually has to be true is
+  # that every RPM we publish outranks whatever Fedora 44 and Hummingbird offer
+  # under the same name -- otherwise dnf installs theirs and the rebuild we went
+  # to the trouble of making is never used. Nothing checked that, and it fails
+  # silently: the image still resolves, just to the wrong build.
+  #
+  # This resolves each name against those repositories, with our own output not
+  # in the picture, and compares. It reports every offender before failing, so
+  # one run yields the whole worklist instead of one entry at a time.
+  precedence:
+    needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4]
+    if: ${{ !cancelled() && needs.prepare.outputs.stage0 != '[]' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: built
+          merge-multiple: true
+      - name: Assert our builds outrank Fedora and Hummingbird
+        run: |
+          docker run --rm \
+            -v "$PWD/built:/built:ro,Z" \
+            -v "$PWD/config:/repos:ro,Z" \
+            quay.io/fedora/fedora:44 bash -exc '
+              dnf -y install rpmdevtools >/dev/null
+              cp /repos/hummingbird.repo /etc/yum.repos.d/
+              disable=--disablerepo=fedora-cisco-openh264
+              fmt="%|EPOCH?{%{EPOCH}:}|%{VERSION}-%{RELEASE}"
+              : > /tmp/losers
+              find /built -name "*.rpm" -type f | sort | while read -r rpm; do
+                case "$rpm" in
+                  *.src.rpm) continue ;;
+                  # The malcontent bootstrap is ranked below the real build on
+                  # purpose and is deleted before publish. It is meant to lose.
+                  *-0.bootstrap.*) continue ;;
+                esac
+                name=$(rpm -qp --qf "%{NAME}" "$rpm" 2>/dev/null) || continue
+                ours=$(rpm -qp --qf "$fmt" "$rpm")
+                theirs=$(dnf -q $disable repoquery --latest-limit=1 \
+                           --qf "$fmt" "$name" 2>/dev/null | tail -n1)
+                # Nothing else ships this name, so there is nothing to outrank.
+                [ -n "$theirs" ] || continue
+                rc=0; rpmdev-vercmp "$ours" "$theirs" >/dev/null 2>&1 || rc=$?
+                # 11 means the first argument is newer, which is what we need.
+                # 0 (equal) and 12 (theirs newer) both mean ours will not win.
+                [ "$rc" = 11 ] || echo "  $name: ours $ours, available $theirs" >> /tmp/losers
+              done
+              if [ -s /tmp/losers ]; then
+                echo "These builds do not outrank what the repositories already offer,"
+                echo "so dnf would install the other one:"
+                cat /tmp/losers
+                echo
+                echo "Bump the release in each spec until its leading segment exceeds"
+                echo "the available one. The .N disttag cannot do it, because the"
+                echo "leading segment comes from the spec."
+                exit 1
+              fi
+              echo "every build outranks what Fedora 44 and Hummingbird offer"
+            '
 
   publish:
     # Publish the packages that built. Without !cancelled() a single failing
