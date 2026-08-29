@@ -1,0 +1,8 @@
+{
+  "package": "gsettings-desktop-schemas",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gsettings-desktop-schemas.git",
+  "commit": "7acb7ce3b4b77ece9f1990342958d2bd321b0987",
+  "tree": "b95db0ec1f487248b848c632e580fd4fefb52ea5",
+  "imported_at": "2026-08-29T06:52:06.093670+00:00"
+}

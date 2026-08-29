@@ -12,3 +12,9 @@ gnome-control-center
 xdg-desktop-portal-gnome
 firefox
 distrobox
+mutter
+gnome-session
+gnome-settings-daemon
+gsettings-desktop-schemas
+libadwaita
+gtk4

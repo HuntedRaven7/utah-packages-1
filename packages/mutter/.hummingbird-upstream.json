@@ -1,0 +1,8 @@
+{
+  "package": "mutter",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/mutter.git",
+  "commit": "6e5e58c285d6b6cbec3fbd25d5f86eef8fe99a88",
+  "tree": "33b467edc67e63b589e1bb5b08e751fec9a0c867",
+  "imported_at": "2026-08-29T06:52:02.424746+00:00"
+}

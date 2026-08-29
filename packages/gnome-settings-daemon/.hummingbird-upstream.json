@@ -1,0 +1,8 @@
+{
+  "package": "gnome-settings-daemon",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-settings-daemon.git",
+  "commit": "e9bce3ae38364c6f4cb4e7e076eec08e45ae1563",
+  "tree": "d0b39fb5d876a0eab1c5f0a072b54ae1b26eea6d",
+  "imported_at": "2026-08-29T06:52:05.407749+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "package": "gnome-session",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-session.git",
+  "commit": "cc813e92d6cd701c7eee4229bf42368cc01c5a65",
+  "tree": "c955b2641f25320509b0335303111af6415d3b61",
+  "imported_at": "2026-08-29T06:52:04.286118+00:00"
+}

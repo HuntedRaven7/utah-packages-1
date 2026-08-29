@@ -1,0 +1,8 @@
+{
+  "package": "libadwaita",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libadwaita.git",
+  "commit": "b3289f5e2f6d4e6a62a99bcd905fc99d070ff795",
+  "tree": "f8b21825f1829a17b02eb7b1d66657ef52ee3caf",
+  "imported_at": "2026-08-29T06:52:06.692736+00:00"
+}
