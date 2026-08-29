@@ -1,6 +1,63 @@
+  File "<stdin>", line 3, in <module>
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/constructor.py", line 49, in get_single_data
+    node = self.get_single_node()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 36, in get_single_node
+    document = self.compose_document()
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 55, in compose_document
+    node = self.compose_node(None, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/composer.py", line 127, in compose_mapping_node
+    while not self.check_event(MappingEndEvent):
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/parser.py", line 98, in check_event
+    self.current_event = self.state()
+                         ^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/parser.py", line 428, in parse_block_mapping_key
+    if self.check_token(KeyToken):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/scanner.py", line 116, in check_token
+    self.fetch_more_tokens()
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/scanner.py", line 223, in fetch_more_tokens
+    return self.fetch_value()
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/yaml/scanner.py", line 577, in fetch_value
+    raise ScannerError(None, None,
+yaml.scanner.ScannerError: mapping values are not allowed here
+  in "<unicode string>", line 22, column 92:
+     ... event.head_commit.message == 'ci: bootstrap direct sources'
+                                         ^
 name: Bootstrap direct upstream sources
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - config/hummingbird.repo
+      - tools/bootstrap_upstream_sources.py
+      - .github/workflows/bootstrap-direct-sources.yml
   workflow_dispatch:
     inputs:
       source_ref:
@@ -13,6 +70,7 @@ permissions:
 
 jobs:
   bootstrap:
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'ci: bootstrap direct sources'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -28,13 +86,15 @@ jobs:
           git worktree add ../candidate FETCH_HEAD
           docker run --rm \
             -v "$PWD/tools:/tools:ro,Z" \
+            -v "$PWD/config/hummingbird.repo:/etc/yum.repos.d/hummingbird.repo:ro,Z" \
             -v "$PWD/../candidate:/workspace:Z" \
             -w /workspace fedora:rawhide bash -exc '
-              dnf -y install python3 rpm-build
-              python3 /tools/bootstrap_upstream_sources.py
+              dnf -y install dnf-plugins-core python3 rpm-build
+              dnf repoquery --repo tunaos-hummingbird --qf "%{name}" | sort -u > reports/hummingbird-provided-packages.txt
+              python3 /tools/bootstrap_upstream_sources.py --provided-packages reports/hummingbird-provided-packages.txt
             '
           git -C ../candidate switch -c "$BRANCH"
-          git -C ../candidate add config/upstream-sources.json reports/direct-source-bootstrap.json
+          git -C ../candidate add config/upstream-sources.json reports/direct-source-bootstrap.json reports/hummingbird-provided-packages.txt
           git -C ../candidate -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot] \
             commit -m 'chore: bootstrap verified direct upstream sources'
           git -C ../candidate push origin "HEAD:$BRANCH"
