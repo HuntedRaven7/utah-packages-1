@@ -7,7 +7,6 @@ License:        Fraunhofer LC3plus Patent Licensing
 URL:            https://www.iis.fraunhofer.de/en/ff/amm/communication/lc3.html
 
 Source0:        https://github.com/arkq/LC3plus/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        https://www.iis.fraunhofer.de/content/dam/iis/en/img/ff/Audio/patent-lizenz/Fraunhofer-LC3plus-Licensing.pdf
 
 # The upstream makefile builds an unversioned libLC3plus.so. Give it a proper
 # soname so pipewire-libs-extra can link against a stable ABI.
@@ -43,7 +42,6 @@ Utilities for command line use of and testing the %{name} library.
 
 %prep
 %autosetup -p1 -n LC3plus-%{version}
-cp %{SOURCE1} .
 
 find . -name "*.c" -exec chmod 644 {} \;
 find . -name "*.h" -exec chmod 644 {} \;
@@ -65,7 +63,6 @@ cp -a src/floating_point/libLC3plus.so* %{buildroot}%{_libdir}/
 
 %files
 %doc README.md
-%license Fraunhofer-LC3plus-Licensing.pdf
 %{_bindir}/LC3plus
 %{_libdir}/libLC3plus.so.1
 %{_libdir}/libLC3plus.so.1.7.1
