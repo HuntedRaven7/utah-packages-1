@@ -1282,6 +1282,20 @@
       "url": "https://download.gnome.org/sources/zenity/4.2/zenity-4.2.2.tar.xz",
       "filename": "zenity-4.2.2.tar.xz",
       "sha512": "383ca702e096b1ac1b26db431aa9c3c78b2e4ce62c2a8ea60d7f40ca8ed86095b73cc17d96590c7bf51916447e5533caef18ae9d524e6cf365cba13a544d72ec"
+    },
+    {
+      "name": "vulkan-headers",
+      "version": "1.4.350.0",
+      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/vulkan-headers/Vulkan-Headers-sdk-1.4.350.0.tar.gz/sha512/b7987072292d81bae34d28878b3cc12845db0a51710b4d5c21cf804d7c593b1db9ee736f10b8d7696150a25d9e8e2d3d1e17e670c6cca029858de027d5df08ea/Vulkan-Headers-sdk-1.4.350.0.tar.gz",
+      "filename": "Vulkan-Headers-sdk-1.4.350.0.tar.gz",
+      "sha512": "b7987072292d81bae34d28878b3cc12845db0a51710b4d5c21cf804d7c593b1db9ee736f10b8d7696150a25d9e8e2d3d1e17e670c6cca029858de027d5df08ea"
+    },
+    {
+      "name": "python-pydantic-core",
+      "version": "2.46.5",
+      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/python-pydantic-core/pydantic_core-2.46.5.tar.gz/sha512/7af13f280d74ab0ded8e9299820930b0257502017f6a688d7d598e72351e127e178db11aeab987decaf95ca8619e151f244392ad9638ea184625728dcbb7cfff/pydantic_core-2.46.5.tar.gz",
+      "filename": "pydantic_core-2.46.5.tar.gz",
+      "sha512": "7af13f280d74ab0ded8e9299820930b0257502017f6a688d7d598e72351e127e178db11aeab987decaf95ca8619e151f244392ad9638ea184625728dcbb7cfff"
     }
   ]
 }
