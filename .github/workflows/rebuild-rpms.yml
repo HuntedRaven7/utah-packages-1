@@ -2,6 +2,12 @@ name: Build verified upstream RPMs
 
 on:
   workflow_dispatch:
+    inputs:
+      full:
+        description: Rebuild every package, ignoring what is already published
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [main]
     paths:
@@ -40,21 +46,69 @@ jobs:
       stage2: ${{ steps.matrix.outputs.stage2 }}
       stage3: ${{ steps.matrix.outputs.stage3 }}
       stage4: ${{ steps.matrix.outputs.stage4 }}
+      build_list: ${{ steps.matrix.outputs.build_list }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Reject a build script that closes its own quoting
         run: python3 tools/check_workflow_quoting.py
+      - name: Install zstandard
+        run: pip install --quiet zstandard
       - id: matrix
+        env:
+          FULL: ${{ github.event_name == 'workflow_dispatch' && inputs.full == true && '1' || '0' }}
         run: |
-          # Packages are built in stages because several of them BuildRequire
-          # each other: mutter needs gsettings-desktop-schemas >= 51.alpha and
-          # gnome-shell needs mutter-devel >= 51~alpha. A flat matrix builds
-          # them in parallel, so those requirements can never be satisfied.
-          for n in 0 1 2 3 4; do
-            echo "stage$n=$(jq -c --argjson n "$n" \
-              '[.packages[] | select((.stage // 0) == $n) | .name]' \
-              config/upstream-sources.json)" >> "$GITHUB_OUTPUT"
-          done
+          python3 - <<'PY'
+          import json, os, re, urllib.request, gzip, io, sys
+          from pathlib import Path
+
+          config = json.loads(Path('config/upstream-sources.json').read_text())
+          full = os.environ.get('FULL') == '1'
+
+          # Fetch the currently published repo so we only rebuild what is new
+          # or changed. Matching is name + normalized version: Fedora's spec
+          # Version rewrites the tarball's '.' to '~' (gnome-shell 51.beta ->
+          # 51~beta), so normalize '~' to '.' on both sides. A mismatch just
+          # rebuilds a package we could have skipped -- safe, only slower.
+          published = {}
+          if not full:
+              try:
+                  base = "https://projectbluefin.github.io/utah-packages/"
+                  repomd = urllib.request.urlopen(base + "repodata/repomd.xml", timeout=60).read().decode()
+                  href = re.search(r'<location href="([^"]*primary[^"]*)"', repomd).group(1)
+                  raw = urllib.request.urlopen(base + href, timeout=120).read()
+                  if href.endswith('.zst'):
+                      import zstandard
+                      stream = zstandard.ZstdDecompressor().stream_reader(io.BytesIO(raw))
+                  else:
+                      stream = gzip.GzipFile(fileobj=io.BytesIO(raw))
+                  text = stream.read()
+                  for m in re.finditer(rb'<package[^>]*>.*?<name>([^<]+)</name>.*?<version[^>]*ver="([^"]+)"', text, re.S):
+                      published[m.group(1).decode()] = m.group(2).decode()
+                  print(f"published repo has {len(published)} packages")
+              except Exception as error:
+                  print(f"WARNING: could not read published repo, rebuilding all: {error}", file=sys.stderr)
+
+          def norm(version: str) -> str:
+              return version.replace('~', '.')
+
+          build = []
+          for package in config['packages']:
+              name = package['name']
+              version = package.get('version', '')
+              if full or name not in published or norm(published[name]) != norm(version):
+                  build.append(package)
+              else:
+                  print(f"skip {name} {version}: already published")
+
+          outputs = {'build_list': json.dumps([p['name'] for p in build])}
+          for n in range(5):
+              outputs[f'stage{n}'] = json.dumps(
+                  [p['name'] for p in build if (p.get('stage') or 0) == n])
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as handle:
+              for key, value in outputs.items():
+                  handle.write(f'{key}={value}\n')
+          print(f"will build {len(build)} of {len(config['packages'])} packages")
+          PY
 
   preflight:
     # Every missing platform dependency has so far been found the slow way: a
@@ -73,13 +127,14 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Resolve every recipe's BuildRequires against Fedora 44 + Hummingbird
+      - name: Resolve BuildRequires for packages being built
         env:
           FACTORY_REPO: ${{ vars.FACTORY_REPO }}
+          BUILD_LIST: ${{ needs.prepare.outputs.build_list }}
         run: |
           mkdir -p work/reports
           docker run --rm \
-            -e FACTORY_REPO \
+            -e FACTORY_REPO -e BUILD_LIST \
             -v "$PWD/work:/work:Z" \
             -v "$PWD/packages:/packages:ro,Z" \
             -v "$PWD/config:/repos:ro,Z" \
@@ -100,8 +155,13 @@ jobs:
               dnf -y $disable install dnf-plugins-core rpm-build @buildsys-build
               rpm -q --qf "buildroot openssl: %{VERSION}-%{RELEASE}\n" openssl-libs || true
               : > /work/reports/preflight.txt
-              for dir in /packages/*/; do
-                package=$(basename "$dir")
+              # Only resolve BuildRequires for packages this run will actually
+              # build (the incremental matrix), not the whole tree.
+              # BUILD_LIST is a JSON array; strip brackets, quotes and commas
+              # without ever writing a literal quote character.
+              for package in $(echo "$BUILD_LIST" | sed -e s/\\[// -e s/\\]// -e s/\\\"//g -e s/,/ /g); do
+                dir="/packages/$package"
+                test -d "$dir" || { echo "build_list names missing dir: $dir" >> /work/reports/preflight.txt; continue; }
                 spec=$(find "$dir" -maxdepth 1 -name "*.spec" -print -quit)
                 test -n "$spec" || continue
                 # --assumeno resolves the transaction without installing it,
