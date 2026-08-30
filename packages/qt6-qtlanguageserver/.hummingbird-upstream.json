@@ -1,0 +1,8 @@
+{
+  "package": "qt6-qtlanguageserver",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/qt6-qtlanguageserver.git",
+  "commit": "02194ad70e4a9b282f489b7211fd7aeac7d430f2",
+  "tree": "50d8467107dfa4b3d0e2e543206b1f70ac47257f",
+  "imported_at": "2026-08-30T16:50:27.177004+00:00"
+}

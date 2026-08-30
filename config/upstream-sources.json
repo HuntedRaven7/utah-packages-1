@@ -1296,6 +1296,20 @@
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/python-pydantic-core/pydantic_core-2.46.5.tar.gz/sha512/7af13f280d74ab0ded8e9299820930b0257502017f6a688d7d598e72351e127e178db11aeab987decaf95ca8619e151f244392ad9638ea184625728dcbb7cfff/pydantic_core-2.46.5.tar.gz",
       "filename": "pydantic_core-2.46.5.tar.gz",
       "sha512": "7af13f280d74ab0ded8e9299820930b0257502017f6a688d7d598e72351e127e178db11aeab987decaf95ca8619e151f244392ad9638ea184625728dcbb7cfff"
+    },
+    {
+      "name": "qt6-qtlanguageserver",
+      "version": "6.11.2",
+      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtlanguageserver/qtlanguageserver-everywhere-src-6.11.2.tar.xz/sha512/7701c2e655d6d363ee97bb58fa7eba386103882bd88aeec59c87a52c412f1e35e5b17989f6af7f2e8fd7137d404769a8f217d7e93a3ff3b52057bd9e202edf36/qtlanguageserver-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtlanguageserver-everywhere-src-6.11.2.tar.xz",
+      "sha512": "7701c2e655d6d363ee97bb58fa7eba386103882bd88aeec59c87a52c412f1e35e5b17989f6af7f2e8fd7137d404769a8f217d7e93a3ff3b52057bd9e202edf36"
+    },
+    {
+      "name": "qt6-qtshadertools",
+      "version": "6.11.2",
+      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtshadertools/qtshadertools-everywhere-src-6.11.2.tar.xz/sha512/511a1c5b05cbe8920cc5750b0384299438fe770755c217b1b96029018799904c039305d36c77fcd718e949e5602104a718a37f2f1a1076185541eaa83238d15d/qtshadertools-everywhere-src-6.11.2.tar.xz",
+      "filename": "qtshadertools-everywhere-src-6.11.2.tar.xz",
+      "sha512": "511a1c5b05cbe8920cc5750b0384299438fe770755c217b1b96029018799904c039305d36c77fcd718e949e5602104a718a37f2f1a1076185541eaa83238d15d"
     }
   ]
 }
