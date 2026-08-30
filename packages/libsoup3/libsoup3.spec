@@ -84,16 +84,17 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 Libsoup is an HTTP library implementation in C. This package allows
 you to develop applications that use the libsoup library.
 
+# The hermetic factory disables gi-docgen documentation: runtime consumers
+# need the shared library and introspection data, not generated HTML.
+%if 0
 %package doc
 Summary: Documentation files for %{name}
-# Because web fonts from upstream are not bundled in the gi-docgen package,
-# packages containing documentation generated with gi-docgen should depend on
-# this metapackage to ensure the proper system fonts are present.
 Recommends: gi-docgen-fonts
 BuildArch: noarch
 
 %description doc
 This package contains developer documentation for %{name}.
+%endif
 
 %if %{with_mingw}
 
@@ -195,8 +196,10 @@ install -m 644 -D tests/libsoup.supp %{buildroot}%{_datadir}/libsoup-3.0/libsoup
 %{_datadir}/vala/vapi/libsoup-3.0.deps
 %{_datadir}/vala/vapi/libsoup-3.0.vapi
 
+%if 0
 %files doc
 %{_docdir}/libsoup-3.0/
+%endif
 
 %if %{with_mingw}
 %files -n mingw32-libsoup3 -f mingw32-libsoup-3.0.lang

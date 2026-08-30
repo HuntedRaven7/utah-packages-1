@@ -37,7 +37,7 @@ development of programs using %{name}.
 %autosetup -p1
 
 %build
-%meson -Dtests=false -Dman=false -Dgtk_doc=disabled -Ddocbook_docs=disabled
+%meson -Dtests=false -Dman=false -Dgtk_doc=false -Ddocbook_docs=disabled
 %meson_build
 
 %install
