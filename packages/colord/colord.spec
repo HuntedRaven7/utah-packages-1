@@ -153,7 +153,6 @@ touch $RPM_BUILD_ROOT%{_localstatedir}/lib/colord/storage.db
 %{_datadir}/polkit-1/actions/org.freedesktop.color.policy
 %{_datadir}/dbus-1/system-services/org.freedesktop.ColorManager.service
 %{_datadir}/metainfo/org.freedesktop.colord.metainfo.xml
-%{_mandir}/man1/*.1*
 %{_datadir}/colord
 %if !0%{?rhel}
 %{_datadir}/bash-completion/completions/colormgr

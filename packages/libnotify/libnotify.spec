@@ -49,7 +49,6 @@ development of programs using %{name}.
 %{_bindir}/notify-send
 %{_libdir}/libnotify.so.*
 %{_libdir}/girepository-1.0/Notify-0.7.typelib
-%{_mandir}/man1/notify-send.1*
 
 %files devel
 %dir %{_includedir}/libnotify
