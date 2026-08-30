@@ -33,13 +33,6 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description devel
 Files for development with %{name}.
 
-%package utils
-Summary: Utility package for %{name}
-Requires: %{name}%{?_isa} = %{version}-%{release}
-
-%description utils
-Utilities for command line use of and testing the %{name} library.
-
 %prep
 %autosetup -p1 -n LC3plus-%{version}
 
@@ -62,7 +55,7 @@ install -p -m 0644 src/floating_point/lc3plus.h \
 cp -a src/floating_point/libLC3plus.so* %{buildroot}%{_libdir}/
 
 %files
-%doc README.md
+%doc Readme.txt
 %{_bindir}/LC3plus
 %{_libdir}/libLC3plus.so.1
 %{_libdir}/libLC3plus.so.1.7.1
@@ -71,9 +64,6 @@ cp -a src/floating_point/libLC3plus.so* %{buildroot}%{_libdir}/
 %{_includedir}/lc3plus.h
 %{_includedir}/defines.h
 %{_libdir}/libLC3plus.so
-
-%files utils
-%doc README.md
 
 %changelog
 * Sun Aug 30 2026 Project Bluefin <bot@projectbluefin.io> - 1.7.1-1
