@@ -2,5 +2,7 @@
   "package": "pipewire-libs-extra",
   "branch": "upstream",
   "remote": "https://github.com/negativo17/pipewire-libs-extra",
-  "imported_at": "2026-08-30T13:10:00.000000+00:00"
+  "imported_at": "2026-08-30T13:10:00.000000+00:00",
+  "commit": "",
+  "tree": ""
 }
