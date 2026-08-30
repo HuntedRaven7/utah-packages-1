@@ -56,8 +56,6 @@ development of programs using %{name}.
 %{_libdir}/libnotify.so
 %{_libdir}/pkgconfig/libnotify.pc
 %{_datadir}/gir-1.0/Notify-0.7.gir
-%{_docdir}/libnotify-0/
-%doc %{_docdir}/libnotify/spec/
 
 %changelog
 %autochangelog

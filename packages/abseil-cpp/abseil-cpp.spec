@@ -92,6 +92,11 @@ Abseil is not meant to be a competitor to the standard library; we've just
 found that many of these utilities serve a purpose within our code base,
 and we now want to provide those resources to the C++ community as a whole.
 
+# The factory deliberately skips Abseil's test-only libraries. They are not
+# runtime dependencies, and building their full test graph exceeds the
+# hermetic runner's memory budget. Keep the upstream subpackage definition out
+# of the generated spec rather than claiming unavailable libraries exist.
+%if 0
 %package testing
 Summary:        Libraries needed for running tests on the installed %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -100,11 +105,11 @@ Provides:       bundled(cctz)
 
 %description testing
 %{summary}.
+%endif
 
 %package devel
 Summary:        Development files for %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Requires:       %{name}-testing%{?_isa} = %{version}-%{release}
 
 # Some of the headers from CCTZ are part of the -devel subpackage. See the
 # corresponding virtual Provides in the base package for full details.
@@ -135,18 +140,17 @@ MinGW Windows abseil-cpp library.
 %autosetup -p1 -S gendiff
 
 %build
-# ABSL_BUILD_TEST_HELPERS is needed to build libraries for the -testing
-# subpackage when tests are not enabled. It is therefore redundant here, but we
-# still supply it to be more explicit. Tests are off: consumers (mozc) only
-# need the libraries, and the test compile doubles an already-90-minute LTO
-# build that OOMs the ~7 GB runner. RPM_BUILD_NCPUS caps ninja parallelism.
+# Test-only libraries are not part of the factory's runtime remit. Skipping
+# their graph avoids an LTO-heavy build that OOMs the hermetic runner; runtime
+# consumers (such as mozc) link the regular Abseil libraries. RPM_BUILD_NCPUS
+# caps ninja parallelism.
 %cmake \
     -GNinja \
     -DABSL_USE_EXTERNAL_GOOGLETEST:BOOL=ON \
     -DABSL_FIND_GOOGLETEST:BOOL=ON \
     -DABSL_ENABLE_INSTALL:BOOL=ON \
     -DABSL_BUILD_TESTING:BOOL=OFF \
-    -DABSL_BUILD_TEST_HELPERS:BOOL=ON \
+    -DABSL_BUILD_TEST_HELPERS:BOOL=OFF \
     -DCMAKE_BUILD_TYPE:STRING=None \
     -DCMAKE_CXX_STANDARD:STRING=17
 RPM_BUILD_NCPUS=2 %cmake_build
@@ -281,31 +285,9 @@ skips="${skips})$"
 %{_libdir}/libabsl_utf8_for_code_point.so.%{lib_version}
 %{_libdir}/libabsl_vlog_config_internal.so.%{lib_version}
 
+%if 0
 %files testing
-# TESTONLY libraries (that are actually installed):
-# absl/base/CMakeLists.txt
-%{_libdir}/libabsl_exception_safety_testing.so.%{lib_version}
-%{_libdir}/libabsl_atomic_hook_test_helper.so.%{lib_version}
-%{_libdir}/libabsl_spinlock_test_common.so.%{lib_version}
-# absl/container/CMakeLists.txt
-%{_libdir}/libabsl_test_instance_tracker.so.%{lib_version}
-%{_libdir}/libabsl_hash_generator_testing.so.%{lib_version}
-# absl/debugging/CMakeLists.txt
-%{_libdir}/libabsl_stack_consumption.so.%{lib_version}
-# absl/log/CMakeLists.txt
-%{_libdir}/libabsl_log_internal_test_actions.so.%{lib_version}
-%{_libdir}/libabsl_log_internal_test_helpers.so.%{lib_version}
-%{_libdir}/libabsl_log_internal_test_matchers.so.%{lib_version}
-%{_libdir}/libabsl_scoped_mock_log.so.%{lib_version}
-# absl/status/CMakeLists.txt
-%{_libdir}/libabsl_status_matchers.so.%{lib_version}
-# absl/strings/CMakeLists.txt
-%{_libdir}/libabsl_pow10_helper.so.%{lib_version}
-# absl/synchronization/CMakeLists.txt
-%{_libdir}/libabsl_per_thread_sem_test_common.so.%{lib_version}
-# absl/time/CMakeLists.txt
-%{_libdir}/libabsl_simulated_clock.so.%{lib_version}
-%{_libdir}/libabsl_time_internal_test_util.so.%{lib_version}
+%endif
 
 %files devel
 %{_includedir}/absl
