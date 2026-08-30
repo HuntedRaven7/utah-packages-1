@@ -11,15 +11,19 @@ on:
   push:
     branches: [main]
     paths:
-      - config/upstream-sources.json
+      - config/**
       - packages/**
       - tools/source_pipeline.py
+      - tools/runtime_contract.py
+      - tests/**
       - .github/workflows/rebuild-rpms.yml
   pull_request:
     paths:
-      - config/upstream-sources.json
+      - config/**
       - packages/**
       - tools/source_pipeline.py
+      - tools/runtime_contract.py
+      - tests/**
       - .github/workflows/rebuild-rpms.yml
   schedule:
     - cron: '41 6 * * *'
@@ -53,8 +57,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - name: Reject a build script that closes its own quoting
-        run: python3 tools/check_workflow_quoting.py
+      - name: Validate factory policy and tests
+        run: |
+          python3 tools/check_workflow_quoting.py
+          python3 tools/runtime_contract.py \
+            config/bluefin-packages.toml config/runtime-contract.toml --check
+          python3 -m unittest discover -s tests -v
       - name: Install zstandard
         run: pip install --quiet zstandard
       - id: matrix
@@ -1279,9 +1287,10 @@ jobs:
             '
 
   publish:
-    # Publish the packages that built. Without !cancelled() a single failing
-    # package skips this job entirely and the overlay repository never updates,
-    # which held the whole set back for the sake of one broken build.
+    # The consumer tag is atomic. Successful artifacts from a failed matrix are
+    # still retained by Actions for diagnosis, but they never replace the
+    # coherent repository Utah consumes. Publication requires every selected
+    # stage plus precedence and the Hummingbird-only transaction below.
     #
     # This is no longer main-only. The repository is published as an OCI image
     # first and to Pages second, and the OCI push is what consumers actually
@@ -1296,10 +1305,17 @@ jobs:
     # is honest; failing on a permission that was never going to be granted is
     # noise that reads like a broken pipeline.
     if: >-
-      ${{ !cancelled() && needs.prepare.outputs.build_list != '[]'
+      ${{ !cancelled()
+          && needs.prepare.outputs.build_list != '[]'
+          && needs.precedence.result == 'success'
+          && (needs.rebuild0.result == 'success' || needs.rebuild0.result == 'skipped')
+          && (needs.rebuild1.result == 'success' || needs.rebuild1.result == 'skipped')
+          && (needs.rebuild2.result == 'success' || needs.rebuild2.result == 'skipped')
+          && (needs.rebuild3.result == 'success' || needs.rebuild3.result == 'skipped')
+          && (needs.rebuild4.result == 'success' || needs.rebuild4.result == 'skipped')
           && (github.event_name != 'pull_request'
               || github.event.pull_request.head.repo.full_name == github.repository) }}
-    needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4]
+    needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4, precedence]
     runs-on: ubuntu-24.04
     outputs:
       ref: ${{ steps.oci.outputs.ref }}
@@ -1339,6 +1355,45 @@ jobs:
           curl -fsSL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o cosign
           install -m 0755 cosign /usr/local/bin/cosign
           cosign sign-blob --yes --bundle repository/repodata/repomd.xml.bundle repository/repodata/repomd.xml
+      - name: Validate Hummingbird-only consumer transaction
+        run: |
+          CONTRACT=$(python3 tools/runtime_contract.py \
+            config/bluefin-packages.toml config/runtime-contract.toml)
+          BASE_IMAGE=$(python3 tools/runtime_contract.py \
+            config/bluefin-packages.toml config/runtime-contract.toml --base-image)
+          export CONTRACT
+          docker run --rm \
+            -e CONTRACT \
+            -v "$PWD/repository:/repository:ro,Z" \
+            -v "$PWD/config:/config:ro,Z" \
+            "$BASE_IMAGE" bash -euo pipefail -c '
+              cp /config/hummingbird.repo /etc/yum.repos.d/hummingbird.repo
+              cat >/etc/yum.repos.d/factory.repo <<EOF
+          [factory]
+          name=Utah package factory candidate
+          baseurl=file:///repository
+          enabled=1
+          gpgcheck=0
+          EOF
+              mapfile -t packages <<<"$CONTRACT"
+              test "${#packages[@]}" -gt 0
+              DNF=$(command -v dnf5 || command -v dnf)
+              output=$($DNF --assumeno --setopt=install_weak_deps=False \
+                --disablerepo="*" \
+                --enablerepo=factory \
+                --enablerepo=public-hummingbird-x86_64-rpms \
+                install "${packages[@]}" 2>&1 || true)
+              printf "%s\n" "$output"
+              if grep -Eqi "No match for argument|nothing provides|conflicting requests|cannot install both|does not belong to a distupgrade repository" <<<"$output"; then
+                echo "Hummingbird-only consumer transaction is not resolvable" >&2
+                exit 1
+              fi
+              if ! grep -Eq "Transaction Summary|Nothing to do" <<<"$output"; then
+                echo "DNF did not produce a valid transaction summary" >&2
+                exit 1
+              fi
+              echo "Hummingbird-only consumer transaction resolves ${#packages[@]} packages"
+            '
       # The repository as an OCI image, which is how everything else in this
       # ecosystem ships build output: Utah Containerfile already pulls
       # projectbluefin/common and ublue-os/brew this way, pinned by digest.

@@ -1,0 +1,47 @@
+# Consumer transaction validated before the factory's OCI repository can move.
+# Bluefin's manifest is kept separately so its copied sections can be compared
+# with upstream; this file adds Utah's Hummingbird desktop requirements and the
+# explicit, issue-backed parity debt.
+
+[base]
+# Must match Utah's BASE_IMAGE pin. The closure transaction runs inside this
+# image because Hummingbird intentionally supplies part of its dependency set
+# through the bootc base RPM database rather than its public Pulp repository.
+image = "quay.io/hummingbird-community/bootc-os:latest@sha256:c5539f9ed4d93aab6bd41e4f5aef8ab83055f3f9e855a47b69fadb7420d0d1df"
+
+[bluefin]
+# multimedia_overrides joins this list when utah-packages#24 closes. The
+# baseline transaction first proves Utah's currently enabled contract; adding
+# a knowingly incomplete future contract here would prevent even diagnostic
+# baseline publication without identifying which policy was being tested.
+sections = [
+  "fedora",
+  "fedora_v43",
+]
+
+[utah]
+packages = [
+  "fwupd",
+  "gnome-control-center",
+  "gnome-session",
+  "gnome-settings-daemon",
+  "gnome-shell",
+  "gsettings-desktop-schemas",
+  "gtk4",
+  "libadwaita",
+  "mutter",
+  "tailscale",
+  "xdg-desktop-portal",
+  "xdg-desktop-portal-gnome",
+]
+
+[unavailable]
+# Each exception is tracked in the consumer or factory issue tracker. Keeping
+# it in this transaction means publication validates the same known debt Utah
+# currently carries rather than silently widening it.
+packages = [
+  "evolution-ews-core",
+  "fish",
+  "tailscale",
+  "zsh",
+]
