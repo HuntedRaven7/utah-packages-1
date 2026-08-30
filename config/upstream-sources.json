@@ -542,6 +542,30 @@
       "url": "https://github.com/sass/sassc/archive/3.6.2/sassc-3.6.2.tar.gz",
       "filename": "sassc-3.6.2.tar.gz",
       "sha512": "fff3995ce8608bdaed5f4f1352ae4f1f882de58663b932c598d6168df421e4dbf907ec0f8caebb1e56490a71ca11105726f291b475816dd53e705bc53121969f"
+    },
+    {
+      "name": "liblc3plus",
+      "version": "1.7.1",
+      "url": "https://github.com/arkq/LC3plus/archive/v1.7.1/liblc3plus-1.7.1.tar.gz",
+      "filename": "liblc3plus-1.7.1.tar.gz",
+      "sha512": "e4322030a52259c2211debb6c40003b0a4ca9a1c1c68a26ae51d80e5fefe73732c885592c5c2a4e8322b1c0a8b7ace0cda76fb2bd6b0bc3fa8d84a2dee37b0de",
+      "stage": 0
+    },
+    {
+      "name": "libfreeaptx",
+      "version": "0.2.2",
+      "url": "https://github.com/regularhunter/libfreeaptx/archive/refs/tags/0.2.2.tar.gz",
+      "filename": "libfreeaptx-0.2.2.tar.gz",
+      "sha512": "b3f2cc449da0269971f5be4bb0c027ba5e6630405abb8c67f4d9d4b651332d1ae184271e3830c661d9b165624460a15c1b678dbab81212e2f507e4f2e63194a8",
+      "stage": 0
+    },
+    {
+      "name": "pipewire-libs-extra",
+      "version": "1.6.8",
+      "url": "https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/1.6.8/pipewire-1.6.8.tar.gz",
+      "filename": "pipewire-1.6.8.tar.gz",
+      "sha512": "afa52e58eebe92ad2137afd9663076c8ecf62a5b1ec70aceeb368d58e6ff9eed1fd8fcf8e92f1b73951f7fbd6461a823c9d911b0d064cb523b8871c0dcc79187",
+      "stage": 1
     }
   ]
 }
