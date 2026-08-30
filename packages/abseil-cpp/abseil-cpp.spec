@@ -143,11 +143,13 @@ MinGW Windows abseil-cpp library.
     -DABSL_USE_EXTERNAL_GOOGLETEST:BOOL=ON \
     -DABSL_FIND_GOOGLETEST:BOOL=ON \
     -DABSL_ENABLE_INSTALL:BOOL=ON \
-    -DABSL_BUILD_TESTING:BOOL=ON \
-    -DABSL_BUILD_TEST_HELPERS:BOOL=ON \
+    # Tests and test helpers are not needed by consumers (mozc links the
+    # libraries); building them doubles an already-90-minute LTO build.
+    -DABSL_BUILD_TESTING:BOOL=OFF \
+    -DABSL_BUILD_TEST_HELPERS:BOOL=OFF \
     -DCMAKE_BUILD_TYPE:STRING=None \
     -DCMAKE_CXX_STANDARD:STRING=17
-%cmake_build
+%cmake_build --parallel 2
 
 %if %{with mingw}
 %mingw_cmake \
