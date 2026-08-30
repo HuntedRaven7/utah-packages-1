@@ -13,6 +13,8 @@ on:
     paths:
       - config/upstream-sources.json
       - packages/**
+      - tools/source_pipeline.py
+      - .github/workflows/rebuild-rpms.yml
   pull_request:
     paths:
       - config/upstream-sources.json
@@ -49,6 +51,8 @@ jobs:
       build_list: ${{ steps.matrix.outputs.build_list }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
       - name: Reject a build script that closes its own quoting
         run: python3 tools/check_workflow_quoting.py
       - name: Install zstandard
@@ -56,13 +60,25 @@ jobs:
       - id: matrix
         env:
           FULL: ${{ github.event_name == 'workflow_dispatch' && inputs.full == true && '1' || '0' }}
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           python3 - <<'PY'
-          import json, os, re, urllib.request, gzip, io, sys
+          import json, os, re, subprocess, urllib.request, gzip, io, sys
           from pathlib import Path
 
           config = json.loads(Path('config/upstream-sources.json').read_text())
           full = os.environ.get('FULL') == '1'
+          changed = set()
+          base = os.environ.get('BASE_SHA', '')
+          if not full and re.fullmatch(r'[0-9a-f]{40}', base or '') and set(base) != {'0'}:
+              paths = subprocess.check_output(
+                  ['git', 'diff', '--name-only', f'{base}..HEAD'], text=True).splitlines()
+              changed = {
+                  match.group(1)
+                  for path in paths
+                  if (match := re.match(r'^packages/([^/]+)/', path))
+              }
+              print(f"changed package recipes: {', '.join(sorted(changed)) or 'none'}")
 
           # Fetch the currently published repo so we only rebuild what is new
           # or changed. Matching is name + normalized version: Fedora's spec
@@ -95,7 +111,7 @@ jobs:
           for package in config['packages']:
               name = package['name']
               version = package.get('version', '')
-              if full or name not in published or norm(published[name]) != norm(version):
+              if full or name in changed or name not in published or norm(published[name]) != norm(version):
                   build.append(package)
               else:
                   print(f"skip {name} {version}: already published")
@@ -123,6 +139,7 @@ jobs:
     # stage has not built yet, and that is indistinguishable from a real gap
     # without resolving against the staged output. Read it as a worklist.
     needs: prepare
+    if: needs.prepare.outputs.build_list != '[]'
     runs-on: ubuntu-24.04
     continue-on-error: true
     steps:
@@ -1187,7 +1204,7 @@ jobs:
   # one run yields the whole worklist instead of one entry at a time.
   precedence:
     needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4]
-    if: ${{ !cancelled() && needs.prepare.outputs.stage0 != '[]' }}
+    if: ${{ !cancelled() && needs.prepare.outputs.build_list != '[]' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -1279,7 +1296,7 @@ jobs:
     # is honest; failing on a permission that was never going to be granted is
     # noise that reads like a broken pipeline.
     if: >-
-      ${{ !cancelled() && needs.prepare.outputs.stage0 != '[]'
+      ${{ !cancelled() && needs.prepare.outputs.build_list != '[]'
           && (github.event_name != 'pull_request'
               || github.event.pull_request.head.repo.full_name == github.repository) }}
     needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4]
@@ -1288,6 +1305,22 @@ jobs:
       ref: ${{ steps.oci.outputs.ref }}
       digest: ${{ steps.oci.outputs.digest }}
     steps:
+      - name: Seed repository from the last published factory image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          owner=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+          image="ghcr.io/${owner}/utah-packages:latest"
+          mkdir -p repository
+          echo "${GITHUB_TOKEN}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+          if podman pull "$image"; then
+            container=$(podman create "$image")
+            podman cp "$container:/repository/." repository/
+            podman rm "$container"
+          else
+            echo "No prior factory image; publishing a new repository"
+          fi
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           pattern: rpm-*
