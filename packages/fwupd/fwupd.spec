@@ -204,11 +204,17 @@ or server machines.
 
 %if 0%{?enable_tests}
 %check
-# fu-systemd-test talks to org.freedesktop.systemd1, which no container
-# buildroot provides (Fedora's mock starts systemd; our hermetic runner
-# cannot). It asserts a D-Bus service we deliberately do not run, so it
-# cannot pass here and is not a code regression. Run the rest of the suite.
-%meson_test --exclude fu-systemd-test
+# These three tests require host facilities the hermetic Hummingbird buildroot
+# deliberately does not provide:
+# - fu-systemd-test talks to a running org.freedesktop.systemd1 service.
+# - fwupd-client-test talks to a running org.freedesktop.fwupd service.
+# - fu-engine-gtypes-test exercises GLib HMAC, disabled by Hummingbird's FIPS
+#   policy (g_hmac_new emits a fatal warning).
+# The remaining 135 tests still run and catch code regressions.
+%meson_test \
+    --exclude fu-systemd-test \
+    --exclude fwupd-client-test \
+    --exclude fu-engine-gtypes-test
 %endif
 
 %install
