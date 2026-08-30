@@ -139,7 +139,8 @@
       "version": "3.61.3",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/evolution-data-server/evolution-data-server-3.61.3.tar.xz/sha512/5473d9b64d07603ec2bb775cb126c0104b1768d04f5c75e591bcd50d60017f1d839b2bb8af75f15fa77184a6b53594559a80632085bef7b0030a34be3d07baa2/evolution-data-server-3.61.3.tar.xz",
       "filename": "evolution-data-server-3.61.3.tar.xz",
-      "sha512": "5473d9b64d07603ec2bb775cb126c0104b1768d04f5c75e591bcd50d60017f1d839b2bb8af75f15fa77184a6b53594559a80632085bef7b0030a34be3d07baa2"
+      "sha512": "5473d9b64d07603ec2bb775cb126c0104b1768d04f5c75e591bcd50d60017f1d839b2bb8af75f15fa77184a6b53594559a80632085bef7b0030a34be3d07baa2",
+      "stage": 1
     },
     {
       "name": "evtest",
@@ -247,7 +248,8 @@
       "version": "1.89.2",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/gjs/gjs-1.89.2.tar.xz/sha512/b318cd6b0ad46b261832f7dc384f19ffd19dc5839b0919b41ba303c15696dc999ca2ab6b67885010a70f393743e589de9c1b6a84f6be1c7d5f8093f438e365e9/gjs-1.89.2.tar.xz",
       "filename": "gjs-1.89.2.tar.xz",
-      "sha512": "b318cd6b0ad46b261832f7dc384f19ffd19dc5839b0919b41ba303c15696dc999ca2ab6b67885010a70f393743e589de9c1b6a84f6be1c7d5f8093f438e365e9"
+      "sha512": "b318cd6b0ad46b261832f7dc384f19ffd19dc5839b0919b41ba303c15696dc999ca2ab6b67885010a70f393743e589de9c1b6a84f6be1c7d5f8093f438e365e9",
+      "stage": 2
     },
     {
       "name": "glycin",
@@ -406,7 +408,8 @@
       "version": "1.28.6",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/gstreamer1-plugins-bad-free/gst-plugins-bad-1.28.6.tar.xz/sha512/233c88e50af78204f1a707eba67350df1140d4293ae1bfe7a6f64ee9ce423968c4d9a515aed397cc88f302f69c86e11f3d6a7d43c406dbd30e34febc934b83d8/gst-plugins-bad-1.28.6.tar.xz",
       "filename": "gst-plugins-bad-1.28.6.tar.xz",
-      "sha512": "233c88e50af78204f1a707eba67350df1140d4293ae1bfe7a6f64ee9ce423968c4d9a515aed397cc88f302f69c86e11f3d6a7d43c406dbd30e34febc934b83d8"
+      "sha512": "233c88e50af78204f1a707eba67350df1140d4293ae1bfe7a6f64ee9ce423968c4d9a515aed397cc88f302f69c86e11f3d6a7d43c406dbd30e34febc934b83d8",
+      "stage": 1
     },
     {
       "name": "gstreamer1-plugins-base",
@@ -957,7 +960,8 @@
       "version": "51~beta",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/nautilus/nautilus-51.beta.tar.xz/sha512/d6441b61ca0fac123d1037c11c7fe8487199af70fc0363b8065211e5ca9f56f82a9abfa98ce9f68e564dd1bd463395f031f89e5fb68b11927b7c90f302084234/nautilus-51.beta.tar.xz",
       "filename": "nautilus-51.beta.tar.xz",
-      "sha512": "d6441b61ca0fac123d1037c11c7fe8487199af70fc0363b8065211e5ca9f56f82a9abfa98ce9f68e564dd1bd463395f031f89e5fb68b11927b7c90f302084234"
+      "sha512": "d6441b61ca0fac123d1037c11c7fe8487199af70fc0363b8065211e5ca9f56f82a9abfa98ce9f68e564dd1bd463395f031f89e5fb68b11927b7c90f302084234",
+      "stage": 2
     },
     {
       "name": "nautilus-python",
@@ -1107,14 +1111,16 @@
       "version": "6.11.2",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtwebengine/pulseaudio-12.2-headers.tar.gz/sha512/a5a9bcbb16030b3bc83cc0cc8f5e7f90e0723d3e83258a5c77eacb32eaa267118a73fa7814fbcc99a24e4907916a2b371ebb6dedc4f45541c3acf6c834fd35be/pulseaudio-12.2-headers.tar.gz",
       "filename": "pulseaudio-12.2-headers.tar.gz",
-      "sha512": "a5a9bcbb16030b3bc83cc0cc8f5e7f90e0723d3e83258a5c77eacb32eaa267118a73fa7814fbcc99a24e4907916a2b371ebb6dedc4f45541c3acf6c834fd35be"
+      "sha512": "a5a9bcbb16030b3bc83cc0cc8f5e7f90e0723d3e83258a5c77eacb32eaa267118a73fa7814fbcc99a24e4907916a2b371ebb6dedc4f45541c3acf6c834fd35be",
+      "stage": 1
     },
     {
       "name": "qt6-qtwebview",
       "version": "6.11.2",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtwebview/qtwebview-everywhere-src-6.11.2.tar.xz/sha512/46477f18e0286f6d7a8baa0f1956d4d8b0d99d7f5cc52fc1087020d0a8b6729da1061993e2110c091d1b38fc8912aad0c556ef356de527ca50dd5289db9e963d/qtwebview-everywhere-src-6.11.2.tar.xz",
       "filename": "qtwebview-everywhere-src-6.11.2.tar.xz",
-      "sha512": "46477f18e0286f6d7a8baa0f1956d4d8b0d99d7f5cc52fc1087020d0a8b6729da1061993e2110c091d1b38fc8912aad0c556ef356de527ca50dd5289db9e963d"
+      "sha512": "46477f18e0286f6d7a8baa0f1956d4d8b0d99d7f5cc52fc1087020d0a8b6729da1061993e2110c091d1b38fc8912aad0c556ef356de527ca50dd5289db9e963d",
+      "stage": 1
     },
     {
       "name": "runc",
@@ -1135,7 +1141,8 @@
       "version": "4.25.0rc1",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/samba/samba-4.25.0rc1.tar.xz/sha512/34b1a2ebf9b391fa9f03cfc6bb95cfb47237e1c0a677144b6e699420fe27fe22a113783e6bc17244948156091bf1d24debe3b996ff026724f0c2aaf06e2ed736/samba-4.25.0rc1.tar.xz",
       "filename": "samba-4.25.0rc1.tar.xz",
-      "sha512": "34b1a2ebf9b391fa9f03cfc6bb95cfb47237e1c0a677144b6e699420fe27fe22a113783e6bc17244948156091bf1d24debe3b996ff026724f0c2aaf06e2ed736"
+      "sha512": "34b1a2ebf9b391fa9f03cfc6bb95cfb47237e1c0a677144b6e699420fe27fe22a113783e6bc17244948156091bf1d24debe3b996ff026724f0c2aaf06e2ed736",
+      "stage": 1
     },
     {
       "name": "sassc",
@@ -1242,7 +1249,8 @@
       "version": "2.53.91",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/webkitgtk/webkitgtk-2.53.91.tar.xz/sha512/0bb5ec4c75cf0dcd4ccc46b7cf8595722d447385b75ed6ec79333b56203f681077fa355600210edb4fe6344e4af2943c7fb5b1bff6e35a7ec1ea456d891a1951/webkitgtk-2.53.91.tar.xz",
       "filename": "webkitgtk-2.53.91.tar.xz",
-      "sha512": "0bb5ec4c75cf0dcd4ccc46b7cf8595722d447385b75ed6ec79333b56203f681077fa355600210edb4fe6344e4af2943c7fb5b1bff6e35a7ec1ea456d891a1951"
+      "sha512": "0bb5ec4c75cf0dcd4ccc46b7cf8595722d447385b75ed6ec79333b56203f681077fa355600210edb4fe6344e4af2943c7fb5b1bff6e35a7ec1ea456d891a1951",
+      "stage": 1
     },
     {
       "name": "wireguard-tools",
