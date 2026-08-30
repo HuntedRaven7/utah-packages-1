@@ -1,0 +1,8 @@
+{
+  "package": "mozjs140",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/mozjs140.git",
+  "commit": "3639fd5137f161cfadd0b92db20832f1f0503b03",
+  "tree": "27281b47840b32288e3c610c8584537fdb1eeea6",
+  "imported_at": "2026-08-30T17:35:34+00:00"
+}

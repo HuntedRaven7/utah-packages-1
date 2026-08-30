@@ -1,0 +1,9 @@
+summary: Test cases for libicu
+test: bash runtest.sh
+framework: beakerlib
+duration: 5m
+require:
+- gcc-c++
+- make
+- libicu-devel
+

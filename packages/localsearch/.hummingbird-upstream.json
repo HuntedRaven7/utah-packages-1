@@ -1,0 +1,8 @@
+{
+  "package": "localsearch",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/localsearch.git",
+  "commit": "88ac593e7e653b3931fcb6d6e5bfbe304b2f57c4",
+  "tree": "6a83bb3281348e39c302518f11d60a884e1eac99",
+  "imported_at": "2026-08-30T17:35:33+00:00"
+}

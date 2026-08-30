@@ -59,7 +59,6 @@ Files for GTK 4 development with %{name}4.
 %files -f %{name}.lang
 %doc README AUTHORS NEWS COPYING
 %{_bindir}/*
-%{_mandir}/man1/*.1*
 %{_libdir}/libcolord-gtk.so.*
 %{_libdir}/girepository-1.0/ColordGtk-1.0.typelib
 

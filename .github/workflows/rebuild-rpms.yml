@@ -322,11 +322,6 @@ jobs:
               # Unconditional: stage 0 has no prior RPMs, so the block above
               # never ran and EXCLUDE would otherwise be empty here.
               HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
-              # Hummingbird Pulp accumulates old libicu builds (77.1) beside
-              # current ones (78.3), and a versioned dependency on the old
-              # one conflicts with the current one in the same transaction.
-              # Exclude the stale series from the Hummingbird repo itself.
-              HB_OLDICU_EXCLUDE="libicu-77* libicudata-77* libicui18n-77* libicuuc-77*"
               EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
               echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
@@ -389,9 +384,7 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -414,9 +407,7 @@ jobs:
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                  ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                  builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -539,11 +530,6 @@ jobs:
               # Unconditional: stage 0 has no prior RPMs, so the block above
               # never ran and EXCLUDE would otherwise be empty here.
               HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
-              # Hummingbird Pulp accumulates old libicu builds (77.1) beside
-              # current ones (78.3), and a versioned dependency on the old
-              # one conflicts with the current one in the same transaction.
-              # Exclude the stale series from the Hummingbird repo itself.
-              HB_OLDICU_EXCLUDE="libicu-77* libicudata-77* libicui18n-77* libicuuc-77*"
               EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
               echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
@@ -606,9 +592,7 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -631,9 +615,7 @@ jobs:
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                  ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                  builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -756,11 +738,6 @@ jobs:
               # Unconditional: stage 0 has no prior RPMs, so the block above
               # never ran and EXCLUDE would otherwise be empty here.
               HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
-              # Hummingbird Pulp accumulates old libicu builds (77.1) beside
-              # current ones (78.3), and a versioned dependency on the old
-              # one conflicts with the current one in the same transaction.
-              # Exclude the stale series from the Hummingbird repo itself.
-              HB_OLDICU_EXCLUDE="libicu-77* libicudata-77* libicui18n-77* libicuuc-77*"
               EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
               echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
@@ -823,9 +800,7 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -848,9 +823,7 @@ jobs:
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                  ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                  builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -973,11 +946,6 @@ jobs:
               # Unconditional: stage 0 has no prior RPMs, so the block above
               # never ran and EXCLUDE would otherwise be empty here.
               HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
-              # Hummingbird Pulp accumulates old libicu builds (77.1) beside
-              # current ones (78.3), and a versioned dependency on the old
-              # one conflicts with the current one in the same transaction.
-              # Exclude the stale series from the Hummingbird repo itself.
-              HB_OLDICU_EXCLUDE="libicu-77* libicudata-77* libicui18n-77* libicuuc-77*"
               EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
               echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
@@ -1040,9 +1008,7 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -1065,9 +1031,7 @@ jobs:
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                  ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                  builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
@@ -1190,11 +1154,6 @@ jobs:
               # Unconditional: stage 0 has no prior RPMs, so the block above
               # never ran and EXCLUDE would otherwise be empty here.
               HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
-              # Hummingbird Pulp accumulates old libicu builds (77.1) beside
-              # current ones (78.3), and a versioned dependency on the old
-              # one conflicts with the current one in the same transaction.
-              # Exclude the stale series from the Hummingbird repo itself.
-              HB_OLDICU_EXCLUDE="libicu-77* libicudata-77* libicui18n-77* libicuuc-77*"
               EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
               echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
@@ -1257,9 +1216,7 @@ jobs:
               spec=$(find "/packages/$PACKAGE" -maxdepth 1 -name "*.spec" -print -quit)
               test -n "$spec"
               dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
+                ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$spec"
               # An imported spec keeps its dist-git PatchN and auxiliary SourceN
               # files next to itself, while the verified upstream archive lands in
               # /work/sources. rpmbuild takes a single _sourcedir, so stage both:
@@ -1282,9 +1239,7 @@ jobs:
                 generated=$(ls /root/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm 2>/dev/null | head -1)
                 test -n "$generated"
                 dnf -y $disable ${EXCLUDE:+--setopt=fedora.excludepkgs="$EXCLUDE"} \
-                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} \
-                  ${HB_OLDICU_EXCLUDE:+--setopt=public-hummingbird-x86_64-rpms.excludepkgs="$HB_OLDICU_EXCLUDE"} \
-                  builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
+                  ${EXCLUDE:+--setopt=updates.excludepkgs="$EXCLUDE"} builddep -D "_sourcedir /packages/$PACKAGE" "$generated"
               done
               rpmbuild -ba "$spec" \
                 --define "_sourcedir $staged" \
