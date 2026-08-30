@@ -1,4 +1,7 @@
-%bcond mingw %{defined fedora}
+# Disable the mingw cross-build: it doubles the build to 90+ minutes and the
+# Windows DLLs are never used by Hummingbird consumers. Fedora enables it, but
+# this factory only needs the native libraries (mozc links absl).
+%bcond mingw 0
 
 # Installed library version
 %global lib_version 2605.0.0
