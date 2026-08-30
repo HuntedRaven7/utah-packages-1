@@ -1,0 +1,7 @@
+---
+runpath:
+    allowed_paths:
+        - /usr/lib/evolution
+        - /usr/lib/evolution-ews
+        - /usr/lib64/evolution
+        - /usr/lib64/evolution-ews

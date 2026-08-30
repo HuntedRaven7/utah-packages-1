@@ -1,0 +1,8 @@
+{
+  "package": "sassc",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/sassc.git",
+  "commit": "d159c189e95f7460a85b9650d82623c6250546b6",
+  "tree": "cce2a7e3d1ed7071bff0e13d480d44639aba3153",
+  "imported_at": "2026-08-30T12:39:15.440381+00:00"
+}
