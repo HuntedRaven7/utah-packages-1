@@ -1090,7 +1090,8 @@
       "version": "6.11.2",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtdeclarative/qtdeclarative-everywhere-src-6.11.2.tar.xz/sha512/012eeaeb9c492d31a71d463a8abe13ebc5ae0661677977c738082f95576befe123df80cf45bd2733ef7a5ed897693234a3a6c5e7060be01757424dca397e0056/qtdeclarative-everywhere-src-6.11.2.tar.xz",
       "filename": "qtdeclarative-everywhere-src-6.11.2.tar.xz",
-      "sha512": "012eeaeb9c492d31a71d463a8abe13ebc5ae0661677977c738082f95576befe123df80cf45bd2733ef7a5ed897693234a3a6c5e7060be01757424dca397e0056"
+      "sha512": "012eeaeb9c492d31a71d463a8abe13ebc5ae0661677977c738082f95576befe123df80cf45bd2733ef7a5ed897693234a3a6c5e7060be01757424dca397e0056",
+      "stage": 1
     },
     {
       "name": "qt6-qtlanguageserver",
