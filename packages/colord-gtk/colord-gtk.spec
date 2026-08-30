@@ -46,7 +46,7 @@ Files for GTK 4 development with %{name}4.
 %autosetup -p1
 
 %build
-%meson -Ddocs=false -Dgtk2=false -Dman=true -Dtests=false -Dvapi=true
+%meson -Ddocs=false -Dgtk2=false -Dman=false -Dtests=false -Dvapi=true
 %meson_build
 
 %install

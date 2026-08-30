@@ -310,17 +310,20 @@ jobs:
                 EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
                   | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
                   | sort -u | paste -sd, -)
-                # Hummingbird ships newer versions of some names than Fedora 44
-                # does, and the two must never mix in one transaction. The
-                # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
-                # (fc44) broke samba and evolution-data-server, and Fedora ruby
-                # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
-                # webkitgtk, colord, libnotify and zsh. Always prefer the
-                # Hummingbird copy by excluding these names from Fedora.
-                HB_EXCLUDE="ruby-default-gems ruby3.3-default-gems ruby3.4-default-gems libicu icu gpgme"
-                EXCLUDE="${HB_EXCLUDE},${EXCLUDE}"
                 echo "excluding from Fedora: $EXCLUDE"
               fi
+              # Hummingbird ships newer versions of some names than Fedora 44
+              # does, and the two must never mix in one transaction. The
+              # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
+              # (fc44) broke samba and evolution-data-server, and Fedora ruby
+              # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
+              # webkitgtk, colord, libnotify and zsh. Always prefer the
+              # Hummingbird copy by excluding these names from Fedora.
+              # Unconditional: stage 0 has no prior RPMs, so the block above
+              # never ran and EXCLUDE would otherwise be empty here.
+              HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
+              EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
+              echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
@@ -515,17 +518,20 @@ jobs:
                 EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
                   | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
                   | sort -u | paste -sd, -)
-                # Hummingbird ships newer versions of some names than Fedora 44
-                # does, and the two must never mix in one transaction. The
-                # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
-                # (fc44) broke samba and evolution-data-server, and Fedora ruby
-                # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
-                # webkitgtk, colord, libnotify and zsh. Always prefer the
-                # Hummingbird copy by excluding these names from Fedora.
-                HB_EXCLUDE="ruby-default-gems ruby3.3-default-gems ruby3.4-default-gems libicu icu gpgme"
-                EXCLUDE="${HB_EXCLUDE},${EXCLUDE}"
                 echo "excluding from Fedora: $EXCLUDE"
               fi
+              # Hummingbird ships newer versions of some names than Fedora 44
+              # does, and the two must never mix in one transaction. The
+              # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
+              # (fc44) broke samba and evolution-data-server, and Fedora ruby
+              # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
+              # webkitgtk, colord, libnotify and zsh. Always prefer the
+              # Hummingbird copy by excluding these names from Fedora.
+              # Unconditional: stage 0 has no prior RPMs, so the block above
+              # never ran and EXCLUDE would otherwise be empty here.
+              HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
+              EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
+              echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
@@ -720,17 +726,20 @@ jobs:
                 EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
                   | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
                   | sort -u | paste -sd, -)
-                # Hummingbird ships newer versions of some names than Fedora 44
-                # does, and the two must never mix in one transaction. The
-                # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
-                # (fc44) broke samba and evolution-data-server, and Fedora ruby
-                # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
-                # webkitgtk, colord, libnotify and zsh. Always prefer the
-                # Hummingbird copy by excluding these names from Fedora.
-                HB_EXCLUDE="ruby-default-gems ruby3.3-default-gems ruby3.4-default-gems libicu icu gpgme"
-                EXCLUDE="${HB_EXCLUDE},${EXCLUDE}"
                 echo "excluding from Fedora: $EXCLUDE"
               fi
+              # Hummingbird ships newer versions of some names than Fedora 44
+              # does, and the two must never mix in one transaction. The
+              # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
+              # (fc44) broke samba and evolution-data-server, and Fedora ruby
+              # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
+              # webkitgtk, colord, libnotify and zsh. Always prefer the
+              # Hummingbird copy by excluding these names from Fedora.
+              # Unconditional: stage 0 has no prior RPMs, so the block above
+              # never ran and EXCLUDE would otherwise be empty here.
+              HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
+              EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
+              echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
@@ -925,17 +934,20 @@ jobs:
                 EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
                   | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
                   | sort -u | paste -sd, -)
-                # Hummingbird ships newer versions of some names than Fedora 44
-                # does, and the two must never mix in one transaction. The
-                # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
-                # (fc44) broke samba and evolution-data-server, and Fedora ruby
-                # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
-                # webkitgtk, colord, libnotify and zsh. Always prefer the
-                # Hummingbird copy by excluding these names from Fedora.
-                HB_EXCLUDE="ruby-default-gems ruby3.3-default-gems ruby3.4-default-gems libicu icu gpgme"
-                EXCLUDE="${HB_EXCLUDE},${EXCLUDE}"
                 echo "excluding from Fedora: $EXCLUDE"
               fi
+              # Hummingbird ships newer versions of some names than Fedora 44
+              # does, and the two must never mix in one transaction. The
+              # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
+              # (fc44) broke samba and evolution-data-server, and Fedora ruby
+              # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
+              # webkitgtk, colord, libnotify and zsh. Always prefer the
+              # Hummingbird copy by excluding these names from Fedora.
+              # Unconditional: stage 0 has no prior RPMs, so the block above
+              # never ran and EXCLUDE would otherwise be empty here.
+              HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
+              EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
+              echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo
@@ -1130,17 +1142,20 @@ jobs:
                 EXCLUDE=$(find /work/prior -name "*.rpm" -type f -print0 \
                   | xargs -0 -r rpm -qp --qf "%{NAME}\n" 2>/dev/null \
                   | sort -u | paste -sd, -)
-                # Hummingbird ships newer versions of some names than Fedora 44
-                # does, and the two must never mix in one transaction. The
-                # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
-                # (fc44) broke samba and evolution-data-server, and Fedora ruby
-                # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
-                # webkitgtk, colord, libnotify and zsh. Always prefer the
-                # Hummingbird copy by excluding these names from Fedora.
-                HB_EXCLUDE="ruby-default-gems ruby3.3-default-gems ruby3.4-default-gems libicu icu gpgme"
-                EXCLUDE="${HB_EXCLUDE},${EXCLUDE}"
                 echo "excluding from Fedora: $EXCLUDE"
               fi
+              # Hummingbird ships newer versions of some names than Fedora 44
+              # does, and the two must never mix in one transaction. The
+              # conflicts this prevents are real: libicu 78.3 (hum) vs 77.1
+              # (fc44) broke samba and evolution-data-server, and Fedora ruby
+              # 3.3/3.4-default-gems vs Hummingbird ruby4.0-default-gems broke
+              # webkitgtk, colord, libnotify and zsh. Always prefer the
+              # Hummingbird copy by excluding these names from Fedora.
+              # Unconditional: stage 0 has no prior RPMs, so the block above
+              # never ran and EXCLUDE would otherwise be empty here.
+              HB_EXCLUDE="ruby-default-gems,ruby3.3-default-gems,ruby3.4-default-gems,libicu,icu,gpgme,qt6-qtbase"
+              EXCLUDE="${HB_EXCLUDE}${EXCLUDE:+,}${EXCLUDE}"
+              echo "hummingbird exclusions: $HB_EXCLUDE"
               if [ -n "${FACTORY_REPO:-}" ]; then
                 printf "[factory]\nname=factory\nbaseurl=%s\nenabled=1\ngpgcheck=0\npriority=5\n" \
                   "$FACTORY_REPO" > /etc/yum.repos.d/factory.repo

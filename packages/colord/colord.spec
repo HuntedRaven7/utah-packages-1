@@ -101,6 +101,7 @@ ulimit -Sv 2000000
 %meson \
     -Dtests=false \
     -Ddocs=false \
+    -Dman=false \
     -Dvapi=true \
     -Dinstalled_tests=true \
     -Dprint_profiles=false \
