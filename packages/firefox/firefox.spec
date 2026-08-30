@@ -885,9 +885,12 @@ echo "ac_add_options --without-sysroot" >> .mozconfig
 echo "ac_add_options --without-wasm-sandboxed-libraries" >> .mozconfig
 %endif
 
-# Require 4 GB of RAM per CPU core
-%constrain_build -m 4096
-echo "mk_add_options MOZ_MAKE_FLAGS=\"-j%{_smp_build_ncpus}\"" >> .mozconfig
+# Require 4 GB of RAM per CPU core. %constrain_build only affects mock; the
+# container buildroot keeps _smp_build_ncpus at the full runner core count,
+# and 4 concurrent rustc LTO links OOM the ~7 GB runner (SIGKILL on gkrust).
+# Cap the parallel jobs at 2 for the hermetic buildroot.
+# %constrain_build -m 4096
+echo "mk_add_options MOZ_MAKE_FLAGS=\"-j2\"" >> .mozconfig
 
 echo "mk_add_options MOZ_SERVICES_SYNC=1" >> .mozconfig
 echo "export STRIP=/bin/true" >> .mozconfig
