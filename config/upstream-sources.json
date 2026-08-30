@@ -397,13 +397,6 @@
       "sha512": "cf8be1759399fb9e3b7c84d353a876b8f599b74fb3094a288333cf0b61a743b74484cbde7eab96576b214c92caf7de65ef94813bb3670e079585c371a438f6b4"
     },
     {
-      "name": "fish",
-      "version": "4.6.0",
-      "url": "https://github.com/fish-shell/fish-shell/releases/download/4.6.0/fish-4.6.0.tar.xz",
-      "filename": "fish-4.6.0.tar.xz",
-      "sha512": "2acc6453f102b570f0f2765739a020f63051b7ee2a7f49d086459287c9e5a8658294b0081904b4897315195c6510a7e53794da9937f6f64aa53c65eb448d68b5"
-    },
-    {
       "name": "firefox",
       "version": "155.0",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/firefox/firefox-155.0.source.tar.xz/sha512/24292681924edb9f0494eb77a7b19994039abbc3a8c0ba304f0e472b49a943838565723de983bc8ef08e019971e02a3014c8d241bb88c645a06a625c8ace0d6a/firefox-155.0.source.tar.xz",
@@ -481,13 +474,6 @@
       "sha512": "e1b475f6c4b41cdc15ac1765a6a0dbb865f1bdc384d7f7393660e39baf38a375a501d7ec7493a82cd8aaeef9faba67422164e26d56f19737949f8578495ca5f1"
     },
     {
-      "name": "zsh",
-      "version": "5.9.2",
-      "url": "https://downloads.sourceforge.net/zsh/zsh-5.9.2.tar.xz",
-      "filename": "zsh-5.9.2.tar.xz",
-      "sha512": "40bb5eb2cf217e6bcff342fcc9314f082a5d8975abcb56897e86eba5839ddf0ec1ac3feed1e797d4c68cea22228197342916f14bb87309bbcc026a87622bc015"
-    },
-    {
       "name": "gnome-shell-extension-gsconnect",
       "version": "72",
       "url": "https://github.com/GSConnect/gnome-shell-extension-gsconnect/archive/v72/gnome-shell-extension-gsconnect-72.tar.gz",
@@ -521,20 +507,6 @@
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/fwupd/fwupd-2.1.7.tar.xz/sha512/52954e08f0066c8a0f3331b631e451230708cf5f4afed5ed8369f4558baae7dee6c1f929deb83e5201f55d48885d8591f1c96dbc5e28fdf3d67e6ec5dad6004f/fwupd-2.1.7.tar.xz",
       "filename": "fwupd-2.1.7.tar.xz",
       "sha512": "52954e08f0066c8a0f3331b631e451230708cf5f4afed5ed8369f4558baae7dee6c1f929deb83e5201f55d48885d8591f1c96dbc5e28fdf3d67e6ec5dad6004f"
-    },
-    {
-      "name": "evolution-ews",
-      "version": "3.61.3",
-      "url": "https://download.gnome.org/sources/evolution-ews/3.61/evolution-ews-3.61.3.tar.xz",
-      "filename": "evolution-ews-3.61.3.tar.xz",
-      "sha512": "617369f907a62ebba88fc83dc21047d7b8fa126a40f85de807a7f561a4d682aea2f9e0e1e9920eb539696675290093fd78a657dfbd521f2e6783f82db55cf813"
-    },
-    {
-      "name": "tailscale",
-      "version": "1.98.8",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/tailscale/tailscale-1.98.8-vendored.tar.xz/sha512/aae219551bd7308fd40067c7b5492ccb4884c9cba0fecef6f230af44d52b2c9dcff541fd0e6d4a8db9297a5245a17ce8613e29f7bf18c1f5b2316eccd553171c/tailscale-1.98.8-vendored.tar.xz",
-      "filename": "tailscale-1.98.8-vendored.tar.xz",
-      "sha512": "aae219551bd7308fd40067c7b5492ccb4884c9cba0fecef6f230af44d52b2c9dcff541fd0e6d4a8db9297a5245a17ce8613e29f7bf18c1f5b2316eccd553171c"
     },
     {
       "name": "sassc",
