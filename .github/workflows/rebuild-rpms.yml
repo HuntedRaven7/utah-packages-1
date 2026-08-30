@@ -34,14 +34,9 @@ permissions:
   packages: write
   pages: write
 
-concurrency:
-  # Scoped per ref, and deliberately NOT cancel-in-progress. A staged build
-  # takes tens of minutes, and cancelling it on every push threw away runs
-  # that were about to answer the question they were started for. A newer run
-  # now queues behind the one in flight instead. Stale runs are cancelled by
-  # hand when we know they will not tell us anything.
-  group: upstream-rpm-build-${{ github.ref }}
-  cancel-in-progress: false
+# Build waves may run concurrently.  They use run-scoped artifacts and each
+# publication re-seeds from the then-current repository, so concurrent work
+# cannot lose RPMs.  The consumer tag itself remains serialized at `publish`.
 
 jobs:
   prepare:
@@ -1376,6 +1371,12 @@ jobs:
           && (github.event_name != 'pull_request'
               || github.event.pull_request.head.repo.full_name == github.repository) }}
     needs: [prepare, rebuild0, rebuild1, rebuild2, rebuild3, rebuild4, precedence]
+    # Build waves can overlap, but `:latest` is an atomic consumer input. Queue
+    # only this critical section per ref; the later publisher re-seeds from the
+    # repository that its predecessor just made current.
+    concurrency:
+      group: utah-packages-publish-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     outputs:
       ref: ${{ steps.oci.outputs.ref }}
