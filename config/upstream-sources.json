@@ -346,6 +346,13 @@
       "sha512": "383ca702e096b1ac1b26db431aa9c3c78b2e4ce62c2a8ea60d7f40ca8ed86095b73cc17d96590c7bf51916447e5533caef18ae9d524e6cf365cba13a544d72ec"
     },
     {
+      "name": "mesa-libGLU",
+      "version": "9.0.3",
+      "url": "https://archive.mesa3d.org/glu/glu-9.0.3.tar.xz",
+      "filename": "glu-9.0.3.tar.xz",
+      "sha512": "b2781059c0e176192c3fc0d7244645020937a463311171efddb9f35fb94ee43faabcf627fa7f429d48fceaf6dd9c5adb69c86c7a21ec4ea490f4ab143d52e3ba"
+    },
+    {
       "name": "gdm",
       "version": "51.beta",
       "url": "https://download.gnome.org/sources/gdm/51/gdm-51.beta.tar.xz",
