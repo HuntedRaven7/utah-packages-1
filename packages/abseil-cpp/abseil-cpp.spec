@@ -137,19 +137,19 @@ MinGW Windows abseil-cpp library.
 %build
 # ABSL_BUILD_TEST_HELPERS is needed to build libraries for the -testing
 # subpackage when tests are not enabled. It is therefore redundant here, but we
-# still supply it to be more explicit.
+# still supply it to be more explicit. Tests are off: consumers (mozc) only
+# need the libraries, and the test compile doubles an already-90-minute LTO
+# build that OOMs the ~7 GB runner. RPM_BUILD_NCPUS caps ninja parallelism.
 %cmake \
     -GNinja \
     -DABSL_USE_EXTERNAL_GOOGLETEST:BOOL=ON \
     -DABSL_FIND_GOOGLETEST:BOOL=ON \
     -DABSL_ENABLE_INSTALL:BOOL=ON \
-    # Tests and test helpers are not needed by consumers (mozc links the
-    # libraries); building them doubles an already-90-minute LTO build.
     -DABSL_BUILD_TESTING:BOOL=OFF \
     -DABSL_BUILD_TEST_HELPERS:BOOL=OFF \
     -DCMAKE_BUILD_TYPE:STRING=None \
     -DCMAKE_CXX_STANDARD:STRING=17
-%cmake_build --parallel 2
+RPM_BUILD_NCPUS=2 %cmake_build
 
 %if %{with mingw}
 %mingw_cmake \
