@@ -344,6 +344,15 @@
       "url": "https://download.gnome.org/sources/zenity/4.2/zenity-4.2.2.tar.xz",
       "filename": "zenity-4.2.2.tar.xz",
       "sha512": "383ca702e096b1ac1b26db431aa9c3c78b2e4ce62c2a8ea60d7f40ca8ed86095b73cc17d96590c7bf51916447e5533caef18ae9d524e6cf365cba13a544d72ec"
+    },
+    {
+      "name": "gdm",
+      "version": "51.beta",
+      "url": "https://download.gnome.org/sources/gdm/51/gdm-51.beta.tar.xz",
+      "filename": "gdm-51.beta.tar.xz",
+      "sha512": "0157b0c24c0e99b211fe5c2adbc3914620d3ba65500f438e48a254bde78781e07b1256ab27381c723c030d11f486c28ad529710e87ba32d788eca2b403839496",
+      "sha256_url": "https://download.gnome.org/sources/gdm/51/gdm-51.beta.sha256sum",
+      "stage": 3
     }
   ]
 }
