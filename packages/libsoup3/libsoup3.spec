@@ -177,7 +177,7 @@ install -m 644 -D tests/libsoup.supp %{buildroot}%{_datadir}/libsoup-3.0/libsoup
 
 %files -f libsoup-3.0.lang
 %license COPYING
-%doc README NEWS AUTHORS
+%doc README
 %{_libdir}/libsoup-3.0.so.0*
 %dir %{_libdir}/girepository-1.0
 %{_libdir}/girepository-1.0/Soup-3.0.typelib
@@ -201,7 +201,7 @@ install -m 644 -D tests/libsoup.supp %{buildroot}%{_datadir}/libsoup-3.0/libsoup
 %if %{with_mingw}
 %files -n mingw32-libsoup3 -f mingw32-libsoup-3.0.lang
 %license COPYING
-%doc README NEWS AUTHORS
+%doc README
 %{mingw32_bindir}/libsoup-3.0-0.dll
 %{mingw32_includedir}/libsoup-3.0
 %{mingw32_libdir}/libsoup-3.0.dll.a
@@ -209,7 +209,7 @@ install -m 644 -D tests/libsoup.supp %{buildroot}%{_datadir}/libsoup-3.0/libsoup
 
 %files -n mingw64-libsoup3 -f mingw64-libsoup-3.0.lang
 %license COPYING
-%doc README NEWS AUTHORS
+%doc README
 %{mingw64_bindir}/libsoup-3.0-0.dll
 %{mingw64_includedir}/libsoup-3.0
 %{mingw64_libdir}/libsoup-3.0.dll.a
