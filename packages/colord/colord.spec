@@ -18,9 +18,7 @@ Source0:   https://www.freedesktop.org/software/colord/releases/%{name}-%{versio
 BuildRequires:  pkgconfig(bash-completion)
 %endif
 BuildRequires: color-filesystem
-BuildRequires: docbook5-style-xsl
 BuildRequires: gettext
-BuildRequires: gtk-doc
 BuildRequires: gobject-introspection-devel
 BuildRequires: libxslt
 BuildRequires: meson
@@ -72,14 +70,6 @@ Obsoletes: colorhug-client-devel <= 0.1.13
 %description devel
 Files for development with %{name}.
 
-%package devel-docs
-Summary: Developer documentation package for %{name}
-Requires: %{name} = %{version}-%{release}
-BuildArch: noarch
-
-%description devel-docs
-Documentation for development with %{name}.
-
 %package extra-profiles
 Summary: More color profiles for color management that are less commonly used
 Requires: %{name} = %{version}-%{release}
@@ -110,6 +100,7 @@ ulimit -Sv 2000000
 
 %meson \
     -Dtests=false \
+    -Ddocs=false \
     -Dvapi=true \
     -Dinstalled_tests=true \
     -Dprint_profiles=false \
@@ -240,10 +231,6 @@ touch $RPM_BUILD_ROOT%{_localstatedir}/lib/colord/storage.db
 %{_datadir}/gir-1.0/*.gir
 %{_datadir}/vala/vapi/colord.vapi
 %{_datadir}/vala/vapi/colord.deps
-
-%files devel-docs
-%dir %{_datadir}/gtk-doc/html/colord
-%{_datadir}/gtk-doc/html/colord/*
 
 %files tests
 %dir %{_libexecdir}/installed-tests/colord
