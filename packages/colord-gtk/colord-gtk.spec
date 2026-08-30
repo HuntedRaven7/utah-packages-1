@@ -7,7 +7,6 @@ URL:       http://www.freedesktop.org/software/colord/
 Source0:   http://www.freedesktop.org/software/colord/releases/%{name}-%{version}.tar.xz
 
 BuildRequires: meson
-BuildRequires: docbook5-style-xsl
 BuildRequires: gettext >= 0.19.8
 BuildRequires: glib2-devel
 BuildRequires: colord-devel >= 0.1.23
@@ -16,7 +15,6 @@ BuildRequires: gobject-introspection-devel
 BuildRequires: vala
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
-BuildRequires: gtk-doc
 
 %description
 colord-gtk is a support library for colord and provides additional
@@ -48,7 +46,7 @@ Files for GTK 4 development with %{name}4.
 %autosetup -p1
 
 %build
-%meson -Ddocs=true -Dgtk2=false -Dman=true -Dtests=false -Dvapi=true
+%meson -Ddocs=false -Dgtk2=false -Dman=true -Dtests=false -Dvapi=true
 %meson_build
 
 %install
@@ -77,11 +75,8 @@ Files for GTK 4 development with %{name}4.
 %{_includedir}/colord-1/colord-gtk/*.h
 %dir %{_datadir}/gir-1.0
 %{_datadir}/gir-1.0/ColordGtk-1.0.gir
-%doc %{_datadir}/gtk-doc/html/colord-gtk
 %{_datadir}/vala/vapi/colord-gtk.vapi
 %{_datadir}/vala/vapi/colord-gtk.deps
-%dir %{_datadir}/gtk-doc
-%dir %{_datadir}/gtk-doc/html
 
 %files -n colord-gtk4-devel
 %{_libdir}/libcolord-gtk4.so

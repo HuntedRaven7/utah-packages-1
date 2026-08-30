@@ -216,7 +216,8 @@
       "version": "2.44.8",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/gdk-pixbuf2/gdk-pixbuf-2.44.8.tar.xz/sha512/5fa8066abbfc29d7d9f07d95af2cfa2668e90381ecf1055ea449d35661b997d55e84e64ae1dedc14cf13d66912d05b1398075c560ce1aeeea7ae60a7d73c873a/gdk-pixbuf-2.44.8.tar.xz",
       "filename": "gdk-pixbuf-2.44.8.tar.xz",
-      "sha512": "5fa8066abbfc29d7d9f07d95af2cfa2668e90381ecf1055ea449d35661b997d55e84e64ae1dedc14cf13d66912d05b1398075c560ce1aeeea7ae60a7d73c873a"
+      "sha512": "5fa8066abbfc29d7d9f07d95af2cfa2668e90381ecf1055ea449d35661b997d55e84e64ae1dedc14cf13d66912d05b1398075c560ce1aeeea7ae60a7d73c873a",
+      "stage": 1
     },
     {
       "name": "gdm",
@@ -253,7 +254,8 @@
       "version": "2.2~beta",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/glycin/glycin-2.2.beta.tar.xz/sha512/e6b9ba38e3cd8f121f344f53fc8643c29f679d1347973a89d517d6ef2712364849dafdf55e7143a9a49f13282539ad2c34fb0176bb083a01458feda02a3efdb8/glycin-2.2.beta.tar.xz",
       "filename": "glycin-2.2.beta.tar.xz",
-      "sha512": "e6b9ba38e3cd8f121f344f53fc8643c29f679d1347973a89d517d6ef2712364849dafdf55e7143a9a49f13282539ad2c34fb0176bb083a01458feda02a3efdb8"
+      "sha512": "e6b9ba38e3cd8f121f344f53fc8643c29f679d1347973a89d517d6ef2712364849dafdf55e7143a9a49f13282539ad2c34fb0176bb083a01458feda02a3efdb8",
+      "stage": 0
     },
     {
       "name": "gnome-autoar",

@@ -12,11 +12,10 @@ Source0:        https://download.gnome.org/sources/%{name}/%{gnome_major_minor_v
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
 BuildRequires:  pkgconfig(glib-2.0) >= %{glib2_version}
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
-BuildRequires:  docbook-xsl-ns
-BuildRequires:  gi-docgen
 BuildRequires:  meson
-BuildRequires:  xmlto
-BuildRequires:  /usr/bin/xsltproc
+# gi-docgen/docbook-xsl-ns/xmlto drag the Ruby doc toolchain, which conflicts
+# with Hummingbird's ruby4.0-default-gems in the buildroot. Docs are not
+# runtime content; disable them.
 
 Requires:       glib2%{?_isa} >= %{glib2_version}
 
@@ -38,7 +37,7 @@ development of programs using %{name}.
 %autosetup -p1
 
 %build
-%meson -Dtests=false
+%meson -Dtests=false -Ddocs=false
 %meson_build
 
 %install

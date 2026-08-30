@@ -25,7 +25,8 @@ Patch:   skip-logger-test-on-32bit.patch
 BuildRequires: gcc
 BuildRequires: gettext
 BuildRequires: glib-networking >= %{glib2_version}
-BuildRequires: gi-docgen >= 2021.1
+# gi-docgen drags the Ruby doc toolchain, which conflicts with Hummingbird's
+# ruby4.0-default-gems in the buildroot. Docs are not runtime content.
 BuildRequires: krb5-devel
 BuildRequires: meson
 BuildRequires: vala
@@ -138,7 +139,7 @@ This is the MinGW build of libsoup3
 %autosetup -p1 -n libsoup-%{version}
 
 %build
-%meson -Ddocs=enabled -Dautobahn=disabled
+%meson -Ddocs=disabled -Dautobahn=disabled
 %meson_build
 
 %if %{with_mingw}

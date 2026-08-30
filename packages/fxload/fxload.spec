@@ -5,7 +5,11 @@ Summary: A helper program to download firmware into FX and FX2 EZ-USB devices
 
 License: GPL-2.0-or-later
 URL: http://linux-hotplug.sourceforge.net/
-Source0: fxload-%{version}-noa3load.tar.gz
+# Fedora's lookaside stores a regenerated archive with a3load.hex removed.
+# The upstream release tarball carries the same tree and the noa3load patch
+# applies cleanly; source it directly (verified by the source pipeline) and
+# drop the lookaside-only name.
+Source0: fxload-%{version}.tar.gz
 # The above file is derived from:
 # http://downloads.sourceforge.net/project/linux-hotplug/fxload/2008_10_13/fxload-2008_10_13.tar.gz
 # This file contains code that is copyright Cypress Semiconductor Inc,

@@ -2,7 +2,10 @@
 %bcond heif     %{undefined rhel}
 %bcond jpegxl   %{undefined rhel}
 
-%bcond bundled_rust_deps %{defined rhel}
+# Hummingbird has no Rust crate RPMs, so the Fedora model (system crates)
+# cannot resolve -- this is the same gap as fish. The vendor tarball is in the
+# lookaside; always use it, as RHEL does.
+%bcond bundled_rust_deps 1
 
 Name:           glycin
 Version:        2.2~beta
