@@ -1,0 +1,8 @@
+{
+  "package": "samba",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/samba.git",
+  "commit": "b188f1b9d24502eff0c99d3d2e67f3b26c571f70",
+  "tree": "baae9807c147b58c24baab683cce7cdd5edfee7d",
+  "imported_at": "2026-08-30T15:47:48.845471+00:00"
+}

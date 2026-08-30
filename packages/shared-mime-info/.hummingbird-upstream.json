@@ -1,0 +1,8 @@
+{
+  "package": "shared-mime-info",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/shared-mime-info.git",
+  "commit": "e41d2750ed6ac86895daff1580cab370995e9add",
+  "tree": "12a115c449f419dd28cf51aaa5c3884a5c6a8b11",
+  "imported_at": "2026-08-30T15:48:52.592255+00:00"
+}

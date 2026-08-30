@@ -1,0 +1,8 @@
+{
+  "package": "sdl2-compat",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/sdl2-compat.git",
+  "commit": "bac4326832c8c9cd1e686c4a0364caab272dac5e",
+  "tree": "1f30fda2162997695924d7c76975a0a9d60b3526",
+  "imported_at": "2026-08-30T15:47:46.648525+00:00"
+}

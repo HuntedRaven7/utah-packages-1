@@ -1,0 +1,2 @@
+# empty index
+addFilter(r'zero-length /usr/share/gtk-doc/html/nautilus-python/index\.sgml')

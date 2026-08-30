@@ -1,0 +1,8 @@
+{
+  "package": "fribidi",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/fribidi.git",
+  "commit": "d33d6a12283008d70ad9306a3f18cb11505efa90",
+  "tree": "6f77f579c36ae77a75085ffd5ec5084356d2038c",
+  "imported_at": "2026-08-30T15:46:55.444382+00:00"
+}

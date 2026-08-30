@@ -1,0 +1,39 @@
+From 34fa62d22787fa16a1cabafbf85a954c767f1b69 Mon Sep 17 00:00:00 2001
+From: Fabio Valentini <decathorpe@gmail.com>
+Date: Thu, 12 Mar 2026 20:15:02 +0100
+Subject: [PATCH 3/3] Fedora: Drop windows-specific dependencies
+
+---
+ Cargo.toml              | 1 -
+ rsvg_convert/Cargo.toml | 3 ---
+ 2 files changed, 4 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index c30a3d6..0208376 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -52,7 +52,6 @@ gdk-pixbuf = "0.22.0"
+ gdk-pixbuf-sys = "0.22.0"
+ gio = "0.22.0"
+ gio-unix = "0.22.0"
+-gio-win32 = "0.22.0"
+ gio-sys = "0.22.0"
+ glib = "0.22.0"
+ glib-sys = "0.22.0"
+diff --git a/rsvg_convert/Cargo.toml b/rsvg_convert/Cargo.toml
+index f40b3d3..efe7e21 100644
+--- a/rsvg_convert/Cargo.toml
++++ b/rsvg_convert/Cargo.toml
+@@ -43,9 +43,6 @@ pango.workspace = true
+ [target.'cfg(unix)'.dependencies]
+ gio-unix.workspace = true
+ 
+-[target.'cfg(windows)'.dependencies]
+-gio-win32.workspace = true
+-
+ [dev-dependencies]
+ assert_cmd.workspace = true
+ predicates.workspace = true
+-- 
+2.53.0
+

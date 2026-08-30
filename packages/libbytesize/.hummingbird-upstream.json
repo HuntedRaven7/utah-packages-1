@@ -1,0 +1,8 @@
+{
+  "package": "libbytesize",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libbytesize.git",
+  "commit": "d8f51a75666c07d78fe17bf06c32ee63b6649a7d",
+  "tree": "e45277806a7d9ed1eb2928f53acbee6f27efb320",
+  "imported_at": "2026-08-30T15:47:19.000634+00:00"
+}

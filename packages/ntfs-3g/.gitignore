@@ -1,0 +1,5 @@
+/.build*.log
+/clog
+/*.rpm
+/x86_64/
+/ntfs-3g_ntfsprogs-*.tgz

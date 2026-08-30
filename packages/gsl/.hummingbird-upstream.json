@@ -1,0 +1,8 @@
+{
+  "package": "gsl",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gsl.git",
+  "commit": "20fb004c5eafb1e4b0c261fe1e650ccd249fc40f",
+  "tree": "4ce5b251aae7b1281ec42bb4d494db8c08799e90",
+  "imported_at": "2026-08-30T15:47:07.128445+00:00"
+}

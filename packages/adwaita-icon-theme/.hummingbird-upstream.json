@@ -1,0 +1,8 @@
+{
+  "package": "adwaita-icon-theme",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/adwaita-icon-theme.git",
+  "commit": "a78a7aa01dda60c40cd849916ac7851d12bcde09",
+  "tree": "551a6343a61977ee8e75e8ebc55c90107c5a3cf6",
+  "imported_at": "2026-08-30T15:46:52.879523+00:00"
+}

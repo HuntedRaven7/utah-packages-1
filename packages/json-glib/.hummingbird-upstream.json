@@ -1,0 +1,8 @@
+{
+  "package": "json-glib",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/json-glib.git",
+  "commit": "48028924297a9cabe88c0cdda4eb1191b2507509",
+  "tree": "8b795faad0383a3f8053ccce171410f92f4174ad",
+  "imported_at": "2026-08-30T15:47:13.363086+00:00"
+}

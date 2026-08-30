@@ -1,0 +1,8 @@
+{
+  "package": "libgweather",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libgweather.git",
+  "commit": "b9132c612f0b526e675566b8013d9511b7ad5bb4",
+  "tree": "07184877a55aa35ab429dbd45921839707b73c3f",
+  "imported_at": "2026-08-30T15:47:27.347918+00:00"
+}

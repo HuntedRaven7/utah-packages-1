@@ -1,0 +1,8 @@
+{
+  "package": "webkitgtk",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/webkitgtk.git",
+  "commit": "805944c3be1b35f62b970e6c7a631d5d42929abb",
+  "tree": "f1dcd9174a8586eb26d0515059fc33a7f3c58a7b",
+  "imported_at": "2026-08-30T15:47:54.695360+00:00"
+}

@@ -1,0 +1,35 @@
+---
+inspections:
+    disttag: off
+
+badfuncs:
+    ignore:
+        - /usr/bin/nmbd
+        - /usr/bin/nmblookup
+        - /usr/bin/smbtorture
+        - /usr/lib*/libndr.so.*
+        - /usr/lib*/libsmbconf.so.*
+        - /usr/lib*/samba/libgse-private-samba.so
+        - /usr/lib*/samba/libsamba-sockets-private-samba.so
+        - /usr/lib*/samba/service/nbtd.so
+        - /usr/libexec/ctdb/smnotify
+        - /usr/sbin/nmbd
+
+runpath:
+    allowed_paths:
+        - /usr/lib/samba
+        - /usr/lib64/samba
+
+abidiff:
+    suppression_file: samba.abignore
+
+debuginfo:
+    ignore:
+        - /usr/lib*/libdcerpc-samr.so.*
+
+annocheck:
+    ignore:
+        - /usr/bin/gentest
+        - /usr/bin/locktest
+        - /usr/bin/masktest
+        - /usr/bin/smbtorture

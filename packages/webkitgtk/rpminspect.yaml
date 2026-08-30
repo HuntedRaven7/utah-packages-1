@@ -1,0 +1,5 @@
+---
+inspections:
+    abidiff: off
+    changedfiles: off
+    filesize: off

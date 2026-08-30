@@ -1,0 +1,4 @@
+/samba-*.tar.xz
+/samba-*.tar.asc
+/*.rpm
+/results_samba

@@ -1,0 +1,8 @@
+{
+  "package": "colord-gtk",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/colord-gtk.git",
+  "commit": "ff67e467050e9399a1e927ffbc0d4082cb36d9cf",
+  "tree": "66a27a455622bb3d80f767f60e401f51ee6a1dda",
+  "imported_at": "2026-08-30T15:46:54.974900+00:00"
+}

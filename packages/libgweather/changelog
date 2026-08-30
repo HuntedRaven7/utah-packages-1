@@ -1,0 +1,2 @@
+* Fri Oct 27 2023 Kalev Lember <klember@redhat.com> - 4.4.0-1
+- Unretire libgweather package, rename libgweather4 back to libgweather

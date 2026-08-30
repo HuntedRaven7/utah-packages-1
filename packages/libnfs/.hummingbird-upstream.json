@@ -1,0 +1,8 @@
+{
+  "package": "libnfs",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libnfs.git",
+  "commit": "3607ab7448b536112920c93a3e0bff45e387120d",
+  "tree": "a93ebe5885f296b8b131e56a51ca63cf832175b0",
+  "imported_at": "2026-08-30T15:47:24.353780+00:00"
+}

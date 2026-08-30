@@ -1,0 +1,8 @@
+{
+  "package": "iio-sensor-proxy",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/iio-sensor-proxy.git",
+  "commit": "fe0de0f1d4ec7fdc006a087167751a7a334eb6e5",
+  "tree": "ccc1a479e186b5f8c089f616ba083ac1dd163dcd",
+  "imported_at": "2026-08-30T15:47:12.472880+00:00"
+}

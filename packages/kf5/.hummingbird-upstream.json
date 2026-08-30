@@ -1,0 +1,8 @@
+{
+  "package": "kf5",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/kf5.git",
+  "commit": "249e170c4968b43afee96b0768c4a335b81dfcbd",
+  "tree": "cfd224217ff862399d424b1471639f4b2bc1b20b",
+  "imported_at": "2026-08-30T15:47:16.520035+00:00"
+}

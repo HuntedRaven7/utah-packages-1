@@ -1,0 +1,68 @@
+From 51b1ef70f184f036b45c207948f70963e99fbb5c Mon Sep 17 00:00:00 2001
+From: Fabio Valentini <decathorpe@gmail.com>
+Date: Thu, 12 Mar 2026 20:12:39 +0100
+Subject: [PATCH 2/3] Fedora: Drop dependencies and references to mutation
+ testing code
+
+Drop mutants that is only required for mutation testing, which we
+don't do during package builds.
+---
+ Cargo.toml                  | 1 -
+ rsvg/Cargo.toml             | 1 -
+ rsvg/src/accept_language.rs | 2 +-
+ rsvg/src/path_parser.rs     | 2 +-
+ 4 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index e5b7769..c30a3d6 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -67,7 +67,6 @@ locale_config = "0.3.0"                                   # not "*" as per the d
+ lopdf = "0.38"
+ markup5ever = "0.35.0"
+ matches = "0.1"
+-mutants = "0.0.3"
+ nalgebra = "0.34.0"
+ num-traits = "0.2"
+ pango = "0.22.0"
+diff --git a/rsvg/Cargo.toml b/rsvg/Cargo.toml
+index 52adb9c..6926fc2 100644
+--- a/rsvg/Cargo.toml
++++ b/rsvg/Cargo.toml
+@@ -63,7 +63,6 @@ language-tags.workspace = true
+ libc.workspace = true
+ locale_config.workspace = true
+ markup5ever.workspace = true
+-mutants.workspace = true
+ nalgebra.workspace = true
+ num-traits.workspace = true
+ pango = { workspace = true, features = ["v1_46"] }
+diff --git a/rsvg/src/accept_language.rs b/rsvg/src/accept_language.rs
+index cfdf08a..342984e 100644
+--- a/rsvg/src/accept_language.rs
++++ b/rsvg/src/accept_language.rs
+@@ -83,7 +83,7 @@ impl fmt::Display for AcceptLanguageError {
+     // `AcceptLanguage::parse()`, which returns `Result<Self, String>`.  These strings go
+     // there, but librsvg makes no promises about their contents.  Below, we do have tests
+     // for `AcceptLanguageError` being computed correctly.
+-    #[mutants::skip]
++    //#[mutants::skip]
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         match self {
+             Self::NoElements => write!(f, "no language tags in list"),
+diff --git a/rsvg/src/path_parser.rs b/rsvg/src/path_parser.rs
+index e522ec0..82d96ed 100644
+--- a/rsvg/src/path_parser.rs
++++ b/rsvg/src/path_parser.rs
+@@ -855,7 +855,7 @@ use crate::path_parser::ErrorKind::*;
+ impl fmt::Display for ParseError {
+     // Skipped for mutation testing; this is just an error formatter.  These errors are just
+     // surfaced as log messages.
+-    #[mutants::skip]
++    //#[mutants::skip]
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         let description = match self.kind {
+             UnexpectedToken(_t) => "unexpected token",
+-- 
+2.53.0
+

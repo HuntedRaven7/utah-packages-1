@@ -1,0 +1,8 @@
+{
+  "package": "fxload",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/fxload.git",
+  "commit": "f48ddcbd405da733955c5f5043c7a67008599483",
+  "tree": "2e2ca50fea306362e4a074bef0acd40afb2c4982",
+  "imported_at": "2026-08-30T15:47:00.216238+00:00"
+}

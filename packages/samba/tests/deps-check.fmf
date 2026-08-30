@@ -1,0 +1,22 @@
+summary: Check samba package dependency structure
+description: |
+    Verify that samba library packages maintain correct dependency hierarchy:
+    - samba-core-libs has no samba-*-libs dependencies
+    - samba-ndr-libs depends on samba-core-libs (not samba-client-libs or samba-libs)
+    - samba-client-libs depends on core-libs + ndr-libs (not samba-libs)
+    - samba-client depends on samba-client-libs (not samba-libs)
+    - samba-libs does not depend on samba-dc-libs
+    - libsmbclient depends on samba-client-libs (not samba-libs)
+    - libwbclient has no samba-*-libs dependencies
+    - libldb has no samba-*-libs dependencies
+test: ./deps-check.sh
+framework: shell
+require:
+  - samba-core-libs
+  - samba-ndr-libs
+  - samba-client-libs
+  - samba-libs
+  - samba-client
+  - libwbclient
+  - libsmbclient
+  - libldb

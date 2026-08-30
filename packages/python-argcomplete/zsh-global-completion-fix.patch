@@ -1,0 +1,18 @@
+--- argcomplete-3.6.3/argcomplete/bash_completion.d/_python-argcomplete.orig	2026-07-27 20:25:34.011670769 -0300
++++ argcomplete-3.6.3/argcomplete/bash_completion.d/_python-argcomplete	2026-07-27 20:25:38.131631021 -0300
+@@ -145,9 +145,13 @@
+         req_argv=( "" "${COMP_WORDS[@]:1}" )
+         __python_argcomplete_expand_tilde_by_ref executable
+     else
+-        executable="${words[1]}"
++        # Reconstruct the unshifted words array from BUFFER to handle cases where
++        # a helper completion function (like _python) has shifted the words array.
++        local -a local_words
++        local_words=( ${(z)BUFFER} )
++        executable="${local_words[1]}"
+         __python_argcomplete_expand_tilde_by_ref executable
+-        req_argv=( "${words[@]:1}" )
++        req_argv=( "${local_words[@]:1}" )
+     fi
+ 
+     local ARGCOMPLETE=0

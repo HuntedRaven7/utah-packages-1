@@ -1,0 +1,8 @@
+{
+  "package": "libthai",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libthai.git",
+  "commit": "fbd61f0dbec642f31047fc17bb6d4405f9a22728",
+  "tree": "88fdfd323981dfdf31b429d86a1bd4d38e02fb00",
+  "imported_at": "2026-08-30T15:47:32.212223+00:00"
+}

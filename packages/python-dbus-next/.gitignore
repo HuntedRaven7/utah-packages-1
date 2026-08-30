@@ -1,0 +1,4 @@
+*.src.rpm
+*.tar.gz
+*.tar.gz.sig
+results_*/

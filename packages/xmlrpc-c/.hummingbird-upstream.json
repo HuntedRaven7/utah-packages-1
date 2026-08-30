@@ -1,0 +1,8 @@
+{
+  "package": "xmlrpc-c",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/xmlrpc-c.git",
+  "commit": "beddf7cc75be77da011cdc3aacf1830a41a9c5b2",
+  "tree": "0ef8f7e5b6efae059869acf1d94f009ae552c7d3",
+  "imported_at": "2026-08-30T15:47:53.984326+00:00"
+}

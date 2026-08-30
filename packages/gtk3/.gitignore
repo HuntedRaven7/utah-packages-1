@@ -1,0 +1,6 @@
+/gtk+-*.tar.bz2
+/gtk+-*.tar.xz
+/reftests-dark.test.in
+/reftests-hc.test.in
+/gtk-*.tar.xz
+/gtk-*-build

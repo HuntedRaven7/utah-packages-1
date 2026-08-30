@@ -1,0 +1,8 @@
+{
+  "package": "iso-codes",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/iso-codes.git",
+  "commit": "2bf234eb89753436c15900d7a7e421203167d974",
+  "tree": "32aa369912a6484dfc445c2f170e2780c047e9c9",
+  "imported_at": "2026-08-30T15:47:14.002136+00:00"
+}

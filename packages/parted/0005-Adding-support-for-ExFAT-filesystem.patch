@@ -1,0 +1,215 @@
+From 9d9b37d6df17df16270edce5c07236b6031e0b8c Mon Sep 17 00:00:00 2001
+From: Victor Couty <victor@couty.eu>
+Date: Wed, 31 Dec 2025 07:58:53 +0100
+Subject: [PATCH] Adding support for ExFAT filesystem
+
+Added and registered exfat probing function
+Updated msdos label probe to properly detect full-disk exfat fs
+Reflected ExFAT support in doc
+Added ExFAT detection test in t1700-probe-fs.sh
+
+Signed-off-by: Brian C. Lane <bcl@redhat.com>
+---
+ doc/C/parted.8             |  2 +-
+ doc/parted.texi            |  1 +
+ libparted/fs/Makefile.am   |  1 +
+ libparted/fs/exfat/exfat.c | 74 ++++++++++++++++++++++++++++++++++++++
+ libparted/labels/dos.c     |  6 ++++
+ libparted/libparted.c      |  4 +++
+ tests/t1700-probe-fs.sh    |  2 +-
+ 7 files changed, 88 insertions(+), 2 deletions(-)
+ create mode 100644 libparted/fs/exfat/exfat.c
+
+diff --git a/doc/C/parted.8 b/doc/C/parted.8
+index 359b0462..40e6212d 100644
+--- a/doc/C/parted.8
++++ b/doc/C/parted.8
+@@ -82,7 +82,7 @@ should be one of "aix", "amiga", "bsd", "dvh", "gpt", "loop", "mac", "msdos",
+ Create a new partition. \fIpart-type\fP may be specified only with msdos and
+ dvh partition tables, it should be one of "primary", "logical", or "extended".
+ \fIname\fP is required for GPT partition tables and \fIfs-type\fP is optional.
+-\fIfs-type\fP can be one of "btrfs", "ext2", "ext3", "ext4", "fat16", "fat32",
++\fIfs-type\fP can be one of "btrfs", "exfat", "ext2", "ext3", "ext4", "fat16", "fat32",
+ "hfs", "hfs+", "linux-swap", "ntfs", "reiserfs", "udf", or "xfs".
+ .TP
+ .B name \fIpartition\fP \fIname\fP
+diff --git a/doc/parted.texi b/doc/parted.texi
+index 4123b2cd..10a576bc 100644
+--- a/doc/parted.texi
++++ b/doc/parted.texi
+@@ -624,6 +624,7 @@ partition table.
+ @itemize @bullet
+ @item btrfs
+ @item ext2, ext3, ext4
++@item exfat
+ @item fat16, fat32
+ @item hfs, hfs+, hfsx
+ @item hp-ufs
+diff --git a/libparted/fs/Makefile.am b/libparted/fs/Makefile.am
+index 2cfe4257..43116db3 100644
+--- a/libparted/fs/Makefile.am
++++ b/libparted/fs/Makefile.am
+@@ -28,6 +28,7 @@ libfs_la_SOURCES =		\
+   ext2/ext2.h			\
+   ext2/ext2_fs.h		\
+   ext2/interface.c		\
++  exfat/exfat.c			\
+   fat/bootsector.c		\
+   fat/bootsector.h		\
+   fat/count.h			\
+diff --git a/libparted/fs/exfat/exfat.c b/libparted/fs/exfat/exfat.c
+new file mode 100644
+index 00000000..497fd18a
+--- /dev/null
++++ b/libparted/fs/exfat/exfat.c
+@@ -0,0 +1,74 @@
++/*
++libparted
++    Copyright (C) 1998-2000, 2002, 2004, 2007, 2009-2014, 2019-2023 Free
++    Software Foundation, Inc.
++
++    This program is free software; you can redistribute it and/or modify
++    it under the terms of the GNU General Public License as published by
++    the Free Software Foundation; either version 3 of the License, or
++    (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with this program.  If not, see<http://www.gnu.org/licenses/>.
++*/
++
++#include <config.h>
++
++#include <parted/parted.h>
++#include <parted/endian.h>
++
++#include <unistd.h>
++
++#define EXFAT_SIGNATURE "EXFAT   "
++
++PedGeometry* exfat_probe (PedGeometry* geom)
++{
++    uint8_t *buf = alloca(geom->dev->sector_size);
++
++    if (!ped_geometry_read(geom, buf, 0, 1)) {
++        return NULL;
++    }
++    if (strncmp (EXFAT_SIGNATURE, ((char *)buf + 3), strlen (EXFAT_SIGNATURE)) == 0) {
++        uint64_t sector_count;
++        unsigned char bytes_per_sector_shift;
++        uint64_t fs_size;
++        PedGeometry *newg = NULL;
++
++        memcpy(&sector_count, buf + 0x48, sizeof(uint64_t));
++        memcpy(&bytes_per_sector_shift, buf + 0x6c, sizeof(unsigned char));
++        if (bytes_per_sector_shift < 9 || bytes_per_sector_shift > 12) {
++            return NULL;
++        }
++        fs_size = sector_count * (1ULL << bytes_per_sector_shift);
++        newg = ped_geometry_new(geom->dev, geom->start, fs_size);
++
++        return newg;
++    }
++
++    return NULL;
++}
++
++static PedFileSystemOps exfat_ops = {
++    probe: exfat_probe,
++};
++
++static PedFileSystemType exfat_type = {
++    next: NULL,
++    ops: &exfat_ops,
++    name: "exfat",
++};
++
++void ped_file_system_exfat_init()
++{
++    ped_file_system_type_register (&exfat_type);
++}
++
++void ped_file_system_exfat_done ()
++{
++    ped_file_system_type_unregister (&exfat_type);
++}
+diff --git a/libparted/labels/dos.c b/libparted/labels/dos.c
+index 9f886188..56806249 100644
+--- a/libparted/labels/dos.c
++++ b/libparted/labels/dos.c
+@@ -439,6 +439,9 @@ fat_probe_fat32 (PedGeometry* geom);
+ PedGeometry*
+ ntfs_probe (PedGeometry* geom);
+ 
++PedGeometry*
++exfat_probe (PedGeometry* geom);
++
+ static int
+ msdos_probe (const PedDevice *dev)
+ {
+@@ -474,6 +477,9 @@ msdos_probe (const PedDevice *dev)
+ 	fsgeom = ntfs_probe (geom);
+ 	if (fsgeom)
+ 		goto probe_fail; /* ntfs fs looks like dos mbr */
++	fsgeom = exfat_probe (geom);
++	if (fsgeom)
++		goto probe_fail; /* exfat fs looks like dos mbr */
+ 	ped_geometry_destroy (geom);
+ 	geom = NULL;
+ 
+diff --git a/libparted/libparted.c b/libparted/libparted.c
+index 4dabb7e8..b1805285 100644
+--- a/libparted/libparted.c
++++ b/libparted/libparted.c
+@@ -115,6 +115,7 @@ extern void ped_file_system_ext2_init (void);
+ extern void ped_file_system_nilfs2_init (void);
+ extern void ped_file_system_btrfs_init (void);
+ extern void ped_file_system_udf_init (void);
++extern void ped_file_system_exfat_init (void);
+ 
+ static void
+ init_file_system_types ()
+@@ -133,6 +134,7 @@ init_file_system_types ()
+ 	ped_file_system_nilfs2_init ();
+ 	ped_file_system_btrfs_init ();
+ 	ped_file_system_udf_init ();
++	ped_file_system_exfat_init ();
+ }
+ 
+ extern void ped_disk_aix_done ();
+@@ -200,6 +202,7 @@ extern void ped_file_system_xfs_done (void);
+ extern void ped_file_system_amiga_done (void);
+ extern void ped_file_system_btrfs_done (void);
+ extern void ped_file_system_udf_done (void);
++extern void ped_file_system_exfat_done (void);
+ 
+ static void
+ done_file_system_types ()
+@@ -218,6 +221,7 @@ done_file_system_types ()
+ 	ped_file_system_amiga_done ();
+ 	ped_file_system_btrfs_done ();
+ 	ped_file_system_udf_done ();
++	ped_file_system_exfat_done ();
+ }
+ 
+ static void _done() __attribute__ ((destructor));
+diff --git a/tests/t1700-probe-fs.sh b/tests/t1700-probe-fs.sh
+index 9b886560..a494e8ab 100755
+--- a/tests/t1700-probe-fs.sh
++++ b/tests/t1700-probe-fs.sh
+@@ -23,7 +23,7 @@ dev=loop-file
+ ss=$sector_size_
+ n_sectors=$((512*1024))
+ 
+-for type in ext2 ext3 ext4 btrfs xfs nilfs2 ntfs vfat hfsplus udf f2fs; do
++for type in ext2 ext3 ext4 btrfs xfs nilfs2 ntfs vfat hfsplus udf f2fs exfat; do
+ 
+   ( mkfs.$type 2>&1 | grep -i '^usage' ) > /dev/null \
+       || { warn_ "$ME: no $type support"; continue; }
+-- 
+2.54.0
+

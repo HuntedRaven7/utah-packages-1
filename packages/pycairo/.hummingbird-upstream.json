@@ -1,0 +1,8 @@
+{
+  "package": "pycairo",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/pycairo.git",
+  "commit": "1c4aefa23b584ee2fc21d36e6bbebf0ed142e481",
+  "tree": "efec6b24b4681dc5c54f1e069b68b925cb88325f",
+  "imported_at": "2026-08-30T15:47:37.293725+00:00"
+}

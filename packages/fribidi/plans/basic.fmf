@@ -1,0 +1,11 @@
+summary: Basic smoke test
+discover:
+    how: fmf
+    dist-git-source: true
+prepare:
+    name: tmt
+    how: install
+    package:
+      - fribidi
+execute:
+    how: tmt

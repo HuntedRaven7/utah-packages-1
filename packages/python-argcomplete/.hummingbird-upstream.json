@@ -1,0 +1,8 @@
+{
+  "package": "python-argcomplete",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/python-argcomplete.git",
+  "commit": "6633157fa9cf7f8f8ca043316098213f1dc70249",
+  "tree": "f1ab1732e9aea1b96769527c6182ee8da921b0a5",
+  "imported_at": "2026-08-30T15:47:37.968518+00:00"
+}

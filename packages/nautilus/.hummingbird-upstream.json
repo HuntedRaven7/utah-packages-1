@@ -1,0 +1,8 @@
+{
+  "package": "nautilus",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/nautilus.git",
+  "commit": "b5fdec7176b0eb758401d12ba79828e684f896a3",
+  "tree": "3bbd583e0d9d52767f7b15ac8808b542449edf57",
+  "imported_at": "2026-08-30T15:47:35.281120+00:00"
+}

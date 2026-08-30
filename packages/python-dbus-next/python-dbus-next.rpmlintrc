@@ -1,0 +1,3 @@
+# suppress spelling errors
+addFilter(r'spelling-error Summary\(en_US\) asyncio ')
+addFilter(r'spelling-error .* en_US asyncio ')

@@ -1,0 +1,8 @@
+{
+  "package": "fuse",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/fuse.git",
+  "commit": "3ee7b966a80f1cbf2e162fc740cc9db506839e76",
+  "tree": "5e9fcacae3f1766d702150dbe7d2a706d651f361",
+  "imported_at": "2026-08-30T15:47:00.520159+00:00"
+}

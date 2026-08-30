@@ -1,0 +1,8 @@
+{
+  "package": "qt6-qtwebview",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/qt6-qtwebview.git",
+  "commit": "4a501093ddd0b998b5b2a95d1425f6817b845890",
+  "tree": "445a5bfcadea9891c626bb62f6263ec0393654e4",
+  "imported_at": "2026-08-30T15:47:46.120762+00:00"
+}

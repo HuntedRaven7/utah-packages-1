@@ -1,0 +1,8 @@
+{
+  "package": "libgtop2",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libgtop2.git",
+  "commit": "c6f8c25749286c6af23858a91cd808c910360290",
+  "tree": "42d81e15819a0a5749fc30b1fe25b311c60eb7ad",
+  "imported_at": "2026-08-30T15:47:21.982386+00:00"
+}

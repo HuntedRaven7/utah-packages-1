@@ -1,0 +1,8 @@
+{
+  "package": "parted",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/parted.git",
+  "commit": "d2678211ce55ca9734283e6034c8816e5070f7a9",
+  "tree": "e23ae493b2cf7e7e45df48db237799418b556e65",
+  "imported_at": "2026-08-30T15:47:39.296371+00:00"
+}

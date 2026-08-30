@@ -1,0 +1,347 @@
+From 4fdb58dd92acdb88d224f0907c2eafd852b7b4c6 Mon Sep 17 00:00:00 2001
+From: "Brian C. Lane" <bcl@redhat.com>
+Date: Fri, 24 Apr 2026 14:56:13 -0700
+Subject: [PATCH 4/4] Cleanup zero as null pointer constant warnings
+
+Pointer types should be set to NULL, not zero. gcc is now warning about
+these with:
+  warning: zero as null pointer constant [-Wzero-as-null-pointer-constant]
+
+This cleans up all the uses found when running make with gcc 16.0.1
+---
+ libparted/arch/linux.c      |  6 +++---
+ libparted/filesys.c         |  2 +-
+ libparted/fs/amiga/amiga.c  |  2 +-
+ libparted/fs/btrfs/btrfs.c  |  4 ++--
+ libparted/fs/ntfs/ntfs.c    |  2 +-
+ libparted/fs/r/fat/fat.c    |  2 +-
+ libparted/fs/r/fat/resize.c |  2 +-
+ libparted/fs/ufs/ufs.c      |  8 ++++----
+ libparted/labels/atari.c    |  2 +-
+ libparted/labels/bsd.c      |  2 +-
+ libparted/labels/dos.c      |  2 +-
+ libparted/labels/gpt.c      |  6 +++---
+ libparted/labels/pc98.c     |  2 +-
+ libparted/labels/rdb.c      |  2 +-
+ parted/parted.c             | 12 ++++++------
+ parted/ui.c                 |  4 ++--
+ 16 files changed, 30 insertions(+), 30 deletions(-)
+
+diff --git a/libparted/arch/linux.c b/libparted/arch/linux.c
+index 238d9925..9b9e7b1b 100644
+--- a/libparted/arch/linux.c
++++ b/libparted/arch/linux.c
+@@ -306,7 +306,7 @@ _read_fd (int fd, char **buf)
+         int s, filesize = 0;
+ 
+         *buf = malloc (size * sizeof (char));
+-        if (*buf == 0) {
++        if (*buf == NULL) {
+                 return -1;
+         }
+ 
+@@ -2312,10 +2312,10 @@ _skip_entry (const char *name)
+ 		{ "loop",	sizeof ("loop") - 1	},
+ 		{ "ram",	sizeof ("ram") - 1	},
+ 		{ "fd",		sizeof ("fd") - 1	},
+-		{ 0, 0 },
++		{ NULL, 0 },
+ 	};
+ 
+-	for (i = entries; i->name != 0; i++) {
++	for (i = entries; i->name != NULL; i++) {
+ 		if (strncmp (name, i->name, i->len) == 0)
+ 			return 1;
+ 	}
+diff --git a/libparted/filesys.c b/libparted/filesys.c
+index 531e8da3..a47dfa27 100644
+--- a/libparted/filesys.c
++++ b/libparted/filesys.c
+@@ -200,7 +200,7 @@ ped_file_system_probe_specific (
+ 	PED_ASSERT (geom != NULL);
+ 
+ 	if (!ped_device_open (geom->dev))
+-		return 0;
++		return NULL;
+ 	result = fs_type->ops->probe (geom);
+ 	ped_device_close (geom->dev);
+ 	return result;
+diff --git a/libparted/fs/amiga/amiga.c b/libparted/fs/amiga/amiga.c
+index a813e32c..43a027c6 100644
+--- a/libparted/fs/amiga/amiga.c
++++ b/libparted/fs/amiga/amiga.c
+@@ -70,7 +70,7 @@ _amiga_add_id (uint32_t id, struct AmigaIds *ids) {
+ 	if ((newid=ped_malloc(sizeof (struct AmigaIds)))==NULL) {
+ 		ped_exception_throw(PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
+ 			_("%s : Failed to allocate id list element\n"), __func__);
+-		return 0;
++		return NULL;
+ 	}
+ 	newid->ID = id;
+ 	newid->next = ids;
+diff --git a/libparted/fs/btrfs/btrfs.c b/libparted/fs/btrfs/btrfs.c
+index 371c99e4..bc17b628 100644
+--- a/libparted/fs/btrfs/btrfs.c
++++ b/libparted/fs/btrfs/btrfs.c
+@@ -44,9 +44,9 @@ btrfs_probe (PedGeometry* geom)
+         PedSector offset = (64*1024)/geom->dev->sector_size;
+ 
+         if (geom->length < offset+1)
+-                return 0;
++                return NULL;
+         if (!ped_geometry_read (geom, &buf, offset, 1))
+-                return 0;
++                return NULL;
+ 
+         if (PED_LE64_TO_CPU(buf.sb.magic) == BTRFS_MAGIC) {
+                 return ped_geometry_new (geom->dev, geom->start, geom->length);
+diff --git a/libparted/fs/ntfs/ntfs.c b/libparted/fs/ntfs/ntfs.c
+index 47d3cc25..8bd47414 100644
+--- a/libparted/fs/ntfs/ntfs.c
++++ b/libparted/fs/ntfs/ntfs.c
+@@ -40,7 +40,7 @@ ntfs_probe (PedGeometry* geom)
+ 	PedGeometry *newg = NULL;
+ 
+ 	if (!ped_geometry_read(geom, buf, 0, 1))
+-		return 0;
++		return NULL;
+ 
+ 	if (strncmp (NTFS_SIGNATURE, ((char *)buf + 3), strlen (NTFS_SIGNATURE)) == 0) {
+ 		uint64_t length;
+diff --git a/libparted/fs/r/fat/fat.c b/libparted/fs/r/fat/fat.c
+index 0d9b2ca2..679270f9 100644
+--- a/libparted/fs/r/fat/fat.c
++++ b/libparted/fs/r/fat/fat.c
+@@ -383,7 +383,7 @@ fat_copy (const PedFileSystem* fs, PedGeometry* geom, PedTimer* timer)
+ error_close_new_fs:
+ 	ped_file_system_close (new_fs);
+ error:
+-	return 0;
++	return NULL;
+ }
+ 
+ static int
+diff --git a/libparted/fs/r/fat/resize.c b/libparted/fs/r/fat/resize.c
+index 527b1c56..bec45d75 100644
+--- a/libparted/fs/r/fat/resize.c
++++ b/libparted/fs/r/fat/resize.c
+@@ -639,7 +639,7 @@ create_resize_context (PedFileSystem* fs, const PedGeometry* new_geom)
+ 						* sizeof (FatDirEntry) / 512;
+ 
+ 	if (!get_fat_type (fs, new_geom, &new_fat_type))
+-		return 0;
++		return NULL;
+ 
+ 	fat_calc_resize_sizes (new_geom, fs_info->cluster_sectors, new_fat_type,
+ 		root_dir_sector_count, fs_info->cluster_sectors,
+diff --git a/libparted/fs/ufs/ufs.c b/libparted/fs/ufs/ufs.c
+index d5e63bf3..f6265ea7 100644
+--- a/libparted/fs/ufs/ufs.c
++++ b/libparted/fs/ufs/ufs.c
+@@ -181,9 +181,9 @@ ufs_probe_sun (PedGeometry* geom)
+ 	struct ufs_super_block *sb;
+ 
+ 	if (geom->length < 5)
+-		return 0;
++		return NULL;
+ 	if (!ped_geometry_read (geom, buf, 16 * 512 / geom->dev->sector_size, sectors))
+-		return 0;
++		return NULL;
+ 
+ 	sb = (struct ufs_super_block *)buf;
+ 
+@@ -210,13 +210,13 @@ ufs_probe_hp (PedGeometry* geom)
+ 	PedSector block_count;
+ 
+ 	if (geom->length < 5)
+-		return 0;
++		return NULL;
+ 	const int	sectors = ((3 * 512) + geom->dev->sector_size - 1) /
+ 				   geom->dev->sector_size;
+ 	uint8_t*	buf = alloca (sectors * geom->dev->sector_size);
+ 
+ 	if (!ped_geometry_read (geom, buf, 16 * 512 / geom->dev->sector_size, sectors))
+-		return 0;
++		return NULL;
+ 
+ 	sb = (struct ufs_super_block *)buf;
+ 
+diff --git a/libparted/labels/atari.c b/libparted/labels/atari.c
+index fc13a7f7..dad296c0 100644
+--- a/libparted/labels/atari.c
++++ b/libparted/labels/atari.c
+@@ -1248,7 +1248,7 @@ atari_partition_new (const PedDisk* disk, PedPartitionType part_type,
+ 	AtariPart*	atrpart;
+ 
+ 	if (atr_xgm_in_icd(disk, part_type))
+-		return 0;
++		return NULL;
+ 
+ 	part = _ped_partition_alloc (disk, part_type, fs_type, start, end);
+ 	if (!part)
+diff --git a/libparted/labels/bsd.c b/libparted/labels/bsd.c
+index d484f147..51b0a621 100644
+--- a/libparted/labels/bsd.c
++++ b/libparted/labels/bsd.c
+@@ -400,7 +400,7 @@ bsd_partition_new (const PedDisk* disk, PedPartitionType part_type,
+ error_free_part:
+ 	free (part);
+ error:
+-	return 0;
++	return NULL;
+ }
+ 
+ static PedPartition*
+diff --git a/libparted/labels/dos.c b/libparted/labels/dos.c
+index 763b6dd4..9f886188 100644
+--- a/libparted/labels/dos.c
++++ b/libparted/labels/dos.c
+@@ -1486,7 +1486,7 @@ msdos_partition_new (const PedDisk* disk, PedPartitionType part_type,
+ error_free_part:
+ 	free (part);
+ error:
+-	return 0;
++	return NULL;
+ }
+ 
+ static PedPartition*
+diff --git a/libparted/labels/gpt.c b/libparted/labels/gpt.c
+index 780fb705..5a48b9bb 100644
+--- a/libparted/labels/gpt.c
++++ b/libparted/labels/gpt.c
+@@ -873,7 +873,7 @@ _parse_part_entry (PedDisk *disk, GuidPartitionEntry_t *pte)
+   for (i = 0; i < 36; i++)
+     gpt_part_data->name[i] = (efi_char16_t) pte->PartitionName[i];
+   gpt_part_data->name[i] = 0;
+-  gpt_part_data->translated_name = 0;
++  gpt_part_data->translated_name = NULL;
+   gpt_part_data->attributes = pte->Attributes;
+ 
+   return part;
+@@ -1379,7 +1379,7 @@ gpt_partition_new (const PedDisk *disk,
+     goto error_free_part;
+ 
+   gpt_part_data->type = PARTITION_LINUX_DATA_GUID;
+-  gpt_part_data->translated_name = 0;
++  gpt_part_data->translated_name = NULL;
+   uuid_generate ((unsigned char *) &gpt_part_data->uuid);
+   swap_uuid_and_efi_guid (&gpt_part_data->uuid);
+   memset (gpt_part_data->name, 0, sizeof gpt_part_data->name);
+@@ -1417,7 +1417,7 @@ gpt_partition_duplicate (const PedPartition *part)
+   if (part_data->translated_name) {
+     result_data->translated_name = xstrdup (part_data->translated_name);
+   } else {
+-    result_data->translated_name = 0;
++    result_data->translated_name = NULL;
+   }
+   return result;
+ 
+diff --git a/libparted/labels/pc98.c b/libparted/labels/pc98.c
+index 5da0930a..e2c33fc2 100644
+--- a/libparted/labels/pc98.c
++++ b/libparted/labels/pc98.c
+@@ -493,7 +493,7 @@ pc98_partition_new (
+ error_free_part:
+ 	free (part);
+ error:
+-	return 0;
++	return NULL;
+ }
+ 
+ static PedPartition*
+diff --git a/libparted/labels/rdb.c b/libparted/labels/rdb.c
+index fb8d05c7..d03bfe79 100644
+--- a/libparted/labels/rdb.c
++++ b/libparted/labels/rdb.c
+@@ -99,7 +99,7 @@ _amiga_add_id (uint32_t id, struct AmigaIds *ids) {
+ 	struct AmigaIds *newid;
+ 
+ 	if ((newid=ped_malloc(sizeof (struct AmigaIds)))==NULL)
+-		return 0;
++		return NULL;
+ 	newid->ID = id;
+ 	newid->next = ids;
+ 	return newid;
+diff --git a/parted/parted.c b/parted/parted.c
+index ac086ff0..7f3b81d0 100644
+--- a/parted/parted.c
++++ b/parted/parted.c
+@@ -568,7 +568,7 @@ do_mklabel (PedDevice** dev, PedDisk** diskp)
+ 
+ error_destroy_disk:
+         ped_disk_destroy (disk);
+-        *diskp = 0;
++        *diskp = NULL;
+ error:
+         return 0;
+ }
+@@ -1632,7 +1632,7 @@ _print_list ()
+                 do_print (&current_dev, &diskp);
+                 if (diskp)
+                         ped_disk_destroy (diskp);
+-                diskp = 0;
++                diskp = NULL;
+                 putchar ('\n');
+         }
+ 
+@@ -1802,7 +1802,7 @@ do_rescue (PedDevice** dev, PedDisk** diskp)
+ 
+         if (*diskp) {
+                 ped_disk_destroy (*diskp);
+-                *diskp = 0;
++                *diskp = NULL;
+         }
+         disk = ped_disk_new (*dev);
+         if (!disk)
+@@ -1975,7 +1975,7 @@ do_select (PedDevice** dev, PedDisk** diskp)
+         ped_device_close (*dev);
+         if (*diskp) {
+                 ped_disk_destroy (*diskp);
+-                *diskp = 0;
++                *diskp = NULL;
+         }
+         *dev = new_dev;
+         print_using_dev (*dev);
+@@ -2107,7 +2107,7 @@ do_set (PedDevice** dev, PedDisk **diskp)
+         PedPartitionFlag        flag;
+         int                     state;
+ 
+-        if (*diskp == 0)
++        if (*diskp == NULL)
+                 *diskp = ped_disk_new (*dev);
+         if (!*diskp)
+                 goto error;
+@@ -2678,7 +2678,7 @@ int
+ main (int argc, char** argv)
+ {
+         PedDevice*      dev;
+-	PedDisk*        diskp = 0;
++	PedDisk*        diskp = NULL;
+         int             status;
+ 
+         set_program_name (argv[0]);
+diff --git a/parted/ui.c b/parted/ui.c
+index 101c3910..3d491a24 100644
+--- a/parted/ui.c
++++ b/parted/ui.c
+@@ -1255,7 +1255,7 @@ _can_create_logical (const PedDisk* disk)
+         if (!ped_disk_type_check_feature (disk->type, PED_DISK_TYPE_EXTENDED))
+                 return 0;
+ 
+-        return ped_disk_extended_partition (disk) != 0;
++        return ped_disk_extended_partition (disk) != NULL;
+ }
+ 
+ int
+@@ -1648,7 +1648,7 @@ interactive_mode (PedDevice** dev, PedDisk** disk, Command* cmd_list[])
+ 
+                                         if (*disk) {
+                                                 ped_disk_destroy (*disk);
+-                                                *disk = 0;
++                                                *disk = NULL;
+                                         }
+                                 }
+                         } else
+-- 
+2.54.0
+

@@ -1,0 +1,8 @@
+{
+  "package": "python-evdev",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/python-evdev.git",
+  "commit": "8426e6f1e676b6e49c8e6da7d4dadd23d208452f",
+  "tree": "22cc8fc8c6ae43549c00a5b6f9d1509521cf9f92",
+  "imported_at": "2026-08-30T15:47:40.850891+00:00"
+}

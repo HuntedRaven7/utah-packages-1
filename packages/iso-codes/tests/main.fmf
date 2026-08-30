@@ -1,0 +1,7 @@
+test: ./runtests.sh
+duration: 10m
+framework: beakerlib
+require:
+  - iso-codes
+  - python3-jsonschema
+  - rpm-build

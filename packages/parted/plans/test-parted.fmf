@@ -1,0 +1,8 @@
+summary: Run a basic parted test
+prepare:
+    how: install
+    package:
+    - parted
+    - jq
+execute:
+    script: ./tests/scripts/run_tests.sh

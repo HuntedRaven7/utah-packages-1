@@ -1,0 +1,8 @@
+{
+  "package": "libayatana-indicator",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libayatana-indicator.git",
+  "commit": "51146465a67209be6c982e952b857649324bb4d7",
+  "tree": "d129dabe76c315ab18eb312e6860669d469ff7b3",
+  "imported_at": "2026-08-30T15:47:18.997438+00:00"
+}

@@ -1,0 +1,5 @@
+/libsecret-*.tar.xz
+/libsecret-*-build
+/.build-*.log
+/*.src.rpm
+/x86_64/

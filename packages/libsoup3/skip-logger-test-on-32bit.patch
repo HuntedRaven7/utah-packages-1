@@ -1,0 +1,30 @@
+From 559cd5da291203f76f33395080306faeddbdf626 Mon Sep 17 00:00:00 2001
+From: Luigi Pavan <lpavan@redhat.com>
+Date: Wed, 27 May 2026 16:16:32 +0200
+Subject: [PATCH] tests: Skip logger long-invalid-body-length test on 32-bit
+
+The test allocates G_MAXINT32 + 1 (2 GiB) bytes, which is not possible
+on 32-bit platforms due to virtual address space limitations.
+---
+ tests/logger-test.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tests/logger-test.c b/tests/logger-test.c
+index 2f749aa..4b793f0 100644
+--- a/tests/logger-test.c
++++ b/tests/logger-test.c
+@@ -468,6 +468,11 @@ do_logger_preconnect_test (void)
+ static void
+ do_logger_long_invalid_body_length_test (void)
+ {
++        if (sizeof (void *) <= 4) {
++                g_test_skip ("Test requires allocating 2 GiB, not possible on 32-bit");
++                return;
++        }
++
+         SoupSession *session;
+         SoupLogger *logger;
+         GUri *uri;
+-- 
+2.54.0
+

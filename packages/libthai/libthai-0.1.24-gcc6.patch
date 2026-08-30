@@ -1,0 +1,36 @@
+Index: ChangeLog
+===================================================================
+--- ChangeLog.orig
++++ ChangeLog
+@@ -28,6 +28,18 @@
+ 
+ 2015-11-22  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+ 
++	Fix compilation error with GCC 6
++
++	* include/thai/thctype.h (_th_bitmsk):
++	  - Use unsigned int instead of unsigned short for bitmask base,
++	    as GCC 6 takes ~0 as -1 for unsigned short,
++	    and causes compilation error for scim-thai.
++
++	Thanks Martin Michlmayr for the report via Debian #811690
++	http://bugs.debian.org/811690
++
++2016-01-20  Theppitak Karoonboonyanan  <theppitak@gmail.com>
++
+ 	* configure.ac: Post-release version suffix added.
+ 
+ 2015-10-22  Theppitak Karoonboonyanan  <theppitak@gmail.com>
+Index: include/thai/thctype.h
+===================================================================
+--- include/thai/thctype.h.orig
++++ include/thai/thctype.h
+@@ -363,7 +363,7 @@ extern int th_iscombchar(thchar_t c);
+ #include <ctype.h>
+ #define _th_ISbit(bit)  (1 << (bit))
+ #define _th_bitfld(base, val)  ((val) << (base))
+-#define _th_bitmsk(base, bits) (~((~(unsigned short)0) << (bits)) << (base))
++#define _th_bitmsk(base, bits) (~((~(unsigned)0) << (bits)) << (base))
+ 
+ enum {
+   _th_IStis   = _th_ISbit(0),        /* TIS-620 char */

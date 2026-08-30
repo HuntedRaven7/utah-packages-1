@@ -1,0 +1,8 @@
+{
+  "package": "geocode-glib",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/geocode-glib.git",
+  "commit": "26aac49256558c12e3e6d0d39a689940315a353b",
+  "tree": "c340326aa647d3f197f5bbb6b2d66eef2ed0ce03",
+  "imported_at": "2026-08-30T15:47:00.646794+00:00"
+}

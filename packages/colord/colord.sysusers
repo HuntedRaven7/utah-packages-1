@@ -1,0 +1,2 @@
+#Type Name    ID  GECOS              Home directory  Shell
+u     colord  -   "User for colord"  /var/lib/colord /sbin/nologin

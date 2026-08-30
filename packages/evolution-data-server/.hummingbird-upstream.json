@@ -1,0 +1,8 @@
+{
+  "package": "evolution-data-server",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/evolution-data-server.git",
+  "commit": "651b82a87363cb520f972361f3c8da507a19e9f6",
+  "tree": "07d4f44a0fdacf6825b3340574359189db7a70ed",
+  "imported_at": "2026-08-30T15:46:58.448708+00:00"
+}

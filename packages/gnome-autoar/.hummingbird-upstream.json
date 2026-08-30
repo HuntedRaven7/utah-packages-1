@@ -1,0 +1,8 @@
+{
+  "package": "gnome-autoar",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-autoar.git",
+  "commit": "399a4c68a4eaba32082965f3db26244c9b0e7b44",
+  "tree": "386545a126552f13c0bbc9248e4d8f2cdbc372b8",
+  "imported_at": "2026-08-30T15:47:03.658880+00:00"
+}

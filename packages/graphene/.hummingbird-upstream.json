@@ -1,0 +1,8 @@
+{
+  "package": "graphene",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/graphene.git",
+  "commit": "a9e4ccd8b129552713d1bef29b79c388158c58c9",
+  "tree": "4e34a7bf87852a264c2d5e99ad5e29da6187ebdb",
+  "imported_at": "2026-08-30T15:47:07.000992+00:00"
+}

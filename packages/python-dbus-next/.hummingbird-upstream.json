@@ -1,0 +1,8 @@
+{
+  "package": "python-dbus-next",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/python-dbus-next.git",
+  "commit": "73d3fc468707f6182d0ba693e5155227cda49fab",
+  "tree": "1d33aa25ddd205b57021fa663adcee47027d465d",
+  "imported_at": "2026-08-30T15:47:40.908431+00:00"
+}

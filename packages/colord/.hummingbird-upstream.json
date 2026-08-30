@@ -1,0 +1,8 @@
+{
+  "package": "colord",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/colord.git",
+  "commit": "ce3987b44223e38ac561fec45910e81dc30b7357",
+  "tree": "59f6977bc53123459963ecdd711509412b789181",
+  "imported_at": "2026-08-30T15:46:56.287209+00:00"
+}

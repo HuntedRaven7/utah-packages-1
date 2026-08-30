@@ -1,0 +1,15 @@
+# packit config for vulkan-loader
+# Build Stage 2 - depends on vulkan-headers
+
+jobs:
+  - job: koji_build
+    trigger: commit | koji_build
+    allowed_committers: [all_admins]
+    dist_git_branches:
+      - fedora-all
+    sidetag_group: vulkan-sdk-releases
+    dependencies:
+      - vulkan-headers
+    dependents:
+      - vulkan-utility-libraries
+      - vulkan-volk

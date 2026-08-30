@@ -1,0 +1,8 @@
+{
+  "package": "hicolor-icon-theme",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/hicolor-icon-theme.git",
+  "commit": "097281c35d7451e51d03b8ff44eceac903e5c9cd",
+  "tree": "c628f6acf32f0d2c755ea37a41e46fc006b4d531",
+  "imported_at": "2026-08-30T15:47:09.826804+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "package": "gnome-online-accounts",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-online-accounts.git",
+  "commit": "8f9dccdf77b35b7760879d008e61b63ec14aefa3",
+  "tree": "fb18dc184ae491beccba55d48dd728d71469fca8",
+  "imported_at": "2026-08-30T15:47:04.799315+00:00"
+}

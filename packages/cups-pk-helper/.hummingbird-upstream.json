@@ -1,0 +1,8 @@
+{
+  "package": "cups-pk-helper",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/cups-pk-helper.git",
+  "commit": "68d894ab19341c335d667e0ff926096252bef23b",
+  "tree": "a29db5aeb298cdb7be37a2d4264442da446600a7",
+  "imported_at": "2026-08-30T15:46:55.444742+00:00"
+}

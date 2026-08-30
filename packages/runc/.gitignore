@@ -1,0 +1,5 @@
+# ignore fedpkg artifacts
+results*
+
+/runc-*.tar.gz
+/runc-*.tar.bz2

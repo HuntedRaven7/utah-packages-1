@@ -1,0 +1,8 @@
+{
+  "package": "liboping",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/liboping.git",
+  "commit": "1de36a3c2038bb6a61559dc77d2122bbd67660c5",
+  "tree": "13bcc58fe1cdab90bf3206419b57b0627aae6798",
+  "imported_at": "2026-08-30T15:47:28.927679+00:00"
+}

@@ -1,0 +1,2 @@
+* Thu Aug 04 2022 Michael Catanzaro <mcatanzaro@redhat.com> - 2.37.1-12
+- Initial import. This manual changelog entry hides the repo's long git history from rpm-autospec.

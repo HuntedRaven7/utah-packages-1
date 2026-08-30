@@ -1,0 +1,4 @@
+/shared-mime-info-*.tar.bz2
+/shared-mime-info-*.tar.xz
+/shared-mime-info-*/
+/xdgmime-*.tar.bz2

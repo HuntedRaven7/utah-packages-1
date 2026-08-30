@@ -1,0 +1,20 @@
+- hosts: localhost
+  roles:
+  - role: standard-test-source
+    tags:
+    - classic
+  - role: standard-test-basic
+    tags:
+    - classic
+    required_packages:
+    - python3
+    - python3-dasbus
+    - dbus-daemon
+    tests:
+    - smoke_test:
+        dir: .
+        run: python3 -c "import dasbus"
+    - unit_tests:
+        dir: .
+        run: python3 -m unittest discover -v -s ./source/tests/
+

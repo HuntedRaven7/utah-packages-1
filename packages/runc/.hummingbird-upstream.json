@@ -1,0 +1,8 @@
+{
+  "package": "runc",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/runc.git",
+  "commit": "e3d4ef3e826a6675bc3a6d44aad2ac7c954ca29d",
+  "tree": "85cdb2546de9fdf5ef8be28a6446a79b878ed3e3",
+  "imported_at": "2026-08-30T15:47:47.761846+00:00"
+}

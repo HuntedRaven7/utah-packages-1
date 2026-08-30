@@ -1,0 +1,8 @@
+{
+  "package": "python-dasbus",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/python-dasbus.git",
+  "commit": "b510773d6bbdf95cc164fec0d6df937bdea366c8",
+  "tree": "d28220bc3dd414e5d4a1722713ad48cac0b9712d",
+  "imported_at": "2026-08-30T15:47:40.818441+00:00"
+}

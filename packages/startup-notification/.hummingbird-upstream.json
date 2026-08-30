@@ -1,0 +1,8 @@
+{
+  "package": "startup-notification",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/startup-notification.git",
+  "commit": "a9616008d19b9ed24591f8751564c40f1d78c741",
+  "tree": "20a44b243185c896feba71d6af3b81f215a5e408",
+  "imported_at": "2026-08-30T15:47:51.246972+00:00"
+}

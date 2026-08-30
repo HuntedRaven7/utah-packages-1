@@ -1,0 +1,8 @@
+{
+  "package": "gjs",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gjs.git",
+  "commit": "81d8ab1bd4e042a506b6da0bbabbf0a2aef0f5f5",
+  "tree": "bd1eafed1abfba50879ed8a2dda8438333ab0157",
+  "imported_at": "2026-08-30T15:47:04.834953+00:00"
+}

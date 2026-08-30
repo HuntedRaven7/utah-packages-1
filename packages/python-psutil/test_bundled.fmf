@@ -1,0 +1,19 @@
+framework: shell
+require:
+- python3
+- python3-pytest
+- python3-psutil
+- procps-ng
+environment:
+  # see the comment in %check
+  GITHUB_ACTIONS: 1
+# test_all also skipped in %check: not reliable?
+# test_sensors_temperatures also skipped in %check: https://github.com/giampaolo/psutil/issues/2434
+# test_users: https://github.com/giampaolo/psutil/issues/2653
+# TestSetupScript tests setup.py, not the installed project
+test: |
+  cd $(dirname $TMT_SOURCE_DIR/*/tests)
+  rm psutil -rf
+  python3 -m pytest tests -k "not (test_process_all and test_all) and not (test_system and test_sensors_temperatures and not fahreneit) and not (TestSystemAPIs and test_users) and not test_disk_partitions_mocked and not TestSetupScript" --ignore tests/test_memleaks.py
+tty: true
+duration: 15m

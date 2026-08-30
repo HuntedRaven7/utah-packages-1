@@ -1,0 +1,8 @@
+{
+  "package": "libdbusmenu",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libdbusmenu.git",
+  "commit": "6da4d302511db675de507b07f7adc3fcd032705b",
+  "tree": "a8c71c3a254dac81696acd0844370e111f98baac",
+  "imported_at": "2026-08-30T15:47:18.772474+00:00"
+}

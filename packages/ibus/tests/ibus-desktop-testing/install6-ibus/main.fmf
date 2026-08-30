@@ -1,0 +1,10 @@
+summary: Install ibus specific packages
+description:
+    The listed packages are required by CI of ibus core.
+require:
+    - ibus-tests
+    # ibus-compose test needs locales
+    - glibc-langpack-el
+    - glibc-langpack-fi
+    - glibc-langpack-ja
+    - glibc-langpack-pt

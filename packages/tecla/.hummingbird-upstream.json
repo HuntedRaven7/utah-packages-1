@@ -1,0 +1,8 @@
+{
+  "package": "tecla",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/tecla.git",
+  "commit": "1af2267f8915485ab6947567d88056ac182c2ea3",
+  "tree": "4cd97191635c95c50c670b670a5940c53487b15d",
+  "imported_at": "2026-08-30T15:47:50.186064+00:00"
+}

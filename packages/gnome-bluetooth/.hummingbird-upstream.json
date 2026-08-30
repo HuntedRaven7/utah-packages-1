@@ -1,0 +1,8 @@
+{
+  "package": "gnome-bluetooth",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gnome-bluetooth.git",
+  "commit": "d1cf55c1cab7edb0c86581e52dfd330fd2fde4c9",
+  "tree": "6ce0cf23b5ebbf3721c6d8613144de66c826904d",
+  "imported_at": "2026-08-30T15:47:04.500392+00:00"
+}

@@ -1,0 +1,40 @@
+From 623efe336621a30bb4fcbb438d48ff60317535c4 Mon Sep 17 00:00:00 2001
+From: "bug-parted@gnu.org" <bug-parted@gnu.org>
+Date: Fri, 10 Apr 2026 10:44:56 +0000
+Subject: [PATCH 1/4] bug#80795: [PATCH] build: mark functions with const
+ attribute, per gcc warnings
+
+fixes warning since glibc-2.43
+
+For ISO C23, the functions wcschr that return pointers into their
+input arrays now have definitions as macros that return a pointer
+to a const-qualified type when the input argument is a pointer to a
+const-qualified type.
+
+../../parted/strlist.c: In function 'wchar_strchr':
+../../parted/strlist.c:61:16: warning: return discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+   61 |         return wcschr (str, ch);
+      |                ^~~~~~
+
+Signed-off-by: Rudi Heitbaum <rudi@heitbaum.com>
+Signed-off-by: Brian C. Lane <bcl@redhat.com>
+---
+ parted/strlist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/parted/strlist.c b/parted/strlist.c
+index 42fa9726..f78cc080 100644
+--- a/parted/strlist.c
++++ b/parted/strlist.c
+@@ -54,7 +54,7 @@ wchar_strlen (const wchar_t* str)
+ #endif
+ }
+ 
+-static wchar_t * _GL_ATTRIBUTE_PURE
++static const wchar_t * _GL_ATTRIBUTE_PURE
+ wchar_strchr (const wchar_t* str, char ch)
+ {
+ #ifdef ENABLE_NLS
+-- 
+2.54.0
+

@@ -1,0 +1,8 @@
+{
+  "package": "libsoup3",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/libsoup3.git",
+  "commit": "b81be5e148950ba48774ea5bdd8c68b4ea5eb3a0",
+  "tree": "97bee6d578439cef2e7213c611bbf56309d2e1c1",
+  "imported_at": "2026-08-30T15:47:29.126539+00:00"
+}

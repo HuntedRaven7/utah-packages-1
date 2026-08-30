@@ -1,0 +1,8 @@
+{
+  "package": "python-psutil",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/python-psutil.git",
+  "commit": "5e7775859b7dbb273a36cd0a90ad47faedfec681",
+  "tree": "ef47d952249af5b0528c5ec647dc2d8e4d6a48fd",
+  "imported_at": "2026-08-30T15:47:41.437986+00:00"
+}

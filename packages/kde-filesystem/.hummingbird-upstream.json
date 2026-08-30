@@ -1,0 +1,8 @@
+{
+  "package": "kde-filesystem",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/kde-filesystem.git",
+  "commit": "4f395f604e7ed4011226d72aa27bff0bb7b2aee2",
+  "tree": "4724f1aa1376262181014848ec25624fb69e8a60",
+  "imported_at": "2026-08-30T15:47:12.584450+00:00"
+}
