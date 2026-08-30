@@ -1,0 +1,8 @@
+{
+  "package": "gdm",
+  "branch": "rawhide",
+  "remote": "https://src.fedoraproject.org/rpms/gdm.git",
+  "commit": "fafadbdd7cf904407405b46f5d267316a9d25ddb",
+  "tree": "3e4f06795b7cf500b08032947defc1dfbf836149",
+  "imported_at": "2026-08-30T02:35:46.365516+00:00"
+}
