@@ -1,8 +1,0 @@
-{
-  "package": "qt6-qtwebengine",
-  "branch": "rawhide",
-  "remote": "https://src.fedoraproject.org/rpms/qt6-qtwebengine.git",
-  "commit": "a4d311c2ea6fdd51952f1ad7c4f4774c765ecb60",
-  "tree": "cf056748540f7f041e50a4a0d0dad8f08d4decdc",
-  "imported_at": "2026-08-30T15:47:48.420322+00:00"
-}

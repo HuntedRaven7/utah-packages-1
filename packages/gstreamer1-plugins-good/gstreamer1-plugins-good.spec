@@ -23,11 +23,9 @@
 %bcond_without qt5
 %endif
 
-%if 0%{?rhel} && 0%{?rhel} < 10
+# Utah does not ship the Qt/QML plugin; avoid introducing the Qt WebEngine
+# closure solely to build a non-GNOME multimedia sink.
 %bcond_with qt6
-%else
-%bcond_without qt6
-%endif
 
 #global gitrel     140
 #global gitcommit  9865730cfa5b3a8b2560d082e7e56b350042d3d2
@@ -88,7 +86,9 @@ BuildRequires:  mesa-libEGL-devel
 BuildRequires:  lame-devel
 BuildRequires:  mpg123-devel
 BuildRequires:  twolame-devel
+%if %{with qt6}
 BuildRequires:  qt6-qtshadertools
+%endif
 %if %{with nasm}
 BuildRequires:  nasm
 %endif

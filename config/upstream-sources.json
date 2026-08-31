@@ -1073,44 +1073,6 @@
       "stage": 0
     },
     {
-      "name": "qt6-qtdeclarative",
-      "version": "6.11.2",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtdeclarative/qtdeclarative-everywhere-src-6.11.2.tar.xz/sha512/012eeaeb9c492d31a71d463a8abe13ebc5ae0661677977c738082f95576befe123df80cf45bd2733ef7a5ed897693234a3a6c5e7060be01757424dca397e0056/qtdeclarative-everywhere-src-6.11.2.tar.xz",
-      "filename": "qtdeclarative-everywhere-src-6.11.2.tar.xz",
-      "sha512": "012eeaeb9c492d31a71d463a8abe13ebc5ae0661677977c738082f95576befe123df80cf45bd2733ef7a5ed897693234a3a6c5e7060be01757424dca397e0056",
-      "stage": 1
-    },
-    {
-      "name": "qt6-qtlanguageserver",
-      "version": "6.11.2",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtlanguageserver/qtlanguageserver-everywhere-src-6.11.2.tar.xz/sha512/7701c2e655d6d363ee97bb58fa7eba386103882bd88aeec59c87a52c412f1e35e5b17989f6af7f2e8fd7137d404769a8f217d7e93a3ff3b52057bd9e202edf36/qtlanguageserver-everywhere-src-6.11.2.tar.xz",
-      "filename": "qtlanguageserver-everywhere-src-6.11.2.tar.xz",
-      "sha512": "7701c2e655d6d363ee97bb58fa7eba386103882bd88aeec59c87a52c412f1e35e5b17989f6af7f2e8fd7137d404769a8f217d7e93a3ff3b52057bd9e202edf36"
-    },
-    {
-      "name": "qt6-qtshadertools",
-      "version": "6.11.2",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtshadertools/qtshadertools-everywhere-src-6.11.2.tar.xz/sha512/511a1c5b05cbe8920cc5750b0384299438fe770755c217b1b96029018799904c039305d36c77fcd718e949e5602104a718a37f2f1a1076185541eaa83238d15d/qtshadertools-everywhere-src-6.11.2.tar.xz",
-      "filename": "qtshadertools-everywhere-src-6.11.2.tar.xz",
-      "sha512": "511a1c5b05cbe8920cc5750b0384299438fe770755c217b1b96029018799904c039305d36c77fcd718e949e5602104a718a37f2f1a1076185541eaa83238d15d"
-    },
-    {
-      "name": "qt6-qtwebengine",
-      "version": "6.11.2",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtwebengine/pulseaudio-12.2-headers.tar.gz/sha512/a5a9bcbb16030b3bc83cc0cc8f5e7f90e0723d3e83258a5c77eacb32eaa267118a73fa7814fbcc99a24e4907916a2b371ebb6dedc4f45541c3acf6c834fd35be/pulseaudio-12.2-headers.tar.gz",
-      "filename": "pulseaudio-12.2-headers.tar.gz",
-      "sha512": "a5a9bcbb16030b3bc83cc0cc8f5e7f90e0723d3e83258a5c77eacb32eaa267118a73fa7814fbcc99a24e4907916a2b371ebb6dedc4f45541c3acf6c834fd35be",
-      "stage": 1
-    },
-    {
-      "name": "qt6-qtwebview",
-      "version": "6.11.2",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/qt6-qtwebview/qtwebview-everywhere-src-6.11.2.tar.xz/sha512/46477f18e0286f6d7a8baa0f1956d4d8b0d99d7f5cc52fc1087020d0a8b6729da1061993e2110c091d1b38fc8912aad0c556ef356de527ca50dd5289db9e963d/qtwebview-everywhere-src-6.11.2.tar.xz",
-      "filename": "qtwebview-everywhere-src-6.11.2.tar.xz",
-      "sha512": "46477f18e0286f6d7a8baa0f1956d4d8b0d99d7f5cc52fc1087020d0a8b6729da1061993e2110c091d1b38fc8912aad0c556ef356de527ca50dd5289db9e963d",
-      "stage": 1
-    },
-    {
       "name": "runc",
       "version": "1.5.1",
       "url": "https://src.fedoraproject.org/repo/pkgs/rpms/runc/runc-1.5.1.tar.gz/sha512/4a96870af3146203a001e08d9a0330f6234f8f0b2efe62e123a4f9b131b73967482954f658d53258e19444630c18981b5d7ef805ab736ca16a69f783f39db182/runc-1.5.1.tar.gz",
