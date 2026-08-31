@@ -66,6 +66,24 @@ def fetch(url: str, destination: Path) -> None:
     raise RuntimeError(f"failed to fetch {url} after {FETCH_ATTEMPTS} attempts: {last}") from last
 
 
+def fetch_with_fallbacks(urls: list[str], destination: Path) -> str:
+    """Fetch the upstream source first, falling back only on transport failure.
+
+    A fallback is an availability mirror, never a replacement for integrity:
+    the caller still validates the configured SHA-512 (and, where present, the
+    upstream signature/checksum manifest).  A fetched file whose digest is
+    wrong must fail closed rather than quietly trying another source.
+    """
+    errors: list[str] = []
+    for url in urls:
+        try:
+            fetch(url, destination)
+            return url
+        except RuntimeError as error:
+            errors.append(f"{url}: {error}")
+    raise RuntimeError("all source URLs failed: " + "; ".join(errors))
+
+
 def verify_signature(package: dict, target: Path, directory: Path) -> None:
     key, signature_url = package.get("gpg_key"), package.get("signature_url")
     if bool(key) != bool(signature_url):
@@ -159,9 +177,12 @@ def main() -> int:
         target_dir.mkdir(parents=True, exist_ok=True)
         filename = package.get("filename") or Path(urllib.parse.urlparse(url).path).name or f"{name}.source"
         candidate = target_dir / f"{filename}.candidate"
+        fallback_urls = package.get("fallback_urls", [])
+        if not isinstance(fallback_urls, list) or not all(isinstance(item, str) and item for item in fallback_urls):
+            raise SystemExit("invalid direct-source entry: fallback_urls must be a list of non-empty URLs")
         report: dict[str, object] = {"package": name, "url": url, "checked_at": datetime.now(UTC).isoformat()}
         try:
-            fetch(url, candidate)
+            resolved_url = fetch_with_fallbacks([url, *fallback_urls], candidate)
             actual = digest(candidate, "sha512")
             if actual != expected:
                 raise ValueError(f"SHA-512 mismatch: expected {expected}, got {actual}")
@@ -175,7 +196,7 @@ def main() -> int:
             final = target_dir / filename
             candidate.replace(final)
             bundled = bundled_sources(package, target_dir, filename)
-            report.update({"result": "accepted", "sha512": actual, "file": str(final)})
+            report.update({"result": "accepted", "sha512": actual, "file": str(final), "resolved_url": resolved_url})
             if bundled:
                 report["bundled"] = bundled
         except Exception as error:  # Do not replace an accepted source.
