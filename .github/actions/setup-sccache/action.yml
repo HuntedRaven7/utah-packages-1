@@ -1,0 +1,35 @@
+name: Setup pinned sccache
+description: Download a SHA-256-locked sccache client and expose GitHub Actions cache credentials.
+runs:
+  using: composite
+  steps:
+    - name: Expose GitHub Actions cache credentials
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+      with:
+        script: |
+          core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+          core.exportVariable('ACTIONS_CACHE_SERVICE_V2', 'on');
+    - name: Download and verify sccache
+      shell: bash
+      run: |
+        set -euo pipefail
+        version=v0.16.0
+        sha256=aec995a83ad3dff3d14b6314e08858b7b73d35ca85a5bcf3d3a9ec07dee35588
+        archive="$RUNNER_TEMP/sccache-${version}-x86_64-unknown-linux-musl.tar.gz"
+        url="https://github.com/mozilla/sccache/releases/download/${version}/sccache-${version}-x86_64-unknown-linux-musl.tar.gz"
+        curl --fail --location --retry 3 --proto '=https' --tlsv1.2 "$url" --output "$archive"
+        printf '%s  %s\n' "$sha256" "$archive" | sha256sum --check --strict
+        tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP"
+        binary="$RUNNER_TEMP/sccache-${version}-x86_64-unknown-linux-musl/sccache"
+        test -x "$binary"
+        mkdir -p "$GITHUB_WORKSPACE/work/tools"
+        install -m 0755 "$binary" "$GITHUB_WORKSPACE/work/tools/sccache"
+        {
+          printf "export SCCACHE_GHA_ENABLED=%q\\n" true
+          printf "export ACTIONS_CACHE_SERVICE_V2=%q\\n" "${ACTIONS_CACHE_SERVICE_V2:?}"
+          printf "export ACTIONS_RESULTS_URL=%q\\n" "${ACTIONS_RESULTS_URL:?}"
+          printf "export ACTIONS_RUNTIME_TOKEN=%q\\n" "${ACTIONS_RUNTIME_TOKEN:?}"
+        } > "$GITHUB_WORKSPACE/work/tools/sccache.env"
+        echo "SCCACHE_PATH=$GITHUB_WORKSPACE/work/tools/sccache" >> "$GITHUB_ENV"
+        echo "SCCACHE_GHA_ENABLED=true" >> "$GITHUB_ENV"

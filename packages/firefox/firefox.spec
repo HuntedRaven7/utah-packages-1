@@ -858,12 +858,36 @@ echo "export NM=\"llvm-nm\"" >> .mozconfig
 echo "export RANLIB=\"llvm-ranlib\"" >> .mozconfig
 echo "ac_add_options --enable-linker=lld" >> .mozconfig
 %else
-echo "export CC=gcc" >> .mozconfig
-echo "export CXX=g++" >> .mozconfig
 echo "export AR=\"gcc-ar\"" >> .mozconfig
 echo "export NM=\"gcc-nm\"" >> .mozconfig
 echo "export RANLIB=\"gcc-ranlib\"" >> .mozconfig
 %endif
+# GitHub-hosted runners expose a SHA-256-pinned sccache client at this path.
+# Keep local/upstream builds functional when it is absent, and retain PGO/LTO:
+# caching reduces repeated compilation but does not change emitted code.
+if [ -x /work/tools/sccache ] && [ -r /work/tools/sccache.env ]; then
+    # rpmbuild traces %build by default. Do not write the short-lived Actions
+    # cache token from sccache.env to CI logs.
+    case "$-" in *x*) sccache_restore_xtrace=1; set +x ;; *) sccache_restore_xtrace=0 ;; esac
+    . /work/tools/sccache.env
+    if [ "$sccache_restore_xtrace" = 1 ]; then set -x; fi
+    %if %{with build_with_clang}
+    echo "export CC=\"/work/tools/sccache clang\"" >> .mozconfig
+    echo "export CXX=\"/work/tools/sccache clang++\"" >> .mozconfig
+    %else
+    echo "export CC=\"/work/tools/sccache gcc\"" >> .mozconfig
+    echo "export CXX=\"/work/tools/sccache g++\"" >> .mozconfig
+    %endif
+    echo "export RUSTC_WRAPPER=\"/work/tools/sccache\"" >> .mozconfig
+else
+    %if %{with build_with_clang}
+    echo "export CC=clang" >> .mozconfig
+    echo "export CXX=clang++" >> .mozconfig
+    %else
+    echo "export CC=gcc" >> .mozconfig
+    echo "export CXX=g++" >> .mozconfig
+    %endif
+fi
 %if 0%{?build_with_pgo}
 # PGO build doesn't work with ccache
 echo "export CCACHE_DISABLE=1" >> .mozconfig
@@ -912,6 +936,9 @@ tar xf %{SOURCE37}
 sed -i -e 's|#!/usr/bin/env python3|#!/usr/bin/env python3.11|' mach
 
 ./mach build -v 2>&1 | cat - || exit 1
+if [ -x /work/tools/sccache ]; then
+    /work/tools/sccache --show-stats || true
+fi
 
 %if %{build_with_pgo}
 kill $MUTTER_PID

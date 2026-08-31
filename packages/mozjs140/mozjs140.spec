@@ -126,6 +126,16 @@ export AWK=awk
 export AC_MACRODIR=./build/autoconf/
 
 pushd js/src/
+# The GitHub factory mounts a pinned sccache client in /work. Keep this
+# optional so the imported recipe remains directly buildable outside CI.
+if test -x /work/tools/sccache && test -r /work/tools/sccache.env; then
+  # rpmbuild traces %build; source the short-lived cache credentials quietly.
+  case "$-" in *x*) sccache_restore_xtrace=1; set +x ;; *) sccache_restore_xtrace=0 ;; esac
+  . /work/tools/sccache.env
+  if test "$sccache_restore_xtrace" = 1; then set -x; fi
+  export CC="/work/tools/sccache gcc"
+  export CXX="/work/tools/sccache g++"
+fi
 %configure \
   --with-system-icu \
   --with-system-zlib \
@@ -140,6 +150,9 @@ pushd js/src/
   --disable-jemalloc
 
 %make_build
+if test -x /work/tools/sccache; then
+  /work/tools/sccache --show-stats || true
+fi
 
 %install
 pushd js/src/

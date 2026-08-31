@@ -233,6 +233,22 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-sccache
+      - name: Add best-effort swap for Firefox PGO/LTO
+        if: matrix.package == 'firefox'
+        run: |
+          set -euo pipefail
+          available_gib=$(df --output=avail -BG "$RUNNER_TEMP" | tail -n1 | tr -dc 0-9)
+          if [ "$available_gib" -lt 20 ]; then
+            echo "Only ${available_gib} GiB free; skipping extra swap to preserve build disk" >&2
+            exit 0
+          fi
+          swapfile="$RUNNER_TEMP/firefox-pgo.swap"
+          sudo fallocate -l 12G "$swapfile"
+          sudo chmod 600 "$swapfile"
+          sudo mkswap "$swapfile"
+          sudo swapon "$swapfile" || { echo "Host does not permit extra swap" >&2; exit 0; }
+          free -h
       - name: Fetch and verify direct upstream source
         env:
           PACKAGE: ${{ matrix.package }}
@@ -434,6 +450,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-sccache
       - name: Collect RPMs built by earlier stages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -642,6 +659,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-sccache
       - name: Collect RPMs built by earlier stages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -850,6 +868,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-sccache
       - name: Collect RPMs built by earlier stages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -1058,6 +1077,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/setup-sccache
       - name: Collect RPMs built by earlier stages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
