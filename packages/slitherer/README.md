@@ -1,3 +1,0 @@
-# slitherer
-
-The slitherer package

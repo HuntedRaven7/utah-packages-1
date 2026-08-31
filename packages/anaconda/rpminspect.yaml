@@ -1,4 +1,0 @@
----
-desktop:
-    skip_icon_check:
-        - /usr/share/applications/liveinst.desktop

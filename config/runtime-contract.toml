@@ -40,6 +40,9 @@ packages = [
 # it in this transaction means publication validates the same known debt Utah
 # currently carries rather than silently widening it.
 packages = [
+  # Bluefin carries this as an installer web-engine dependency. Utah uses the
+  # bootc-installer live path, not Anaconda WebUI or Slitherer.
+  "slitherer",
   "evolution-ews-core",
   "fish",
   "tailscale",

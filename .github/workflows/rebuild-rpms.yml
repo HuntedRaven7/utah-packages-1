@@ -198,8 +198,8 @@ jobs:
                 #
                 # "cannot install both" is a version conflict between the layered
                 # repositories and what @System already carries, and it has been
-                # wrong every time so far -- anaconda and slitherer both produced
-                # one and both built successfully in the same run. The resolution
+                # not a reliable predictor: packages have built successfully after
+                # reporting one here. The resolution
                 # this job performs is not the one the build performs, so conflicts
                 # are recorded separately and must not be treated as gaps.
                 missing=$(printf "%s\n" "$output" \
