@@ -1357,7 +1357,7 @@
       "name": "intel-media-driver-free",
       "version": "26.2.4",
       "filename": "intel-media-26.2.4-free.tar.gz",
-      "sha512": "748a17e6defdd4c643900eb7932334ee8103a36b9465b6bd7d48b8fd30529fccc285ce7990924af777542f8ea5c0747f919e85649bc4a7940954a9a7ca9fb203",
+      "sha512": "bee1f5c133917d01dfd46356c56ec62b4757da25db3003ef09c4c2ea7c903eb5cc2da58b21a8bdfe4433207d411279311490aacfa8845fb9df67e26608fd1096",
       "generate": {
         "script": "tools/generated_sources.py",
         "input": "https://github.com/intel/media-driver/archive/intel-media-26.2.4.tar.gz (sha512-pinned)",

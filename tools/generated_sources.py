@@ -185,16 +185,24 @@ def _imd_transform(archive: bytes, version: str) -> bytes:
             name = name.rstrip("/")
             return any(name == item or name.startswith(item + "/") for item in doomed)
 
-        output = io.BytesIO()
-        with gzip.GzipFile(filename="", mode="wb", fileobj=output, compresslevel=9, mtime=0) as gz:
-            with tarfile.open(fileobj=gz, mode="w", format=tarfile.PAX_FORMAT) as result:
-                for member in sorted(members, key=lambda m: m.name):
-                    if dropped(member.name):
-                        continue
-                    member.uid = member.gid = 0
-                    member.uname = member.gname = ""
-                    result.addfile(member, source.extractfile(member) if member.isreg() else None)
-        return output.getvalue()
+        tar_buf = io.BytesIO()
+        with tarfile.open(fileobj=tar_buf, mode="w", format=tarfile.PAX_FORMAT) as result:
+            for member in sorted(members, key=lambda m: m.name):
+                if dropped(member.name):
+                    continue
+                member.uid = member.gid = 0
+                member.uname = member.gname = ""
+                result.addfile(member, source.extractfile(member) if member.isreg() else None)
+        tar_bytes = tar_buf.getvalue()
+        proc = subprocess.Popen(
+            ["gzip", "-n", "-9"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+        )
+        out, _ = proc.communicate(tar_bytes)
+        if proc.returncode != 0:
+            raise RuntimeError("gzip failed")
+        return out
 
 
 def _imd_metadata(package_dir: Path) -> dict:
