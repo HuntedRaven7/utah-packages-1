@@ -39,68 +39,23 @@ permissions:
   contents: read
 
 jobs:
+  discover:
+    runs-on: ubuntu-24.04
+    outputs:
+      packages: ${{ steps.packages.outputs.packages }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: packages
+        run: |
+          echo "packages=$(python3 tools/packit_workflow.py packages)" >> "$GITHUB_OUTPUT"
+
   srpm:
+    needs: discover
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        # All 54 packages that carry a leftover .packit.yaml. This list must
-        # match packages: in the root .packit.yaml.
-        package:
-          - adw-gtk3-theme
-          - adwaita-fonts
-          - adwaita-icon-theme
-          - at-spi2-core
-          - bootc
-          - dconf
-          - distrobox
-          - fzf
-          - gcr
-          - gdk-pixbuf2
-          - gdm
-          - geocode-glib
-          - gjs
-          - gnome-autoar
-          - gnome-bluetooth
-          - gnome-control-center
-          - gnome-online-accounts
-          - gnome-session
-          - gnome-settings-daemon
-          - gnome-shell
-          - gobject-introspection
-          - gsettings-desktop-schemas
-          - gsound
-          - gtk3
-          - gtk4
-          - gvfs
-          - igt-gpu-tools
-          - json-glib
-          - libadwaita
-          - libblockdev
-          - libbytesize
-          - libdrm
-          - libgtop2
-          - libgweather
-          - libheif
-          - libnotify
-          - libsecret
-          - libsoup3
-          - libxcrypt
-          - localsearch
-          - mesa
-          - mutter
-          - nautilus
-          - nautilus-python
-          - openrgb
-          - pango
-          - python-argcomplete
-          - runc
-          - tecla
-          - vulkan-headers
-          - vulkan-loader
-          - xdg-desktop-portal-gnome
-          - xrefresh
-          - zenity
+        package: ${{ fromJson(needs.discover.outputs.packages) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 
-PACKAGE_KEY = re.compile(r"^  ([a-z0-9][a-z0-9+.-]*):$")
+PACKAGE_KEY = re.compile(r"^  ([a-zA-Z0-9][a-zA-Z0-9+.-]*):$")
 
 
 def package_names(config: Path) -> list[str]:

@@ -12,27 +12,26 @@ PACKIT_WORKFLOW = ROOT / ".github" / "workflows" / "packit-srpm-pilot.yml"
 SOURCE_CONFIG = ROOT / "config" / "upstream-sources.json"
 
 
+from tools.packit_workflow import package_names
+
+
 class PackitSrpmTests(unittest.TestCase):
     def test_workflow_stages_verified_sources_for_every_configured_package(self) -> None:
-        package_config = PACKIT_CONFIG.read_text().split("packages:\n", 1)[1]
-        config_packages = {
-            match.group(1)
-            for line in package_config.splitlines()
-            if (match := re.fullmatch(r"  ([a-z0-9][a-z0-9+.-]*):", line))
-        }
+        config_packages = set(package_names(PACKIT_CONFIG))
         workflow = PACKIT_WORKFLOW.read_text()
-        matrix_packages = set(re.findall(r"^          - ([a-z0-9][a-z0-9+.-]*)$", workflow, re.MULTILINE))
         source_packages = {
             package["name"]
             for package in json.loads(SOURCE_CONFIG.read_text())["packages"]
         }
 
-        self.assertEqual(matrix_packages, config_packages)
-        self.assertEqual(matrix_packages - source_packages, set())
+        self.assertEqual(len(config_packages), 193)
+        self.assertEqual(config_packages - source_packages, set())
         self.assertTrue(
             {"adw-gtk3-theme", "bootc", "igt-gpu-tools", "mesa", "runc"}
-            <= matrix_packages
+            <= config_packages
         )
+        self.assertIn("python3 tools/packit_workflow.py packages", workflow)
+        self.assertIn("fromJson(needs.discover.outputs.packages)", workflow)
         self.assertIn("--stage-into packages", workflow)
         self.assertIn("--verify-staged packages", workflow)
         self.assertIn("packit srpm --preserve-spec", workflow)
