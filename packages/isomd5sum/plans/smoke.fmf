@@ -1,7 +1,0 @@
-summary: Smoke tests for isomd5sum tools
-
-discover:
-    how: fmf
-
-execute:
-    how: tmt

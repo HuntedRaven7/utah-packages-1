@@ -1,1 +1,0 @@
-../../../.agents/skills/build-failure-triage/SKILL.md

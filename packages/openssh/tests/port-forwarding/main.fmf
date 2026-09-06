@@ -1,4 +1,0 @@
-summary: Testing port forwarding
-description: |
-  Testing port forwarding (ideally all possibilities: -L, -R, -D)
-contact: Stanislav Zidek <szidek@redhat.com>

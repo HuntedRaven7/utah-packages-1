@@ -1,6 +1,0 @@
-summary: Run all tests
-execute:
-  how: tmt
-discover:
-  how: fmf
-

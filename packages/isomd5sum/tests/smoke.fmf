@@ -1,6 +1,0 @@
-summary: Basic smoke test
-contact: Radek Vykydal <rvykydal@redhat.com>
-path: /tests
-test: ./smoke.sh
-duration: 30m
-require: [genisoimage, coreutils, isomd5sum]

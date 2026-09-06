@@ -3,3 +3,27 @@ reports/source-pipeline/
 __pycache__/
 *.pyc
 .worktrees/
+
+# Build inputs fetched and staged beside each recipe by tools/source_pipeline.py
+# (--stage-into packages). Every name here appears in some packages/*/sources
+# manifest; none of it is tracked. These rules replace 189 per-package
+# .gitignore files imported from dist-git, so a new recipe is covered the
+# moment it is added instead of needing its own copy.
+packages/*/*.tar.*
+packages/*/*.tgz
+packages/*/*.zip
+packages/*/*.crate
+packages/*/*.gz
+packages/*/*.sig
+packages/*/*.asc
+packages/*/*.sha256sum
+packages/*/*.upstream
+
+# Lookaside payloads whose names carry no build-artifact extension.
+packages/fish/krobelus.gpg
+packages/openssh/gpgkey-*.gpg
+packages/icu/icu-config.sh
+packages/icu/metaZones.txt
+packages/icu/timezoneTypes.txt
+packages/icu/windowsZones.txt
+packages/icu/zoneinfo64.txt

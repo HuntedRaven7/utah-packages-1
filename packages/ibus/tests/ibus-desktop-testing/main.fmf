@@ -1,3 +1,0 @@
-summary: gnome-desktop-testing tests
-# common test for sub tests
-test: env

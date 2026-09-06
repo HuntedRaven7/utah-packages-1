@@ -1,9 +1,0 @@
-# https://github.com/rpminspect/rpminspect/blob/master/data/generic.yaml
-# https://github.com/rpminspect/rpminspect-data-fedora/blob/main/fedora.yaml
-
----
-
-runpath:
-    allowed_paths:
-        - /usr/lib/mutter-17
-        - /usr/lib64/mutter-17

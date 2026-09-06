@@ -1,1 +1,0 @@
-../../../.agents/skills/hummingbird/SKILL.md

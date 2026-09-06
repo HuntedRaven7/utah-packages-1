@@ -1,3 +1,0 @@
-summary: Basic test
-test: ./test.sh
-framework: beakerlib

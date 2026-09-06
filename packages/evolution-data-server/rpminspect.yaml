@@ -1,5 +1,0 @@
----
-runpath:
-    allowed_paths:
-        - /usr/lib/evolution-data-server
-        - /usr/lib64/evolution-data-server

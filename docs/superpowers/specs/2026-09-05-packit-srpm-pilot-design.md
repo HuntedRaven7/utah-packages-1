@@ -21,7 +21,7 @@ packages in the repository.
   `quay.io/packit/packit@sha256:...` (upstream-published, rebuilt daily) and
   use only `packit srpm` / `packit build in-mock`, never the mutable
   `packit/actions/*@main` GitHub Actions. This is recorded in
-  `docs/architecture.md` and `docs/packit-reuse-research.md` §7.
+  `docs/architecture.md`.
 - Issue #35 closed as COMPLETED, but two of its acceptance criteria were
   never checked off:
   - "At least one existing or new job in this repo consumes the image ...
@@ -58,9 +58,8 @@ defensible:
 **This spec picks (1), the pilot**, and treats (2) as explicit future scope
 gated on the pilot succeeding. Reasons:
 
-- It is the option `docs/packit-reuse-research.md` §7 actually recommends:
-  pin the CLI, use it narrowly, don't restructure the whole factory around
-  it in one pass.
+- It is the conservative option: pin the CLI, use it narrowly, don't
+  restructure the whole factory around it in one pass.
 - It directly closes the two unchecked boxes on issue #35 with the smallest
   possible blast radius, consistent with how #36→#37→#38→#40 were landed as
   a sequence of small, reviewable PRs rather than one large change.
