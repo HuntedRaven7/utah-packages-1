@@ -509,7 +509,7 @@
     {
       "name": "igt-gpu-tools",
       "version": "2.5",
-      "url": "https://www.x.org/archive/individual/app/igt-gpu-tools-2.5.tar.xz",
+      "url": "https://xorg.freedesktop.org/archive/individual/app/igt-gpu-tools-2.5.tar.xz",
       "filename": "igt-gpu-tools-2.5.tar.xz",
       "sha512": "0da8f56a76bb79186da95545be63b8fa82c93edfe9b5fe6ffe43017deb792601545bba292c516b525e1e29087e9b048751df4875d8a7a64e265bac943bf6be81"
     },
