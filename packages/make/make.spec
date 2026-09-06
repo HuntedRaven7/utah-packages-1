@@ -25,7 +25,7 @@ Summary: Meta package to include latest version of make
 %global make %{name}
 Summary: A GNU tool which simplifies the build process for users
 Provides:   make-latest = %{version}-%{release}
-Provides:   %(echo make%{version} | tr -d .) = %{version}-%{release}
+Provides:   make441 = %{version}-%{release}
 %endif
 
 # This gives the user the option of saying --with guile, but defaults to WITHOUT

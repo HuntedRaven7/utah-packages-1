@@ -17,7 +17,10 @@ def verified_source0(root: Path, working_directory: Path | None = None) -> str:
 
     configured = Path(spec_path)
     candidates = []
-    if configured.is_absolute() and configured.is_file():
+    package_env = os.environ.get("PACKAGE")
+    if package_env and (root / "packages" / package_env / configured.name).is_file():
+        candidates.append(root / "packages" / package_env / configured.name)
+    elif configured.is_absolute() and configured.is_file():
         candidates.append(configured)
     elif (root / configured).is_file():
         candidates.append(root / configured)
@@ -32,7 +35,6 @@ def verified_source0(root: Path, working_directory: Path | None = None) -> str:
         package
         for package in config["packages"]
         if package["name"] == package_name
-        or package.get("dist_git_name") == package_name
     ]
     if len(matches) != 1:
         raise ValueError(f"cannot uniquely locate source lock for {package_name}")

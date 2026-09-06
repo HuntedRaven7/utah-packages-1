@@ -120,7 +120,7 @@ def generate_source(package: dict, target_dir: Path) -> Path:
         raise ValueError(f"generation script does not exist: {script}")
     if not package.get("filename"):
         raise ValueError(f"generated source entry for {name} requires a filename")
-    package_dir = Path("packages") / package.get("dist_git_name", name)
+    package_dir = Path("packages") / package["name"]
     if not package_dir.is_dir():
         raise ValueError(f"package recipe directory does not exist: {package_dir}")
     scratch = target_dir / ".generate"
@@ -138,7 +138,7 @@ def generate_source(package: dict, target_dir: Path) -> Path:
 
 def source_manifest(package: dict) -> list[tuple[str, str]]:
     """Return the Fedora lookaside filenames and SHA-512 digests."""
-    manifest = Path("packages") / package.get("dist_git_name", package["name"]) / "sources"
+    manifest = Path("packages") / package["name"] / "sources"
     if not manifest.is_file():
         return []
     entries = []
@@ -182,7 +182,7 @@ def bundled_sources(package: dict, target_dir: Path, already: str) -> list[str]:
 
 def verify_staged_sources(package: dict, package_root: Path) -> list[str]:
     """Fail if Packit changed any source after the verification gate."""
-    package_dir = package_root / package.get("dist_git_name", package["name"])
+    package_dir = package_root / package["name"]
     expected_sources = {
         package.get("filename", ""): package["sha512"].lower(),
         **dict(source_manifest(package)),
@@ -205,8 +205,7 @@ def verify_staged_sources(package: dict, package_root: Path) -> list[str]:
 
 def stage_for_packit(package: dict, sources: list[Path], package_root: Path) -> list[str]:
     """Copy verified sources beside the package spec for `packit srpm`."""
-    package_name = package.get("dist_git_name", package["name"])
-    package_dir = package_root / package_name
+    package_dir = package_root / package["name"]
     if not package_dir.is_dir():
         raise ValueError(f"package recipe directory does not exist: {package_dir}")
     staged = []

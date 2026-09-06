@@ -27,7 +27,7 @@
 %global wcd1 cosmic-panel or hyprland or sway or waybar or lxqt-wayland-session
 %global wcd2 budgie-desktop or plasma-workspace or xfce4-session-wayland-session
 
-%if %with_pkg_config
+%if 0%{?with_pkg_config}
 %if %{with gtk2}
 %{!?gtk2_binary_version: %global gtk2_binary_version %(pkg-config  --variable=gtk_binary_version gtk+-2.0)}
 %else
