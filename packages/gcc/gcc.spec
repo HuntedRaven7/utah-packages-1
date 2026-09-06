@@ -3375,7 +3375,7 @@ for f in /%{_lib}/libgcc_s.so.1 \
 %endif
 %if %{build_libubsan}
   %{_prefix}/%{_lib}/libubsan.so.1 \
-%%endif
+%endif
   ; do
     mkdir -p %{buildroot}/%{sysroot_prefix}/$(dirname $f)
     cp %{buildroot}$f %{buildroot}/%{sysroot_prefix}/$f
