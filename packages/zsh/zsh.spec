@@ -33,7 +33,12 @@ BuildRequires: make
 BuildRequires: ncurses-devel
 BuildRequires: pcre2-devel
 BuildRequires: sed
+# HTML documentation requires texi2html, which drags Fedora ruby into the
+# buildroot and conflicts with Hummingbird ruby4.0 (issue #21).
+%bcond_with html
+%if %{with html}
 BuildRequires: texi2html
+%endif
 BuildRequires: texinfo
 Requires(post): grep
 Requires(postun): coreutils grep
@@ -48,6 +53,7 @@ command line editing, built-in spelling correction, programmable
 command completion, shell functions (with autoloading), a history
 mechanism, and more.
 
+%if %{with html}
 %package html
 Summary: Zsh shell manual in html format
 BuildArch: noarch
@@ -61,6 +67,7 @@ command completion, shell functions (with autoloading), a history
 mechanism, and more.
 
 This package contains the Zsh manual in html format.
+%endif
 
 %prep
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
@@ -86,7 +93,11 @@ export zsh_cv_sys_nis='no'
 make -C Src headers
 make -C Src -f Makemod zsh{path,xmod}s.h version.h
 
+%if %{with html}
 %make_build all html
+%else
+%make_build all
+%endif
 
 %check
 # avoid unnecessary failure of the test-suite in case ${RPS1} is set
@@ -154,8 +165,10 @@ fi
 %config(noreplace) %{_sysconfdir}/skel/.z*
 %config(noreplace) %{_sysconfdir}/z*
 
+%if %{with html}
 %files html
 %doc Doc/*.html
+%endif
 
 %changelog
 * Wed Jul 22 2026 Lukáš Zaoral <lzaoral@redhat.com> - 5.9.2-3
