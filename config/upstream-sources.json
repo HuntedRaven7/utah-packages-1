@@ -1339,7 +1339,7 @@
       "name": "gcc",
       "version": "16.2.1",
       "filename": "gcc-16.2.1-20260819.tar.xz",
-      "sha512": "6583ec486ab104dbb46aed2adb27d0e77c02e60ecd275c7bc9f0da51f865a61432b3b6d37d57381fde0d7c097ec231b197f6c9ab1b6787511f425aac9bcc037a",
+      "sha512": "ecb291407817316f5516fe771099148ee2ead872d0044ba1b94b68141ef3c46f95f1242bac98881c69f056fc05a1b172e7f2ed3a160219d45c1e4acafc04e680",
       "generate": {
         "script": "tools/generated_sources.py",
         "input": "https://gcc.gnu.org/git/gcc.git revision 95ef1679dd68f27b3d056a497318089d85aa0d55 (vendors/redhat/heads/gcc-16-branch)",
