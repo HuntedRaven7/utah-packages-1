@@ -7,6 +7,7 @@ drift without a failing test. These tests cover the extracted module and assert
 that both tools now resolve the same binary set from the real manifest.
 """
 
+import json
 from pathlib import Path
 import tomllib
 import unittest
@@ -63,6 +64,12 @@ class ImportBinariesTests(unittest.TestCase):
         self.assertEqual(binaries, sorted(set(binaries)))
         for section in IMPORT_SECTIONS:
             self.assertTrue(set(manifest[section]["packages"]) <= set(binaries))
+
+    def test_committed_resolution_report_is_valid_json(self):
+        report_path = ROOT / "reports" / "bluefin-rawhide-resolution.json"
+        if report_path.exists():
+            data = json.loads(report_path.read_text())
+            self.assertIn("binary_count", data)
 
 
 if __name__ == "__main__":

@@ -74,7 +74,7 @@ def main() -> int:
         "import_failures": failures,
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n")
+    args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps({key: report[key] for key in ("binary_count", "imported_sources", "unavailable", "import_failures")}, indent=2))
     return 0
 
