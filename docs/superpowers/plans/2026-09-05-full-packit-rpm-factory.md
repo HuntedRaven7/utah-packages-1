@@ -21,6 +21,12 @@
 - The existing builder remains intact until full parity and closure proof.
 - The Packit image remains pinned to `sha256:149e6e06d3e5fb2f10d19760c8a0031c7d8825e7bb91a5f4a7ab9b927c947494`.
 - Local Zot image/artifact traffic uses `10.99.0.1:30500` from build containers with TLS verification explicitly disabled; this routes `exo-0` traffic over USB4.
+- Package builds, generated-source reproduction, and environment-sensitive
+  validation run on the lab's remote Argo cluster. Generic steps reuse
+  existing organization-owned FSDK containers; no ad hoc local Ubuntu or
+  Fedora containers and no runtime package installation are allowed. The
+  digest-pinned Packit image mirrored into local Zot is used only for Packit
+  and Mock operations that require its toolchain.
 
 ---
 
@@ -123,7 +129,13 @@ packages.
 
 - [ ] **Step 3: Generate candidates**
 
-Run once per missing recipe:
+Run candidate generation in a GitOps-managed Argo workflow on the remote lab
+cluster. Use an existing organization-owned FSDK image for generic
+source-generation tooling and the mirrored digest-pinned Packit image only
+where RPM macro expansion requires it. Do not run these commands from an ad
+hoc local distro container.
+
+Run once per missing recipe inside that workflow:
 
 ```bash
 python3 tools/bootstrap_upstream_sources.py \
@@ -147,7 +159,7 @@ additional sources through each package's Fedora `sources` manifest so
 
 - [ ] **Step 4: Verify every new source**
 
-Run:
+Run on the remote lab cluster:
 
 ```bash
 for package in dracut evolution-ews firewalld fish gcc git \

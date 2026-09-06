@@ -43,6 +43,16 @@ The 54-package Argo SRPM lane is proven independently: run
 `utah-srpm-cjzrv` completed 54/54 packages successfully in 93 seconds across
 `ghost` and `exo-0`.
 
+## Execution environment
+
+All package builds, generated-source reproduction, and environment-sensitive
+validation run on the lab's remote Argo cluster. Generic workflow steps reuse
+the organization-owned FSDK containers already maintained by
+`projectbluefin/fsdk-containers`; they must not create ad hoc local Ubuntu or
+Fedora containers or install tooling into a container at runtime. The
+digest-pinned Packit image mirrored into local Zot is reserved for Packit and
+Mock operations that require its toolchain.
+
 ## Considered approaches
 
 ### 1. Keep the existing binary builder and use Packit only for SRPMs

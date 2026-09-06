@@ -29,12 +29,18 @@ image.
 
 ## Tooling
 
+Package builds, generated-source reproduction, and environment-sensitive
+validation run on the lab's remote Argo cluster. Generic workflow steps use
+existing organization-owned FSDK containers instead of ad hoc local Ubuntu or
+Fedora containers. If an FSDK image lacks a required tool, add it in
+`projectbluefin/fsdk-containers`; do not install packages at runtime.
+
 Where Packit CLI functionality (SRPM generation, spec-version-bump logic) is
 useful in this factory's own automation, consume the upstream-published
 `quay.io/packit/packit` image directly (it already ships `packit`, `mock`, and
 `createrepo_c`, rebuilt daily by the Packit project) rather than maintaining a
-local rebuild of it. Pin by digest. Do not reinvent an image upstream already
-publishes and maintains.
+local rebuild of it. Pin by digest and mirror it into the lab's writable Zot.
+This is the narrow tool-specific exception to the FSDK-image rule.
 
 `.github/workflows/packit-srpm-pilot.yml` proves this end-to-end: it runs the
 verified-source pipeline and then `packit srpm --preserve-spec` against all 54

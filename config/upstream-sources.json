@@ -1338,13 +1338,12 @@
     {
       "name": "gcc",
       "version": "16.2.1",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/gcc/gcc-16.2.1-20260819.tar.xz/sha512/6583ec486ab104dbb46aed2adb27d0e77c02e60ecd275c7bc9f0da51f865a61432b3b6d37d57381fde0d7c097ec231b197f6c9ab1b6787511f425aac9bcc037a/gcc-16.2.1-20260819.tar.xz",
       "filename": "gcc-16.2.1-20260819.tar.xz",
       "sha512": "6583ec486ab104dbb46aed2adb27d0e77c02e60ecd275c7bc9f0da51f865a61432b3b6d37d57381fde0d7c097ec231b197f6c9ab1b6787511f425aac9bcc037a",
-      "generated": {
+      "generate": {
+        "script": "tools/generated_sources.py",
         "input": "https://gcc.gnu.org/git/gcc.git revision 95ef1679dd68f27b3d056a497318089d85aa0d55 (vendors/redhat/heads/gcc-16-branch)",
-        "method": "git archive --prefix=gcc-16.2.1-20260819/ 95ef1679dd68f27b3d056a497318089d85aa0d55 | xz -9e",
-        "script": "packages/gcc/update-gcc.sh"
+        "method": "git archive --prefix=gcc-16.2.1-20260819/ 95ef1679dd68f27b3d056a497318089d85aa0d55 | xz -9e (single-stream liblzma, preset 9 extreme)"
       }
     },
     {
@@ -1357,13 +1356,12 @@
     {
       "name": "intel-media-driver-free",
       "version": "26.2.4",
-      "url": "https://src.fedoraproject.org/repo/pkgs/rpms/intel-media-driver-free/intel-media-26.2.4-free.tar.gz/sha512/a8a496174f8c16ed4ee3975d65fb81b3e3b1a10ebe9e9978e02b593779813df10e81b511eb3155c31a85f428fe9f1ecacc04c33423c3d216f0058d7ae0674bad/intel-media-26.2.4-free.tar.gz",
       "filename": "intel-media-26.2.4-free.tar.gz",
-      "sha512": "a8a496174f8c16ed4ee3975d65fb81b3e3b1a10ebe9e9978e02b593779813df10e81b511eb3155c31a85f428fe9f1ecacc04c33423c3d216f0058d7ae0674bad",
-      "generated": {
-        "input": "https://github.com/intel/media-driver/archive/intel-media-26.2.4.tar.gz",
-        "method": "remove non-free EU kernel files from the extracted tag archive and repack as intel-media-26.2.4-free.tar.gz",
-        "script": "packages/intel-media-driver-free/strip.py"
+      "sha512": "748a17e6defdd4c643900eb7932334ee8103a36b9465b6bd7d48b8fd30529fccc285ce7990924af777542f8ea5c0747f919e85649bc4a7940954a9a7ca9fb203",
+      "generate": {
+        "script": "tools/generated_sources.py",
+        "input": "https://github.com/intel/media-driver/archive/intel-media-26.2.4.tar.gz (sha512-pinned)",
+        "method": "remove non-free EU kernel files from the tag archive (strip.py removal set) and repack deterministically as intel-media-26.2.4-free.tar.gz"
       }
     },
     {
