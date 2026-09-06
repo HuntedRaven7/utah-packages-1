@@ -1,9 +1,16 @@
 %bcond check 1
 
-%global glib2_version 2.56.0
-%global qmi_version 1.36.0
-%global mbim_version 1.32.0
-%global qrtr_version 1.0.0
+# Derived from the buildroot so the Conflicts below name the versions this
+# package was actually compiled against. packit's spec parser sanitizes shell
+# expansions to %{nil}, so each Conflicts is emitted only when its macro
+# resolved -- an SRPM parses without them, a real rpmbuild carries them.
+# Hardcoding these instead would silently weaken the constraint: Hummingbird's
+# root has glib2 2.89.3, so a fixed "< 2.56.0" would admit versions older than
+# the library the binary links.
+%global glib2_version %(pkg-config --modversion glib-2.0 2>/dev/null)
+%global qmi_version %(pkg-config --modversion qmi-glib 2>/dev/null)
+%global mbim_version %(pkg-config --modversion mbim-glib 2>/dev/null)
+%global qrtr_version %(pkg-config --modversion qrtr-glib 2>/dev/null)
 
 %global forgeurl https://gitlab.freedesktop.org/mobile-broadband/ModemManager
 
@@ -22,10 +29,18 @@ Requires: %{name}-glib%{?_isa} = %{version}-%{release}
 
 # Don't allow older versions of these than what we built against,
 # because they add new API w/o versioning it or bumping the SONAME
+%if "%{glib2_version}" != ""
 Conflicts: glib2%{?_isa} < %{glib2_version}
+%endif
+%if "%{qmi_version}" != ""
 Conflicts: libqmi%{?_isa} < %{qmi_version}
+%endif
+%if "%{mbim_version}" != ""
 Conflicts: libmbim%{?_isa} < %{mbim_version}
+%endif
+%if "%{qrtr_version}" != ""
 Conflicts: libqrtr-glib%{?_isa} < %{qrtr_version}
+%endif
 
 Requires(post): systemd
 Requires(postun): systemd
@@ -75,7 +90,9 @@ from applications.
 %package glib
 Summary: Libraries for adding ModemManager support to applications that use glib.
 License: LGPL-2.1-or-later
+%if "%{glib2_version}" != ""
 Requires: glib2 >= %{glib2_version}
+%endif
 
 %description glib
 This package contains the libraries that make it easier to use some ModemManager
@@ -88,7 +105,9 @@ License: LGPL-2.1-or-later
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: %{name}-devel%{?_isa} = %{version}-%{release}
 Requires: %{name}-glib%{?_isa} = %{version}-%{release}
+%if "%{glib2_version}" != ""
 Requires: glib2-devel >= %{glib2_version}
+%endif
 Requires: pkgconfig
 
 %description glib-devel

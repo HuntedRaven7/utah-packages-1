@@ -25,7 +25,14 @@ Summary: Meta package to include latest version of make
 %global make %{name}
 Summary: A GNU tool which simplifies the build process for users
 Provides:   make-latest = %{version}-%{release}
-Provides:   make441 = %{version}-%{release}
+# Derived from %%{version} rather than written out, so the versioned capability
+# cannot drift when Version moves. Emitted only when the shell expansion
+# resolved: packit's parser sanitizes %%(...) to %%{nil}, and a bare
+# "Provides: = 4.4.1-13" is a hard parse error.
+%global make_versioned %(echo make%{version} | tr -d .)
+%if "%{make_versioned}" != ""
+Provides:   %{make_versioned} = %{version}-%{release}
+%endif
 %endif
 
 # This gives the user the option of saying --with guile, but defaults to WITHOUT

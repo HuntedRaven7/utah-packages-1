@@ -47,7 +47,16 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - id: packages
         run: |
-          echo "packages=$(python3 tools/packit_workflow.py packages)" >> "$GITHUB_OUTPUT"
+          # Capture the substitution before writing it. "echo $(cmd) >> file"
+          # reports echo's status, not the command's, so a discovery failure
+          # would leave packages= behind a green job -- and an empty list is a
+          # matrix that runs nothing while the workflow still passes. Both
+          # failure modes are a green build that tested no package at all.
+          packages="$(python3 tools/packit_workflow.py packages)"
+          count=$(printf '%s' "$packages" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
+          test "$count" -gt 0
+          echo "discovered $count packages"
+          printf 'packages=%s\n' "$packages" >> "$GITHUB_OUTPUT"
 
   srpm:
     needs: discover
