@@ -30,7 +30,7 @@ CentOS Stream 10 kernel based on Linux 6.12.
 %prep
 rpm2cpio %{SOURCE0} | cpio -idmv *.tar.xz
 tar -xJf linux-*.tar.xz
-cd linux-*
+cd linux-%{version}-%{release}
 
 %build
 make mrproper
