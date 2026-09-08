@@ -43,7 +43,7 @@ cp .config %{buildroot}/boot/config-7.2.3-ogc3
 /boot/vmlinuz-7.2.3-ogc3
 /boot/System.map-7.2.3-ogc3
 /boot/config-7.2.3-ogc3
-/lib/modules/7.2.3-ogc3/
+/lib/modules/*/
 
 %changelog
 * Tue Sep 08 2026 Robin - 7.2.3-ogc3

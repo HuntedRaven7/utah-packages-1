@@ -28,9 +28,9 @@ BuildRequires:  zlib-devel
 CentOS Stream 10 kernel based on Linux 6.12.
 
 %prep
-rpm2cpio %{SOURCE0} | cpio -idmv linux-%{version}-%{release}.tar.xz
-tar -xJf linux-%{version}-%{release}.tar.xz
-cd linux-%{version}-%{release}
+rpm2cpio %{SOURCE0} | cpio -idmv *.tar.xz
+tar -xJf linux-*.tar.xz
+cd linux-*
 
 %build
 make mrproper
@@ -48,7 +48,7 @@ cp .config %{buildroot}/boot/config-%{version}-%{release}
 /boot/vmlinuz-%{version}-%{release}
 /boot/System.map-%{version}-%{release}
 /boot/config-%{version}-%{release}
-/lib/modules/%{version}-%{release}/
+/lib/modules/*/
 
 %changelog
 * Tue Sep 08 2026 Robin - 6.12.0-264.el10
