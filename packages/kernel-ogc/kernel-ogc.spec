@@ -20,6 +20,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  perl-interpreter
 BuildRequires:  rpm-build
 BuildRequires:  xz
+BuildRequires:  elfutils-devel
 BuildRequires:  zlib-devel
 
 %description
