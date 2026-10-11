@@ -97,6 +97,20 @@ For every mapped GNOME-owned factory source the audit reports:
 - **component membership**: whether the gbm element exists and is a core/sdk/
   core-deps component, and whether the factory source is tracked at all.
 
+### Mutter private-API package boundaries
+
+For an add-on that links to Mutter's private Clutter, Cogl, or libmutter APIs,
+keep all three pkg-config dependencies on one Mutter API major and bound the
+version interval (for example `>= 51.0, < 52.0`). A generic `libmutter`
+requirement can silently select a different ABI, while versioned pkg-config
+modules make a Mutter ABI transition fail at configure time. Read the pinned
+`.pc` metadata for the GIR and private-library directories instead of
+hard-coding their locations. RPM's generated SONAME dependencies may already
+express the runtime library requirement, so inspect the built RPM before
+adding a broader package-name `Requires:`. Static extension compatibility
+checks do not establish that a native library builds or loads against the
+pinned Hummingbird root; verify that with the factory build.
+
 BuildStream `(@)` includes are resolved deliberately (see the `Loader`), and
 unresolved merge operators (`(>)`, `(<)`, ...) are recorded per element. The
 resolved-include set is reset per element, so a shared include

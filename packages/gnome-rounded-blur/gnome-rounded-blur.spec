@@ -33,7 +33,6 @@ BuildRequires:  meson
 BuildRequires:  mutter-devel
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-2.0)
-Requires:       mutter%{?_isa}
 
 %description
 Library providing the Blur blur effect with corner radius support for
