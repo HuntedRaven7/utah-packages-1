@@ -16,7 +16,7 @@
 # says 1.0.0, so Version tracks the tag (post-release snapshot) to keep EVR
 # above Bluefin's 1.0.1-1.
 %global commit f3bfcc796e1214c1e1d4287ee35cb132ad8133f0
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global shortcommit %(printf '%s\\n' %{commit} | cut -c1-7)
 %global gitdate 20260809
 
 Name:           gnome-rounded-blur
