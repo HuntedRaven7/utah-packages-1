@@ -11,13 +11,17 @@
 # itself a port of upstream commit c0d67c886ac0b54fedaddf75817e85264d16322e,
 # submitted upstream as kancko/gnome-rounded-blur#7). Drop the patch when it
 # lands upstream; keep the ABI-51 requirement when updating the pin.
+#
+# The pinned commit is one commit past the v1.0.1 tag; its meson.build still
+# says 1.0.0, so Version tracks the tag (post-release snapshot) to keep EVR
+# above Bluefin's 1.0.1-1.
 %global commit f3bfcc796e1214c1e1d4287ee35cb132ad8133f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global gitdate 20260809
 
 Name:           gnome-rounded-blur
-Version:        1.0.0
-Release:        1.%{gitdate}git%{shortcommit}%{?dist}
+Version:        1.0.1^%{gitdate}git%{shortcommit}
+Release:        1%{?dist}
 Summary:        Rounded corners and blur effect library for GNOME Shell
 
 License:        GPL-3.0-or-later
@@ -72,5 +76,5 @@ against %{name}.
 %{_datadir}/gir-1.0/Blur-1.0.gir
 
 %changelog
-* Fri Oct 10 2026 Utah Packages <packages@projectbluefin.io> - 1.0.0-1.20260809gitf3bfcc7
+* Sat Oct 10 2026 Utah Packages <packages@projectbluefin.io> - 1.0.1^20260809gitf3bfcc7-1
 - Initial recipe: mutter-51 port from Dakota for the blur-my-shell provider
