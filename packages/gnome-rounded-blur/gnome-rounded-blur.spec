@@ -30,7 +30,9 @@ BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  meson
-BuildRequires:  mutter-devel
+BuildRequires:  pkgconfig(mutter-clutter-51) >= 51.0
+BuildRequires:  pkgconfig(mutter-cogl-51) >= 51.0
+BuildRequires:  pkgconfig(libmutter-51) >= 51.0
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-2.0)
 
@@ -42,7 +44,7 @@ without it the extension's blur features do nothing.
 %package devel
 Summary:        Development files for %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Requires:       mutter-devel%{?_isa}
+Requires:       mutter-devel%{?_isa} >= 51.0
 
 %description devel
 Headers, pkg-config file, and GObject introspection data for building
