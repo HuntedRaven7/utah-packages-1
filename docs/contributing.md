@@ -71,6 +71,20 @@ provenance, and editing it makes the recipe claim an origin it does not have.
 Pull requests validate configuration. They cannot publish packages,
 attestations, or image tags.
 
+### Mutter private-API package boundaries
+
+For an add-on that links to Mutter's private Clutter, Cogl, or libmutter APIs,
+keep all three pkg-config dependencies on one Mutter API major and bound the
+version interval (for example `>= 51.0, < 52.0`). A generic `libmutter`
+requirement can silently select a different ABI, while versioned pkg-config
+modules make a Mutter ABI transition fail at configure time. Read the pinned
+`.pc` metadata for the GIR and private-library directories instead of
+hard-coding their locations. RPM's generated SONAME dependencies may already
+express the runtime library requirement, so inspect the built RPM before
+adding a broader package-name `Requires:`. Static extension compatibility
+checks do not establish that a native library builds or loads against the
+pinned Hummingbird root; verify that with the factory build.
+
 ## Updating a carried package from Rawhide
 
 You usually do not. `detect-rawhide-updates.yml` re-imports, once a day on
