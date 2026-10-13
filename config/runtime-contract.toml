@@ -38,6 +38,9 @@ packages = [
   # Files. The factory built nautilus with no way to install it: gexiv2 and
   # libportal were in no repository. Both are recipes now (utah#100).
   "nautilus",
+  # GNOME Disks for drive partitioning and image mounting parity with other
+  # Bluefin variants (projectbluefin/utah-packages#435).
+  "gnome-disk-utility",
   "fwupd",
   "gnome-control-center",
   "gnome-session",

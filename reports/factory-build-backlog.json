@@ -16,8 +16,8 @@
     },
     "gnome-apps": {
       "already_recipe": 5,
-      "pending": 33,
-      "total": 38
+      "pending": 32,
+      "total": 37
     },
     "long-tail": {
       "already_recipe": 9,
@@ -1382,11 +1382,6 @@
     {
       "area": "gnome-apps",
       "name": "gnome-color-manager",
-      "state": "pending"
-    },
-    {
-      "area": "gnome-apps",
-      "name": "gnome-disk-utility",
       "state": "pending"
     },
     {
@@ -2814,11 +2809,11 @@
   "states": {
     "already_recipe": 29,
     "manifest_wants": 1,
-    "pending": 521
+    "pending": 520
   },
   "totals": {
-    "backlog": 551,
-    "resolved": 0,
+    "backlog": 550,
+    "resolved": 1,
     "wontfix": 0
   }
 }

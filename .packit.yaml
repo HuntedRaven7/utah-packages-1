@@ -436,6 +436,12 @@ packages:
     downstream_package_name: gnome-desktop3
     paths:
       - packages/gnome-desktop3
+  gnome-disk-utility:
+    specfile_path: gnome-disk-utility.spec
+    upstream_package_name: gnome-disk-utility
+    downstream_package_name: gnome-disk-utility
+    paths:
+      - packages/gnome-disk-utility
   gnome-initial-setup:
     specfile_path: gnome-initial-setup.spec
     upstream_package_name: gnome-initial-setup

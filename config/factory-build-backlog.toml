@@ -184,7 +184,6 @@ packages = [
     "gnome-browser-connector",
     "gnome-classic-session",
     "gnome-color-manager",
-    "gnome-disk-utility",
     "gnome-epub-thumbnailer",
     "gnome-menus",
     "gnome-remote-desktop",
@@ -648,7 +647,9 @@ packages = [
 [resolved]
 # Packages that left the backlog because a recipe was imported.
 # Each entry: package name and the commit that closed the gap.
-packages = []
+packages = [
+    { name = "gnome-disk-utility", commit = "652149e0a00e635b805d98e8abdfbc11f8dabd16" },
+]
 
 [wontfix]
 # Packages deliberately decided not to carry. Each entry: package

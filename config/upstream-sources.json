@@ -3761,6 +3761,13 @@
       "fallback_urls": [
         "https://src.fedoraproject.org/repo/pkgs/rpms/simdutf/simdutf-9.0.0.tar.gz/sha512/0c74226247cbe95368efa87ab84f5217485f16bcdf7a9def8741c6086cb86e6c378f0c437030d2be0934726e3ea9c28b5df2e593d0c654c78291c455a8d1e103/simdutf-9.0.0.tar.gz"
       ]
+    },
+    {
+      "name": "gnome-disk-utility",
+      "version": "46.1",
+      "url": "https://download.gnome.org/sources/gnome-disk-utility/46/gnome-disk-utility-46.1.tar.xz",
+      "filename": "gnome-disk-utility-46.1.tar.xz",
+      "sha512": "e2b6b6e793e5ad0ca3c22704ccb9ae420acbe41d237eb9aabbda51a47dd3d452daa4f71f07edb37157a03cd2faf76338f80b9044f5d0ff546e74196005ba30bb"
     }
   ]
 }
